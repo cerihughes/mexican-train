@@ -1,0 +1,47 @@
+name: MexicanTrain
+schemes:
+  MexicanTrain:
+    build:
+      targets:
+        MexicanTrain: all
+        Tests: [test]
+    test:
+      gatherCoverageData: true
+      coverageTargets:
+        - MexicanTrain
+      targets: 
+        - Tests
+options:
+  bundleIdPrefix: uk.co.cerihughes
+packages:
+  Madog:
+    url: https://github.com/cerihughes/madog
+    from: 4.0.0
+  SnapKit:
+    url: https://github.com/SnapKit/SnapKit
+    from: 5.0.0
+targets:
+  MexicanTrain:
+    type: application
+    platform: iOS
+    deploymentTarget: "13.0"
+    settings:
+      INFOPLIST_FILE: Resources/Info.plist
+    sources:
+      - Source
+      - Resources
+    dependencies:
+      - package: Madog
+      - package: SnapKit
+    postCompileScripts:
+      - script: swiftlint
+        name: Swift Lint
+  Tests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests
+      - TestResources
+    dependencies:
+      - target: MexicanTrain
