@@ -26,13 +26,20 @@ targets:
     platform: iOS
     deploymentTarget: "13.0"
     settings:
-      INFOPLIST_FILE: Resources/Info.plist
+      INFOPLIST_FILE: Resources/Secret.plist
     sources:
       - Source
       - Resources
     dependencies:
       - package: Madog
       - package: SnapKit
+    preBuildScripts:
+      - script: '"$PROJECT_DIR"/tools/copy-plist.sh'
+        name: Increment Build Number
+        inputFiles:
+          - $PROJECT_DIR/Resources/Info.plist
+        outputFiles:
+          - $PROJECT_DIR/Resources/Secret.plist
     postCompileScripts:
       - script: swiftlint
         name: Swift Lint
