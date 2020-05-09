@@ -11,3 +11,4 @@ Carthage/
 
 .DS_Store
 Resources/GoogleService-Info.plist
+Resources/Secret.plist
