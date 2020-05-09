@@ -9,7 +9,8 @@ jobs:
     steps:
       # Install dependencies
       - run: brew update
-      - run: brew install cocoapods swiftformat swiftlint || true
+      - run: brew install xcodegen cocoapods swiftformat swiftlint || true
+      - run: brew outdated xcodegen || brew upgrade xcodegen
       - run: brew outdated cocoapods || brew upgrade cocoapods
       - run: brew outdated swiftformat || brew upgrade swiftformat
       - run: brew outdated swiftlint || brew upgrade swiftlint
@@ -22,8 +23,8 @@ jobs:
       - run: set -o pipefail
       - run: export PROJECT_DIR=.; /bin/sh tools/copy-plist.sh
       - run: /bin/sh tools/create-fake-firebase-plist.sh
-      - run: /bin/sh xcodegen
-      - run: /bin/sh pod install
+      - run: xcodegen
+      - run: pod install
       - run: xcodebuild clean test -workspace MexicanTrain.xcworkspace -archivePath build -scheme MexicanTrain -destination "OS=latest,name=iPad (7th generation)" -sdk iphonesimulator CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
       - name: Codecov
         uses: codecov/codecov-action@v1.0.6
