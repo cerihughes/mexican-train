@@ -33,6 +33,9 @@ targets:
     dependencies:
       - package: Madog
       - package: SnapKit
+    postCompileScripts:
+      - script: swiftlint
+        name: Swift Lint
     preBuildScripts:
       - script: '"$PROJECT_DIR"/tools/copy-plist.sh'
         name: Increment Build Number
@@ -40,9 +43,12 @@ targets:
           - $PROJECT_DIR/Resources/Info.plist
         outputFiles:
           - $PROJECT_DIR/Resources/Secret.plist
-    postCompileScripts:
-      - script: swiftlint
-        name: Swift Lint
+    postBuildScripts:
+      - script: '"${PODS_ROOT}/FirebaseCrashlytics/run"'
+        name: Crashlytics
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+          - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
   Tests:
     type: bundle.unit-test
     platform: iOS
