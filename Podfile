@@ -7,4 +7,8 @@ target 'MexicanTrain' do
   # Pods for MexicanTrain
   pod 'Firebase/Analytics'
   pod 'Firebase/Database'
+
+  target 'Tests' do
+    inherit! :complete
+  end
 end
