@@ -30,6 +30,10 @@ class GameViewController: UIViewController {
         }
     }
 
+    override func loadView() {
+        view = SKView()
+    }
+
     override var shouldAutorotate: Bool {
         return true
     }

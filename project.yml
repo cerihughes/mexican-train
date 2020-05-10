@@ -11,6 +11,8 @@ schemes:
         - MexicanTrain
       targets: 
         - Tests
+      commandLineArguments:
+        "-isRunningUnitTests YES": true
 options:
   bundleIdPrefix: uk.co.cerihughes
 packages:
