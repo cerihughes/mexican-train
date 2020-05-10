@@ -2,7 +2,7 @@
 //  DominoTests.swift
 //  Tests
 //
-//  Created by Home on 10/05/2020.
+//  Created by Ceri on 10/05/2020.
 //
 
 import XCTest
