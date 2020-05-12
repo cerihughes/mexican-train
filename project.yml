@@ -31,7 +31,9 @@ targets:
       INFOPLIST_FILE: Resources/Secret.plist
     sources:
       - Source
-      - Resources
+      - path: Resources
+        excludes:
+          - "Secret.plist"
     dependencies:
       - package: Madog
       - package: SnapKit
@@ -51,6 +53,8 @@ targets:
         inputFiles:
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
           - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+    settings:
+      DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
   Tests:
     type: bundle.unit-test
     platform: iOS
