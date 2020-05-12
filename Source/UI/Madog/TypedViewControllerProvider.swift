@@ -2,7 +2,7 @@
 //  TypedViewControllerProvider.swift
 //  MexicanTrain
 //
-//  Created by Ceri Hughes on 12/05/2020.
+//  Created by Ceri on 12/05/2020.
 //
 
 import Madog
