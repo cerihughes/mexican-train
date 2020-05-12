@@ -8,15 +8,16 @@
 import Foundation
 import Madog
 
-class MadogResolver: Resolver<URL> {
+class MadogResolver: Resolver<MadogToken> {
     override func serviceProviderCreationFunctions() -> [(ServiceProviderCreationContext) -> ServiceProvider] {
         [
             MadogServiceProviderImplementation.init(context:)
         ]
     }
 
-    override func viewControllerProviderCreationFunctions() -> [() -> ViewControllerProvider<URL>] {
+    override func viewControllerProviderCreationFunctions() -> [() -> ViewControllerProvider<MadogToken>] {
         [
+            DominoesViewControllerProvider.init
         ]
     }
 }

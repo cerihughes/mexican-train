@@ -10,4 +10,9 @@ import Foundation
 struct MadogToken {
     let identifier: String
     let components: [String]
+
+    init(identifier: String, components: [String] = []) {
+        self.identifier = identifier
+        self.components = components
+    }
 }
