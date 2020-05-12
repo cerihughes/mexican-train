@@ -10,7 +10,7 @@ import UIKit
 
 class MexicanTrainUI {
     private let window: UIWindow
-    private let madog = Madog<URL>()
+    private let madog = Madog<MadogToken>()
 
     init(window: UIWindow) {
         self.window = window
@@ -18,8 +18,8 @@ class MexicanTrainUI {
     }
 
     func showInitialUI() -> Bool {
-        window.rootViewController = GameViewController()
-        return true
+        let context = madog.renderUI(identifier: .createNavigationControllerIdentifier(), token: MadogToken.dominoesTest, in: window)
+        return context != nil
     }
 
     // MARK: - Private
