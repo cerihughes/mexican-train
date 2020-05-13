@@ -8,20 +8,12 @@
 import SnapKit
 import UIKit
 
-class DominoesView: UIView {
+class DominoesView: SuperView {
     let domino = DominoView()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
+    override func commonInit() {
+        super.commonInit()
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         backgroundColor = .white
 
         addSubview(domino)
@@ -29,7 +21,7 @@ class DominoesView: UIView {
         domino.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(8)
             make.centerY.equalToSuperview()
-            make.size.equalTo(CGSize(width: 216, height: 115))
+            make.size.equalTo(CGSize(width: 115, height: 216))
         }
     }
 }

@@ -8,23 +8,28 @@
 import SnapKit
 import UIKit
 
-class DominoView: UIView {
+class DominoView: SuperView {
     let face1 = DominoFaceView()
     let face2 = DominoFaceView()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
+    override func commonInit() {
+        super.commonInit()
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         layer.borderWidth = 8
         layer.cornerRadius = 16
         layer.borderColor = UIColor.black.cgColor
+
+        addSubview(face1)
+        addSubview(face2)
+
+        face1.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview().inset(16)
+            make.width.equalTo(face1.snp.height)
+        }
+
+        face2.snp.makeConstraints { make in
+            make.bottom.leading.trailing.equalToSuperview().inset(16)
+            make.width.equalTo(face2.snp.height)
+        }
     }
 }
