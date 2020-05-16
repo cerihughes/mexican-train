@@ -2,7 +2,7 @@
 //  SuperView.swift
 //  MexicanTrain
 //
-//  Created by Ceri Hughes on 13/05/2020.
+//  Created by Ceri on 13/05/2020.
 //
 
 import UIKit

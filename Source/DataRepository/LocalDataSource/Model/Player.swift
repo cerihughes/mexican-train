@@ -11,7 +11,7 @@ struct Player {
     let id: Int
     let name: String
     let dominoes: [Domino]
-    let train: [Domino]
+    let train: Train
 }
 
 extension Player {
@@ -20,7 +20,7 @@ extension Player {
             .reduce(0, +)
     }
 
-    func with(name: String? = nil, dominoes: [Domino]? = nil, train: [Domino]? = nil) -> Player {
+    func with(name: String? = nil, dominoes: [Domino]? = nil, train: Train? = nil) -> Player {
         Player(id: id,
                name: name ?? self.name,
                dominoes: dominoes ?? self.dominoes,
@@ -28,6 +28,13 @@ extension Player {
     }
 
     func with(domino: Domino) -> Player {
-        with(dominoes: dominoes + [domino])
+        with(dominoes: dominoes.with(domino))
+    }
+
+    func without(domino: Domino) -> Player? {
+        guard let dominoes = dominoes.without(domino) else {
+            return nil
+        }
+        return with(dominoes: dominoes)
     }
 }
