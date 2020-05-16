@@ -44,8 +44,8 @@ extension Game {
         return with(currentPlayerId: nextPlayer.id)
     }
 
-    func with(updatedPlayer: Player, pool: [Domino]? = nil) -> Game {
+    func with(updatedPlayer: Player, mexicanTrain: Train? = nil, pool: [Domino]? = nil) -> Game {
         let updatedPlayers = players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 }
-        return with(players: updatedPlayers, pool: pool)
+        return with(mexicanTrain: mexicanTrain, players: updatedPlayers, pool: pool)
     }
 }
