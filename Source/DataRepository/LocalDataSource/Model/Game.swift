@@ -11,18 +11,22 @@ struct Game {
     let stationValue: Domino.Value
     let currentPlayerId: Int
     let initialPlayerId: Int
-    let mexicanTrain: [Domino]
+    let mexicanTrain: Train
     let players: [Player]
     let pool: [Domino]
 }
 
 extension Game {
     var currentPlayer: Player? {
-        players.filter { $0.id == currentPlayerId }
+        player(id: currentPlayerId)
+    }
+
+    func player(id: Int) -> Player? {
+        players.filter { $0.id == id }
             .first
     }
 
-    func with(currentPlayerId: Int? = nil, mexicanTrain: [Domino]? = nil, players: [Player]? = nil, pool: [Domino]? = nil) -> Game {
+    func with(currentPlayerId: Int? = nil, mexicanTrain: Train? = nil, players: [Player]? = nil, pool: [Domino]? = nil) -> Game {
         Game(stationValue: stationValue,
              currentPlayerId: currentPlayerId ?? self.currentPlayerId,
              initialPlayerId: initialPlayerId,
@@ -40,8 +44,8 @@ extension Game {
         return with(currentPlayerId: nextPlayer.id)
     }
 
-    func with(updatedPlayer: Player, updatedPool: [Domino]) -> Game {
+    func with(updatedPlayer: Player, pool: [Domino]? = nil) -> Game {
         let updatedPlayers = players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 }
-        return with(players: updatedPlayers, pool: updatedPool)
+        return with(players: updatedPlayers, pool: pool)
     }
 }

@@ -21,7 +21,7 @@ class PickUpOperation {
         }
 
         let updatedPlayer = currentPlayer.with(domino: domino)
-        return game.with(updatedPlayer: updatedPlayer, updatedPool: pool)
+        return game.with(updatedPlayer: updatedPlayer, pool: pool)
             .withIncrementedPlayer()
     }
 }
