@@ -47,7 +47,7 @@ class PlaceDominoOnPlayerOperationTests: XCTestCase {
         XCTAssertEqual(updatedGame.currentPlayerId, 2)
     }
 
-    func testPerformOperation_removesDominoFromPlayer() {
+    func testPerformOperation_samePlayer_removesDominoFromPlayer() {
         let domino = game.currentPlayer!.dominoes.first!
         let operation = createOperation(domino: domino)
         let updatedGame = operation.perform(game: game)!
@@ -56,7 +56,7 @@ class PlaceDominoOnPlayerOperationTests: XCTestCase {
         XCTAssertFalse(updatedPlayer.dominoes.contains(domino))
     }
 
-    func testPerformOperation_addsDominoToTrain() {
+    func testPerformOperation_samePlayer_addsDominoToTrain() {
         let domino = game.currentPlayer!.dominoes.first!
         let operation = createOperation(domino: domino)
         let updatedGame = operation.perform(game: game)!
@@ -65,8 +65,25 @@ class PlaceDominoOnPlayerOperationTests: XCTestCase {
         XCTAssertEqual(updatedTrain.dominoes[0], domino)
     }
 
+    func testPerformOperation_differentPlayer_removesDominoFromPlayer() {
+        let domino = game.currentPlayer!.dominoes.first!
+        let operation = createOperation(domino: domino, playerId: 2)
+        let updatedGame = operation.perform(game: game)!
+        let updatedPlayer = updatedGame.player(id: 1)!
+        XCTAssertEqual(updatedPlayer.dominoes.count, 3)
+        XCTAssertFalse(updatedPlayer.dominoes.contains(domino))
+    }
+
+    func testPerformOperation_differentPlayer_addsDominoToTrain() {
+        let domino = game.currentPlayer!.dominoes.first!
+        let operation = createOperation(domino: domino, playerId: 2)
+        let updatedGame = operation.perform(game: game)!
+        let updatedTrain = updatedGame.player(id: 2)!.train
+        XCTAssertEqual(updatedTrain.dominoes.count, 1)
+        XCTAssertEqual(updatedTrain.dominoes[0], domino)
+    }
+
     private func createOperation(domino: Domino, playerId: Int? = nil) -> PlaceDominoOnPlayerOperation {
-        let player = game.player(id: playerId ?? game.currentPlayerId)!
-        return PlaceDominoOnPlayerOperation(ruleSet: ruleSet, domino: domino, player: player)
+        return PlaceDominoOnPlayerOperation(ruleSet: ruleSet, domino: domino, playerId: playerId ?? game.currentPlayerId)
     }
 }
