@@ -14,7 +14,7 @@ class ChangeTrainPlayableStateOperation {
         }
 
         let train = currentPlayer.train
-        let updatedTrain = currentPlayer.train.with(playable: !train.playable)
+        let updatedTrain = currentPlayer.train.with(isPlayable: !train.isPlayable)
         let updatedPlayer = currentPlayer.with(train: updatedTrain)
         return game.with(updatedPlayer: updatedPlayer)
     }

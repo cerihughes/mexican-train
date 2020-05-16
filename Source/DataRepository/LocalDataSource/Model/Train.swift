@@ -8,13 +8,17 @@
 import Foundation
 
 struct Train {
-    let playable: Bool
+    let isPlayable: Bool
     let dominoes: [Domino]
 }
 
 extension Train {
-    func with(playable: Bool? = nil, dominoes: [Domino]? = nil) -> Train {
-        Train(playable: playable ?? self.playable,
+    var isStarted: Bool {
+        !dominoes.isEmpty
+    }
+
+    func with(isPlayable: Bool? = nil, dominoes: [Domino]? = nil) -> Train {
+        Train(isPlayable: isPlayable ?? self.isPlayable,
               dominoes: dominoes ?? self.dominoes)
     }
 

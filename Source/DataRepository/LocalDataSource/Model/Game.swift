@@ -21,6 +21,14 @@ extension Game {
         player(id: currentPlayerId)
     }
 
+    var otherPlayers: [Player] {
+        guard let currentPlayer = currentPlayer else {
+            return players
+        }
+
+        return players.filter { $0.id != currentPlayer.id }
+    }
+
     func player(id: Int) -> Player? {
         players.filter { $0.id == id }
             .first
