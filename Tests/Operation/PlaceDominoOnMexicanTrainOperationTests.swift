@@ -20,7 +20,7 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
         super.setUp()
 
         ruleSet = MockRuleSet()
-        game = createGameData()
+        game = createTestGameData()
     }
 
     override func tearDown() {
@@ -63,7 +63,7 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)
     }
 
-    private func createGameData() -> Game {
+    private func createTestGameData() -> Game {
         let player1 = createPlayer(id: 1, domino: player1Domino)
         let player2 = createPlayer(id: 2, domino: player2Domino)
         return createGame(stationValue: .twelve,

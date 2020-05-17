@@ -8,15 +8,18 @@
 import Foundation
 
 class PickUpOperation {
+    private let ruleSet: RuleSet
     private let shuffler: Shuffler
 
-    init(shuffler: Shuffler) {
+    init(ruleSet: RuleSet, shuffler: Shuffler) {
+        self.ruleSet = ruleSet
         self.shuffler = shuffler
     }
 
     func perform(game: Game) -> Game? {
         var pool = game.pool
-        guard let currentPlayer = game.currentPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
+        guard ruleSet.currentPlayerHasValidPlay(in: game) == false,
+            let currentPlayer = game.currentPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
             return nil
         }
 
