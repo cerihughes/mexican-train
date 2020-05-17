@@ -10,21 +10,32 @@ import XCTest
 @testable import MexicanTrain
 
 class PickUpOperationTests: XCTestCase {
-    private var shuffler: Shuffler!
+    private var ruleSet: MockRuleSet!
+    private var shuffler: MockShuffler!
     private var operation: PickUpOperation!
 
     override func setUp() {
         super.setUp()
 
+        ruleSet = MockRuleSet()
+        ruleSet.hasValidPlay = false
         shuffler = MockShuffler()
-        operation = PickUpOperation(shuffler: shuffler)
+        operation = PickUpOperation(ruleSet: ruleSet, shuffler: shuffler)
     }
 
     override func tearDown() {
+        ruleSet = nil
         operation = nil
         shuffler = nil
 
         super.tearDown()
+    }
+
+    func testPerformOperation_withValidMove() {
+        ruleSet.hasValidPlay = true
+        let game1 = createTestGameData()
+        let game2 = operation.perform(game: game1)
+        XCTAssertNil(game2)
     }
 
     func testPerformOperation_incrementsCurrentPlayer() {
