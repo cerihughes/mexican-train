@@ -9,5 +9,5 @@ import Foundation
 
 protocol RuleSet {
     func currentPlayerHasValidPlay(in game: Game) -> Bool
-    func player(_ player: Player, canPlay domino: Domino, on train: [Domino], in game: Game) -> Bool
+    func player(_ player: Player, canPlay domino: UnplayedDomino, on train: Train, in game: Game) -> Bool
 }

@@ -25,7 +25,9 @@ class PassOperationTests: XCTestCase {
     }
 
     func testPerformOperation_incrementsCurrentPlayer() {
-        let game1 = createTestGameData()
+        let player1 = createPlayer(id: 1, domino: UnplayedDomino(value1: .six, value2: .nine))
+        let player2 = createPlayer(id: 2, domino: UnplayedDomino(value1: .six, value2: .ten))
+        let game1 = createGame(players: [player1, player2])
         XCTAssertEqual(game1.currentPlayerId, 1)
 
         let game2 = operation.perform(game: game1)!

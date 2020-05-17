@@ -25,7 +25,8 @@ class ChangeTrainPlayableStateOperationTests: XCTestCase {
     }
 
     func testPerformOperation_togglesPlayableState() {
-        let game1 = createTestGameData()
+        let player = createPlayer(domino: UnplayedDomino(value1: .six, value2: .nine))
+        let game1 = createGame(players: [player])
         XCTAssertFalse(game1.currentPlayer!.train.isPlayable)
 
         let game2 = operation.perform(game: game1)!

@@ -5,7 +5,7 @@
 //  Created by Ceri on 16/05/2020.
 //
 
-import UIKit
+import Foundation
 
 class ChangeTrainPlayableStateOperation {
     func perform(game: Game) -> Game? {

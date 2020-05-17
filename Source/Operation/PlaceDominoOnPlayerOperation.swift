@@ -9,10 +9,10 @@ import Foundation
 
 class PlaceDominoOnPlayerOperation {
     private let ruleSet: RuleSet
-    private let domino: Domino
+    private let domino: UnplayedDomino
     private let playerId: Int
 
-    init(ruleSet: RuleSet, domino: Domino, playerId: Int) {
+    init(ruleSet: RuleSet, domino: UnplayedDomino, playerId: Int) {
         self.ruleSet = ruleSet
         self.domino = domino
         self.playerId = playerId
@@ -21,17 +21,19 @@ class PlaceDominoOnPlayerOperation {
     func perform(game: Game) -> Game? {
         guard let currentPlayer = game.currentPlayer,
             let player = game.player(id: playerId),
-            ruleSet.player(currentPlayer, canPlay: domino, on: player.train.dominoes, in: game),
+            ruleSet.player(currentPlayer, canPlay: domino, on: player.train, in: game),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino) else {
             return nil
         }
 
         let updatedGame = game.with(updatedPlayer: updatedCurrentPlayer)
-        guard let refreshedPlayer = updatedGame.player(id: playerId) else {
+        guard let refreshedPlayer = updatedGame.player(id: playerId),
+            let trainValue = refreshedPlayer.train.playableValue,
+            let playedDomino = domino.playedDomino(on: trainValue) else {
             return nil
         }
 
-        let updatedTrain = refreshedPlayer.train.with(domino: domino)
+        let updatedTrain = refreshedPlayer.train.with(domino: playedDomino)
         let updatedPlayer = refreshedPlayer.with(train: updatedTrain)
         return updatedGame.with(updatedPlayer: updatedPlayer)
             .withIncrementedPlayer()
