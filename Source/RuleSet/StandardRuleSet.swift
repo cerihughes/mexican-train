@@ -2,7 +2,7 @@
 //  StandardRuleSet.swift
 //  MexicanTrain
 //
-//  Created by Home on 16/05/2020.
+//  Created by Ceri on 16/05/2020.
 //
 
 import Foundation
