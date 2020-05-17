@@ -40,4 +40,17 @@ extension Domino {
     var pointsValue: Int {
         value1.rawValue + value2.rawValue
     }
+
+    func has(value: Value) -> Bool {
+        value1 == value || value2 == value
+    }
+
+    func isPlayable(with other: Domino) -> Bool {
+        has(value: other.value1) || has(value: other.value2)
+    }
+
+    func isPlayable(with oneOf: [Domino]) -> Bool {
+        !oneOf.filter { $0.isPlayable(with: self) }
+            .isEmpty
+    }
 }

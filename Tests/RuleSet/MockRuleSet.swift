@@ -10,7 +10,12 @@ import Foundation
 @testable import MexicanTrain
 
 class MockRuleSet: RuleSet {
+    var hasValidPlay = true
     var canPlay = true
+
+    func currentPlayerHasValidPlay(in game: Game) -> Bool {
+        return hasValidPlay
+    }
 
     func player(_ player: Player, canPlay domino: Domino, on train: [Domino], in game: Game) -> Bool {
         return canPlay

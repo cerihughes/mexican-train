@@ -2,7 +2,7 @@
 //  ChangeTrainPlayableStateOperation.swift
 //  MexicanTrain
 //
-//  Created by Home on 16/05/2020.
+//  Created by Ceri on 16/05/2020.
 //
 
 import UIKit
@@ -14,7 +14,7 @@ class ChangeTrainPlayableStateOperation {
         }
 
         let train = currentPlayer.train
-        let updatedTrain = currentPlayer.train.with(playable: !train.playable)
+        let updatedTrain = currentPlayer.train.with(isPlayable: !train.isPlayable)
         let updatedPlayer = currentPlayer.with(train: updatedTrain)
         return game.with(updatedPlayer: updatedPlayer)
     }
