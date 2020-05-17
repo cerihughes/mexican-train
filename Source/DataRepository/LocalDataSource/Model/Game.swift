@@ -8,12 +8,12 @@
 import Foundation
 
 struct Game {
-    let stationValue: Domino.Value
+    let stationValue: DominoValue
     let currentPlayerId: Int
     let initialPlayerId: Int
     let mexicanTrain: Train
     let players: [Player]
-    let pool: [Domino]
+    let pool: [UnplayedDomino]
 }
 
 extension Game {
@@ -34,7 +34,7 @@ extension Game {
             .first
     }
 
-    func with(currentPlayerId: Int? = nil, mexicanTrain: Train? = nil, players: [Player]? = nil, pool: [Domino]? = nil) -> Game {
+    func with(currentPlayerId: Int? = nil, mexicanTrain: Train? = nil, players: [Player]? = nil, pool: [UnplayedDomino]? = nil) -> Game {
         Game(stationValue: stationValue,
              currentPlayerId: currentPlayerId ?? self.currentPlayerId,
              initialPlayerId: initialPlayerId,
@@ -52,7 +52,7 @@ extension Game {
         return with(currentPlayerId: nextPlayer.id)
     }
 
-    func with(updatedPlayer: Player, mexicanTrain: Train? = nil, pool: [Domino]? = nil) -> Game {
+    func with(updatedPlayer: Player, mexicanTrain: Train? = nil, pool: [UnplayedDomino]? = nil) -> Game {
         let updatedPlayers = players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 }
         return with(mexicanTrain: mexicanTrain, players: updatedPlayers, pool: pool)
     }

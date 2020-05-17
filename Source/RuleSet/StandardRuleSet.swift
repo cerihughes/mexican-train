@@ -15,9 +15,9 @@ class StandardRuleSet: RuleSet {
 
         let playerDominoes = currentPlayer.dominoes
         if currentPlayer.train.isStarted {
-            let playableDominoes = game.playableDominoes
+            let playableTrainValues = game.playableTrainValues
             return !playerDominoes
-                .filter { $0.isPlayable(with: playableDominoes) }
+                .filter { $0.isPlayable(with: playableTrainValues) }
                 .isEmpty
         } else {
             let stationValue = game.stationValue
@@ -27,15 +27,15 @@ class StandardRuleSet: RuleSet {
         }
     }
 
-    func player(_ player: Player, canPlay domino: Domino, on train: [Domino], in game: Game) -> Bool {
+    func player(_ player: Player, canPlay domino: UnplayedDomino, on train: Train, in game: Game) -> Bool {
         return true
     }
 }
 
 private extension Game {
-    var playableDominoes: [Domino] {
+    var playableTrainValues: [DominoValue] {
         return playableTrains
-            .compactMap { $0.dominoes.last }
+            .compactMap { $0.dominoes.last?.outerValue }
     }
 
     var playableTrains: [Train] {
