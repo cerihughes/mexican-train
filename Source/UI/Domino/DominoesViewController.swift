@@ -9,7 +9,7 @@ import UIKit
 
 class DominoesViewController: UIViewController {
     private lazy var dominoesView = DominoesView()
-    private var faceValue = DominoFaceView.Value.zero
+    private var faceValues = DominoFaceView.Value.createData()
 
     override func loadView() {
         view = dominoesView
@@ -18,22 +18,48 @@ class DominoesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        updateDominoes()
+        dominoesView.collectionView.register(DominoCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
+        dominoesView.collectionView.dataSource = self
+        dominoesView.collectionView.delegate = self
+    }
+}
 
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
-        dominoesView.addGestureRecognizer(gestureRecognizer)
+private let cellIdentifier = String(describing: DominoCollectionViewCell.self)
+
+extension DominoesViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        faceValues.count
     }
 
-    @objc
-    private func tapped() {
-        let numericValue = faceValue.rawValue
-        faceValue = DominoFaceView.Value(rawValue: numericValue + 1) ?? .zero
-        updateDominoes()
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath)
+        if let dominoCell = cell as? DominoCollectionViewCell, let faceValue = faceValue(for: indexPath) {
+            dominoCell.dominoView.state = .faceUp(faceValue, faceValue)
+        }
+        return cell
     }
 
-    private func updateDominoes() {
-        let state = DominoView.State.faceUp(faceValue, faceValue)
-        dominoesView.remove(state: state)
-        dominoesView.add(state: state)
+    private func faceValue(for indexPath: IndexPath) -> DominoFaceView.Value? {
+        let index = indexPath.row
+        guard faceValues.indices.contains(index) else {
+            return nil
+        }
+        return faceValues[index]
+    }
+}
+
+extension DominoesViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        collectionView.performBatchUpdates({
+            faceValues.remove(at: indexPath.row)
+            dominoesView.collectionView.deleteItems(at: [indexPath])
+        }, completion: nil)
+    }
+}
+
+private extension DominoFaceView.Value {
+    static func createData() -> [DominoFaceView.Value] {
+        return (0 ... 12).compactMap { DominoFaceView.Value(rawValue: $0) }
     }
 }
