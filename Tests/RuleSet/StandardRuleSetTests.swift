@@ -10,7 +10,6 @@ import XCTest
 @testable import MexicanTrain
 
 class StandardRuleSetTests: XCTestCase {
-
     private var ruleSet: StandardRuleSet!
 
     override func setUp() {
@@ -43,7 +42,7 @@ class StandardRuleSetTests: XCTestCase {
     func testHasValidPlay_validTrain_withStarter() throws {
         let game = createGame(stationValue: .twelve,
                               playerDominoes: [UnplayedDomino(value1: .zero, value2: .one)],
-                              playerTrain:[PlayedDomino(innerValue: .twelve, outerValue: .eleven)],
+                              playerTrain: [PlayedDomino(innerValue: .twelve, outerValue: .eleven)],
                               mexicanTrain: [PlayedDomino(innerValue: .twelve, outerValue: .zero)])
         XCTAssertTrue(ruleSet.currentPlayerHasValidPlay(in: game))
     }
