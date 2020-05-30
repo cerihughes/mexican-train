@@ -9,7 +9,8 @@ import UIKit
 
 class DominoesViewController: UIViewController {
     private lazy var dominoesView = DominoesView()
-    private var faceValue = DominoFaceView.Value.zero
+    private var faceValues = [DominoFaceView.Value]()
+    private var dataSource: DominoesCollectionViewDataSource?
 
     override func loadView() {
         view = dominoesView
@@ -17,6 +18,8 @@ class DominoesViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        DominoesCollectionViewDataSource.registerCells(in: dominoesView.collectionView)
 
         updateDominoes()
 
@@ -26,14 +29,15 @@ class DominoesViewController: UIViewController {
 
     @objc
     private func tapped() {
-        let numericValue = faceValue.rawValue
-        faceValue = DominoFaceView.Value(rawValue: numericValue + 1) ?? .zero
+        let numericValue = faceValues.last?.rawValue ?? 0
+        faceValues.append(DominoFaceView.Value(rawValue: numericValue + 1) ?? .zero)
         updateDominoes()
     }
 
     private func updateDominoes() {
-        let state = DominoView.State.faceUp(faceValue, faceValue)
-        dominoesView.remove(state: state)
-        dominoesView.add(state: state)
+        let dominoStates = faceValues.map { DominoView.State.faceUp($0, $0) }
+        dataSource = DominoesCollectionViewDataSource(dominoStates: dominoStates)
+        dominoesView.collectionView.dataSource = dataSource
+        dominoesView.collectionView.reloadData()
     }
 }
