@@ -9,7 +9,7 @@ import UIKit
 
 class DominoesViewController: UIViewController {
     private lazy var dominoesView = DominoesView()
-    private var faceValues = [DominoFaceView.Value]()
+    private var faceValues = DominoFaceView.Value.createData()
 
     override func loadView() {
         view = dominoesView
@@ -20,28 +20,13 @@ class DominoesViewController: UIViewController {
 
         dominoesView.collectionView.register(DominoCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
         dominoesView.collectionView.dataSource = self
-
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
-        dominoesView.addGestureRecognizer(gestureRecognizer)
-    }
-
-    @objc
-    private func tapped() {
-        dominoesView.collectionView.performBatchUpdates(addDomino, completion: nil)
-    }
-
-    private func addDomino() {
-        let numericValue = faceValues.first?.rawValue ?? 0
-        faceValues.insert(DominoFaceView.Value(rawValue: numericValue + 1) ?? .zero, at: 0)
-        dominoesView.collectionView.insertItems(at: [IndexPath(row: 0, section: 0)])
+        dominoesView.collectionView.delegate = self
     }
 }
 
 private let cellIdentifier = String(describing: DominoCollectionViewCell.self)
 
 extension DominoesViewController: UICollectionViewDataSource {
-    // MARK: - UICollectionViewDataSource
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         faceValues.count
     }
@@ -60,5 +45,21 @@ extension DominoesViewController: UICollectionViewDataSource {
             return nil
         }
         return faceValues[index]
+    }
+}
+
+extension DominoesViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        collectionView.performBatchUpdates({
+            faceValues.remove(at: indexPath.row)
+            dominoesView.collectionView.deleteItems(at: [indexPath])
+        }, completion: nil)
+    }
+}
+
+private extension DominoFaceView.Value {
+    static func createData() -> [DominoFaceView.Value] {
+        return (0 ... 12).compactMap { DominoFaceView.Value(rawValue: $0) }
     }
 }
