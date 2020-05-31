@@ -26,4 +26,13 @@ public extension Array where Element: Equatable {
         _ = array.remove(at: firstIndex)
         return array
     }
+
+    func removing(_ element: Element) -> [Element] {
+        guard let firstIndex = firstIndex(of: element) else {
+            return self
+        }
+        var array = self
+        _ = array.remove(at: firstIndex)
+        return array
+    }
 }

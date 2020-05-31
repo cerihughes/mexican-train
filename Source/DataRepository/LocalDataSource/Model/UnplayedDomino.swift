@@ -30,6 +30,10 @@ extension UnplayedDomino {
 
         return allDominoes
     }
+
+    static func allDominoes(except stationValue: DominoValue) -> [UnplayedDomino] {
+        allDominoes().removing(UnplayedDomino(value1: stationValue, value2: stationValue))
+    }
 }
 
 extension UnplayedDomino {
