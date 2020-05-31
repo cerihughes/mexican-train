@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Game {
+struct Game: Equatable {
     let stationValue: DominoValue
     let currentPlayerId: Int
     let initialPlayerId: Int
