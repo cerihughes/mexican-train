@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Train {
+struct Train: Hashable {
     let isPlayable: Bool
     let dominoes: [PlayedDomino]
 }

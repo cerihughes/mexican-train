@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UnplayedDomino: Equatable {
+struct UnplayedDomino: Hashable {
     let value1: DominoValue
     let value2: DominoValue
 }
@@ -29,6 +29,10 @@ extension UnplayedDomino {
         }
 
         return allDominoes
+    }
+
+    static func allDominoes(except stationValue: DominoValue) -> [UnplayedDomino] {
+        allDominoes().removing(UnplayedDomino(value1: stationValue, value2: stationValue))
     }
 }
 

@@ -22,6 +22,9 @@ packages:
   SnapKit:
     url: https://github.com/SnapKit/SnapKit
     from: 5.0.0
+  CombineDataSources:
+    url: https://github.com/combineopensource/CombineDataSources
+    from: 0.2.5
 targets:
   MexicanTrain:
     type: application
@@ -37,6 +40,7 @@ targets:
     dependencies:
       - package: Madog
       - package: SnapKit
+      - package: CombineDataSources
     postCompileScripts:
       - script: swiftlint
         name: Swift Lint
