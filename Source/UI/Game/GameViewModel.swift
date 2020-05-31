@@ -15,6 +15,8 @@ protocol GameViewModel {
     var mexicanTrain: AnyPublisher<[PlayedDomino], Never> { get }
     var player1Train: AnyPublisher<[PlayedDomino], Never> { get }
     var player2Train: AnyPublisher<[PlayedDomino], Never> { get }
+
+    func reload()
 }
 
 class GameViewModelImplementation: GameViewModel {
@@ -30,8 +32,6 @@ class GameViewModelImplementation: GameViewModel {
 
     init(operation: SetupGameOperation) {
         game = operation.perform(playerNames: ["Player 1", "Player 2"])
-
-        gameSubject.send(game)
 
         let player1 = gameSubject
             .map { $0.players[0] }
@@ -62,5 +62,9 @@ class GameViewModelImplementation: GameViewModel {
             .map { $0.train.dominoes }
             .removeDuplicates()
             .eraseToAnyPublisher()
+    }
+
+    func reload() {
+        gameSubject.send(game)
     }
 }

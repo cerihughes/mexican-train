@@ -18,10 +18,10 @@ class GameViewControllerProvider: TypedViewControllerProvider {
         }
 
         let viewModel = GameViewModelImplementation(operation: serviceProvider.setupGameOperation)
-        return GameViewController()
+        return GameViewController(viewModel: viewModel)
     }
 }
 
 extension MadogToken {
-    static let gameTest = MadogToken(identifier: dominoesTestIdentifier)
+    static let gameTest = MadogToken(identifier: gameTestIdentifier)
 }
