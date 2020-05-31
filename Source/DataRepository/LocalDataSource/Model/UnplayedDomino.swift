@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UnplayedDomino: Equatable {
+struct UnplayedDomino: Hashable {
     let value1: DominoValue
     let value2: DominoValue
 }
