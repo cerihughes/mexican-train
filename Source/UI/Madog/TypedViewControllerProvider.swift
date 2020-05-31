@@ -10,6 +10,14 @@ import UIKit
 
 class TypedViewControllerProvider: ViewControllerProvider<MadogToken> {
     private var uuid: UUID?
+    var serviceProvider: MadogServiceProvider?
+
+    override final func configure(with serviceProviders: [String: ServiceProvider]) {
+        super.configure(with: serviceProviders)
+
+        serviceProvider = serviceProviders[serviceProviderName] as? MadogServiceProvider
+    }
+
     override func register(with registry: Registry<MadogToken>) {
         uuid = registry.add(registryFunction: createViewController(token:context:))
     }
