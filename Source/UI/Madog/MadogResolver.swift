@@ -9,13 +9,13 @@ import Foundation
 import Madog
 
 class MadogResolver: Resolver<MadogToken> {
-    override func serviceProviderCreationFunctions() -> [(ServiceProviderCreationContext) -> ServiceProvider] {
+    override func serviceProviderFunctions() -> [(ServiceProviderCreationContext) -> ServiceProvider] {
         [
             MadogServiceProviderImplementation.init(context:)
         ]
     }
 
-    override func viewControllerProviderCreationFunctions() -> [() -> ViewControllerProvider<MadogToken>] {
+    override func viewControllerProviderFunctions() -> [() -> ViewControllerProvider<MadogToken>] {
         [
             DominoesViewControllerProvider.init,
             GameViewControllerProvider.init

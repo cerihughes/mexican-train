@@ -18,7 +18,7 @@ options:
 packages:
   Madog:
     url: https://github.com/cerihughes/madog
-    from: 4.0.0
+    from: 5.0.0
   SnapKit:
     url: https://github.com/SnapKit/SnapKit
     from: 5.0.0
