@@ -18,7 +18,7 @@ class MexicanTrainUI {
     }
 
     func showInitialUI() -> Bool {
-        let identifier = SingleUIIdentifier.createNavigationControllerIdentifier { $0.setNavigationBarHidden(true, animated: false) }
+        let identifier = SingleUIIdentifier.createNavigationIdentifier { $0.setNavigationBarHidden(true, animated: false) }
         let context = madog.renderUI(identifier: identifier, token: MadogToken.gameTest, in: window)
         return context != nil
     }
