@@ -8,11 +8,9 @@ jobs:
 
     steps:
       # Install dependencies
-      - run: brew update
-      - run: brew install xcodegen cocoapods swiftformat swiftlint || true
+      - run: brew install xcodegen cocoapods swiftlint || true
       - run: brew outdated xcodegen || brew upgrade xcodegen
       - run: brew outdated cocoapods || brew upgrade cocoapods
-      - run: brew outdated swiftformat || brew upgrade swiftformat
       - run: brew outdated swiftlint || brew upgrade swiftlint
 
       # Checkout
