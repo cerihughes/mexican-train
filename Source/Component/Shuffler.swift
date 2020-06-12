@@ -44,7 +44,7 @@ extension Array where Element: Equatable {
     }
 }
 
-class ShufflerImplementation: Shuffler {
+class ShufflerImpl: Shuffler {
     func shuffle<T>(_ data: [T]) -> [T] {
         data.shuffled()
     }
