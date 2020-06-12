@@ -22,7 +22,7 @@ class AuthenticateGameViewModelImpl: AuthenticateGameViewModel {
     func authenticate(context: ForwardBackNavigationContext?, _ block: @escaping (UIViewController) -> Void) {
         gameEngine.authenticate { viewController, isAuthenticated in
             if isAuthenticated {
-                context?.navigateForward(token: MadogToken.gameTest, animated: true)
+                context?.navigateForward(token: MadogToken.newGame, animated: true)
             } else if let viewController = viewController {
                 block(viewController)
             }

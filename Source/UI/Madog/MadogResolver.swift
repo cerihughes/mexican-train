@@ -19,6 +19,7 @@ class MadogResolver: Resolver<MadogToken> {
         [
             DominoesViewControllerProvider.init,
             AuthenticateGameViewControllerProvider.init,
+            NewGameViewControllerProvider.init,
             GameViewControllerProvider.init
         ]
     }

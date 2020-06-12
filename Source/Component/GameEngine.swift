@@ -12,6 +12,7 @@ typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
 protocol GameEngine {
     var isAuthenticated: Bool { get }
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock)
+    func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 }
 
 class GameKitGameEngine: GameEngine {
@@ -25,5 +26,13 @@ class GameKitGameEngine: GameEngine {
         localPlayer.authenticateHandler = { [weak self] viewController, _ in
             block(viewController, self?.isAuthenticated ?? false)
         }
+    }
+
+    func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest {
+        let request = GKMatchRequest()
+        request.minPlayers = minPlayers
+        request.maxPlayers = maxPlayers
+        request.inviteMessage = inviteMessage
+        return request
     }
 }
