@@ -1,5 +1,5 @@
 //
-//  CreateGameViewController.swift
+//  AuthenticateGameViewController.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 12/06/2020.
@@ -8,11 +8,11 @@
 import Madog
 import UIKit
 
-class CreateGameViewController: UIViewController {
-    private let viewModel: CreateGameViewModel
+class AuthenticateGameViewController: UIViewController {
+    private let viewModel: AuthenticateGameViewModel
     private weak var context: ForwardBackNavigationContext?
 
-    init(viewModel: CreateGameViewModel, context: ForwardBackNavigationContext) {
+    init(viewModel: AuthenticateGameViewModel, context: ForwardBackNavigationContext) {
         self.viewModel = viewModel
         self.context = context
         super.init(nibName: nil, bundle: nil)
