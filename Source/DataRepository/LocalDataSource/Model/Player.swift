@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Player: Equatable {
+struct Player: Equatable, Codable {
     let id: Int
     let name: String
     let dominoes: [UnplayedDomino]

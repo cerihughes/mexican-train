@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Train: Equatable {
+struct Train: Equatable, Codable {
     let isPlayable: Bool
     let dominoes: [PlayedDomino]
 }

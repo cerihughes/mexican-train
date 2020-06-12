@@ -2,7 +2,7 @@
 //  NewGameViewController.swift
 //  MexicanTrain
 //
-//  Created by Home on 12/06/2020.
+//  Created by Ceri on 12/06/2020.
 //
 
 import GameKit

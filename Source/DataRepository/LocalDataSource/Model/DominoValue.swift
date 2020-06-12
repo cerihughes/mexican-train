@@ -7,6 +7,6 @@
 
 import Foundation
 
-enum DominoValue: Int, CaseIterable {
+enum DominoValue: Int, CaseIterable, Codable {
     case zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve
 }

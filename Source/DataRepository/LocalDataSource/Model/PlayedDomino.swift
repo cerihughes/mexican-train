@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PlayedDomino: Equatable {
+struct PlayedDomino: Equatable, Codable {
     let innerValue: DominoValue
     let outerValue: DominoValue
 }
