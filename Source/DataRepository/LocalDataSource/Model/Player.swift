@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Player: Hashable {
+struct Player: Equatable {
     let id: Int
     let name: String
     let dominoes: [UnplayedDomino]
