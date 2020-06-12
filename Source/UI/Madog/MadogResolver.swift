@@ -11,7 +11,7 @@ import Madog
 class MadogResolver: Resolver<MadogToken> {
     override func serviceProviderFunctions() -> [(ServiceProviderCreationContext) -> ServiceProvider] {
         [
-            MadogServiceProviderImplementation.init(context:)
+            MadogServiceProviderImpl.init(context:)
         ]
     }
 

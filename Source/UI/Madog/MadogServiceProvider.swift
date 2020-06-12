@@ -17,7 +17,7 @@ protocol MadogServiceProvider {
     var setupGameOperation: SetupGameOperation { get }
 }
 
-class MadogServiceProviderImplementation: ServiceProvider, MadogServiceProvider {
+class MadogServiceProviderImpl: ServiceProvider, MadogServiceProvider {
     let gameEngine: GameEngine
     let shuffler: Shuffler
     let localDataSource: LocalDataSource
@@ -27,8 +27,8 @@ class MadogServiceProviderImplementation: ServiceProvider, MadogServiceProvider 
 
     override init(context: ServiceProviderCreationContext) {
         gameEngine = GameKitGameEngine()
-        shuffler = ShufflerImplementation()
-        localDataSource = LocalDataSourceImplementation()
+        shuffler = ShufflerImpl()
+        localDataSource = LocalDataSourceImpl()
         setupGameOperation = SetupGameOperation(shuffler: shuffler)
 
         super.init(context: context)

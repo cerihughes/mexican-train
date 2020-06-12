@@ -9,4 +9,4 @@ import Foundation
 
 protocol LocalDataSource {}
 
-class LocalDataSourceImplementation: LocalDataSource {}
+class LocalDataSourceImpl: LocalDataSource {}

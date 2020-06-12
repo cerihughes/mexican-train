@@ -19,7 +19,7 @@ protocol GameViewModel {
     func reload()
 }
 
-class GameViewModelImplementation: GameViewModel {
+class GameViewModelImpl: GameViewModel {
     private var game: Game
 
     private let gameSubject = PassthroughSubject<Game, Never>()
