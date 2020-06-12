@@ -11,9 +11,8 @@ import UIKit
 private let gameTestIdentifier = "gameTest"
 
 class GameViewControllerProvider: TypedViewControllerProvider {
-    override func createViewController(token: MadogToken, context: Context) -> UIViewController? {
-        guard token.identifier == gameTestIdentifier,
-            let serviceProvider = serviceProvider else {
+    override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
+        guard token.identifier == gameTestIdentifier else {
             return nil
         }
 

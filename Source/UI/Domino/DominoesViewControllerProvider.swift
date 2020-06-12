@@ -11,7 +11,7 @@ import UIKit
 private let dominoesTestIdentifier = "dominoesTest"
 
 class DominoesViewControllerProvider: TypedViewControllerProvider {
-    override func createViewController(token: MadogToken, context: Context) -> UIViewController? {
+    override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
         guard token.identifier == dominoesTestIdentifier else {
             return nil
         }
