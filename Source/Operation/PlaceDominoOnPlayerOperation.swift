@@ -10,9 +10,9 @@ import Foundation
 class PlaceDominoOnPlayerOperation {
     private let ruleSet: RuleSet
     private let domino: UnplayedDomino
-    private let playerId: Int
+    private let playerId: String
 
-    init(ruleSet: RuleSet, domino: UnplayedDomino, playerId: Int) {
+    init(ruleSet: RuleSet, domino: UnplayedDomino, playerId: String) {
         self.ruleSet = ruleSet
         self.domino = domino
         self.playerId = playerId

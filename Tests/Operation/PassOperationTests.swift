@@ -43,18 +43,18 @@ class PassOperationTests: XCTestCase {
 
     func testPerformOperation_incrementsCurrentPlayer() {
         let game1 = createTestGameData()
-        XCTAssertEqual(game1.currentPlayerId, 1)
+        XCTAssertEqual(game1.currentPlayerId, "P1")
 
         let game2 = operation.perform(game: game1)!
-        XCTAssertEqual(game2.currentPlayerId, 2)
+        XCTAssertEqual(game2.currentPlayerId, "P2")
 
         let game3 = operation.perform(game: game2)!
-        XCTAssertEqual(game3.currentPlayerId, 1)
+        XCTAssertEqual(game3.currentPlayerId, "P1")
     }
 
     private func createTestGameData(pool: [UnplayedDomino] = []) -> Game {
-        let player1 = createPlayer(id: 1, domino: UnplayedDomino(value1: .six, value2: .nine))
-        let player2 = createPlayer(id: 2, domino: UnplayedDomino(value1: .six, value2: .ten))
+        let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .six, value2: .nine))
+        let player2 = createPlayer(id: "P2", domino: UnplayedDomino(value1: .six, value2: .ten))
         return createGame(players: [player1, player2], pool: pool)
     }
 }
