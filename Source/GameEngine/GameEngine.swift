@@ -12,6 +12,7 @@ typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player])
 }
 
 protocol GameEngine {
@@ -22,11 +23,8 @@ protocol GameEngine {
 
     func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 
+    var localPlayerId: String { get }
     func update(game: Game, completion: @escaping GameEngineCompletionBlock)
-}
-
-enum GameCenterHelperError: Error {
-    case matchNotFound
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -64,6 +62,10 @@ class GameKitGameEngine: NSObject, GameEngine {
         return request
     }
 
+    var localPlayerId: String {
+        ""
+    }
+
     func update(game: Game, completion: @escaping GameEngineCompletionBlock) {
         guard let match = currentMatch, let data = coder.encode(game) else {
             completion(false)
@@ -89,11 +91,14 @@ extension GameKitGameEngine: GKLocalPlayerListener {
         print("Function: \(#function), line: \(#line)")
         currentMatch = match
         match.loadMatchData { [weak self] data, _ in
-            guard let self = self, let data = data, let game = self.coder.decode(data) else {
+            guard let self = self else {
                 return
             }
-            self.listenerContainer.listeners.forEach {
-                $0.gameEngine(self, didReceive: game)
+
+            if let data = data, let game = self.coder.decode(data) {
+                self.listenerContainer.gameEngine(self, didReceive: game)
+            } else {
+                self.listenerContainer.gameEngine(self, didStartGameWith: match.players)
             }
         }
     }
@@ -114,4 +119,14 @@ extension GameKitGameEngine: GKLocalPlayerListener {
 
 private extension TimeInterval {
     static let turnTimeout = 60.0 * 60.0 * 24.0
+}
+
+private extension GKTurnBasedMatch {
+    var localPlayerId: String {
+        ""
+    }
+
+    var players: [Player] {
+        []
+    }
 }

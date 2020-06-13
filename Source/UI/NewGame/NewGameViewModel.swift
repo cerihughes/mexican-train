@@ -30,4 +30,9 @@ extension NewGameViewModelImpl: GameEngineListener {
         print("Function: \(#function), line: \(#line)")
         print(game)
     }
+
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player]) {
+        print("Function: \(#function), line: \(#line)")
+        print(players)
+    }
 }

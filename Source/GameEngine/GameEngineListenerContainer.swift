@@ -22,3 +22,17 @@ class GameEngineListenerContainer {
         weakListeners.compactMap { $0.wrapped }
     }
 }
+
+extension GameEngineListenerContainer: GameEngineListener {
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
+        listeners.forEach {
+            $0.gameEngine(gameEngine, didReceive: game)
+        }
+    }
+
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player]) {
+        listeners.forEach {
+            $0.gameEngine(gameEngine, didStartGameWith: players)
+        }
+    }
+}
