@@ -15,43 +15,42 @@ private let player2Domino = UnplayedDomino(value1: .five, value2: .seven)
 class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
     private var ruleSet: MockRuleSet!
     private var game: Game!
+    private var operation: PlaceDominoOnMexicanTrainOperation!
 
     override func setUp() {
         super.setUp()
 
         ruleSet = MockRuleSet()
         game = createTestGameData()
+        operation = PlaceDominoOnMexicanTrainOperation(ruleSet: ruleSet)
     }
 
     override func tearDown() {
         ruleSet = nil
         game = nil
+        operation = nil
 
         super.tearDown()
     }
 
     func testPerformOperation_invalidTurn() {
-        let operation = createOperation(domino: player1Domino)
         ruleSet.canPlay = false
-        XCTAssertNil(operation.perform(gameState: game.createInitialState()))
+        XCTAssertNil(operation.perform(gameState: game.createInitialState(), domino: player1Domino))
     }
 
     func testPerformOperation_invalidDomino() {
-        let operation = createOperation(domino: player2Domino)
-        XCTAssertNil(operation.perform(gameState: game.createInitialState()))
+        XCTAssertNil(operation.perform(gameState: game.createInitialState(), domino: player2Domino))
     }
 
     func testPerformOperation_removesDominoFromPlayer() {
-        let operation = createOperation(domino: player1Domino)
-        let updatedGame = operation.perform(gameState: game.createInitialState())!
+        let updatedGame = operation.perform(gameState: game.createInitialState(), domino: player1Domino)!
         let updatedPlayer = updatedGame.player(id: "P1")!
         XCTAssertEqual(updatedPlayer.dominoes.count, 0)
         XCTAssertFalse(updatedPlayer.dominoes.contains(player1Domino))
     }
 
     func testPerformOperation_addsDominoToTrain() {
-        let operation = createOperation(domino: player1Domino)
-        let updatedGame = operation.perform(gameState: game.createInitialState())!
+        let updatedGame = operation.perform(gameState: game.createInitialState(), domino: player1Domino)!
         let updatedTrain = updatedGame.mexicanTrain
         XCTAssertEqual(updatedTrain.dominoes.count, 2)
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)
@@ -63,9 +62,5 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
         return createGame(stationValue: .twelve,
                           players: [player1, player2],
                           mexicanTrain: [PlayedDomino(innerValue: .twelve, outerValue: .five)])
-    }
-
-    private func createOperation(domino: UnplayedDomino) -> PlaceDominoOnMexicanTrainOperation {
-        return PlaceDominoOnMexicanTrainOperation(ruleSet: ruleSet, domino: domino)
     }
 }
