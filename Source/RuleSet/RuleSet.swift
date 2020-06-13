@@ -8,6 +8,6 @@
 import Foundation
 
 protocol RuleSet {
-    func currentPlayerHasValidPlay(in game: Game) -> Bool
-    func player(_ player: Player, canPlay domino: UnplayedDomino, on train: Train, in game: Game) -> Bool
+    func currentPlayerHasValidPlay(in gameState: GameState) -> Bool
+    func player(_ player: Player, canPlay domino: UnplayedDomino, on train: Train, in gameState: GameState) -> Bool
 }

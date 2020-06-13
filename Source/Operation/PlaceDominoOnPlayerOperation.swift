@@ -18,15 +18,15 @@ class PlaceDominoOnPlayerOperation {
         self.playerId = playerId
     }
 
-    func perform(game: Game) -> Game? {
-        guard let currentPlayer = game.currentPlayer,
-            let player = game.player(id: playerId),
-            ruleSet.player(currentPlayer, canPlay: domino, on: player.train, in: game),
+    func perform(gameState: GameState) -> Game? {
+        guard let currentPlayer = gameState.currentPlayer,
+            let player = gameState.game.player(id: playerId),
+            ruleSet.player(currentPlayer, canPlay: domino, on: player.train, in: gameState),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino) else {
             return nil
         }
 
-        let updatedGame = game.with(updatedPlayer: updatedCurrentPlayer)
+        let updatedGame = gameState.game.with(updatedPlayer: updatedCurrentPlayer)
         guard let refreshedPlayer = updatedGame.player(id: playerId),
             let trainValue = refreshedPlayer.train.playableValue,
             let playedDomino = domino.playedDomino(on: trainValue) else {
@@ -36,6 +36,5 @@ class PlaceDominoOnPlayerOperation {
         let updatedTrain = refreshedPlayer.train.with(domino: playedDomino)
         let updatedPlayer = refreshedPlayer.with(train: updatedTrain)
         return updatedGame.with(updatedPlayer: updatedPlayer)
-            .withIncrementedPlayer()
     }
 }
