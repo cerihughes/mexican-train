@@ -27,12 +27,15 @@ class ChangeTrainPlayableStateOperationTests: XCTestCase {
     func testPerformOperation_togglesPlayableState() {
         let player = createPlayer(domino: UnplayedDomino(value1: .six, value2: .nine))
         let game1 = createGame(players: [player])
-        XCTAssertFalse(game1.currentPlayer!.train.isPlayable)
+        var state = game1.createInitialState()
+        XCTAssertFalse(state.currentPlayer!.train.isPlayable)
 
-        let game2 = operation.perform(game: game1)!
-        XCTAssertTrue(game2.currentPlayer!.train.isPlayable)
+        let game2 = operation.perform(gameState: state)!
+        state = state.incrementedState(game: game2)
+        XCTAssertTrue(state.currentPlayer!.train.isPlayable)
 
-        let game3 = operation.perform(game: game2)!
-        XCTAssertFalse(game3.currentPlayer!.train.isPlayable)
+        let game3 = operation.perform(gameState: state)!
+        state = state.incrementedState(game: game3)
+        XCTAssertFalse(state.currentPlayer!.train.isPlayable)
     }
 }

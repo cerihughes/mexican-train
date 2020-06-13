@@ -31,33 +31,27 @@ class PlaceDominoOnPlayerOperationTests: XCTestCase {
     }
 
     func testPerformOperation_invalidTurn() {
-        let operation = createOperation(domino: player1Domino)
+        let operation = createOperation(domino: player1Domino, playerId: "P1")
         ruleSet.canPlay = false
-        XCTAssertNil(operation.perform(game: game))
+        XCTAssertNil(operation.perform(gameState: game.createInitialState()))
     }
 
     func testPerformOperation_invalidDomino() {
-        let operation = createOperation(domino: player2Domino)
-        XCTAssertNil(operation.perform(game: game))
-    }
-
-    func testPerformOperation_incrementsCurrentPlayer() {
-        let operation = createOperation(domino: player1Domino)
-        let updatedGame = operation.perform(game: game)!
-        XCTAssertEqual(updatedGame.currentPlayerId, "P2")
+        let operation = createOperation(domino: player2Domino, playerId: "P1")
+        XCTAssertNil(operation.perform(gameState: game.createInitialState()))
     }
 
     func testPerformOperation_samePlayer_removesDominoFromPlayer() {
-        let operation = createOperation(domino: player1Domino)
-        let updatedGame = operation.perform(game: game)!
+        let operation = createOperation(domino: player1Domino, playerId: "P1")
+        let updatedGame = operation.perform(gameState: game.createInitialState())!
         let updatedPlayer = updatedGame.player(id: "P1")!
         XCTAssertEqual(updatedPlayer.dominoes.count, 0)
         XCTAssertFalse(updatedPlayer.dominoes.contains(player1Domino))
     }
 
     func testPerformOperation_samePlayer_addsDominoToTrain() {
-        let operation = createOperation(domino: player1Domino)
-        let updatedGame = operation.perform(game: game)!
+        let operation = createOperation(domino: player1Domino, playerId: "P1")
+        let updatedGame = operation.perform(gameState: game.createInitialState())!
         let updatedTrain = updatedGame.player(id: "P1")!.train
         XCTAssertEqual(updatedTrain.dominoes.count, 2)
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)
@@ -65,7 +59,7 @@ class PlaceDominoOnPlayerOperationTests: XCTestCase {
 
     func testPerformOperation_differentPlayer_removesDominoFromPlayer() {
         let operation = createOperation(domino: player1Domino, playerId: "P2")
-        let updatedGame = operation.perform(game: game)!
+        let updatedGame = operation.perform(gameState: game.createInitialState())!
         let updatedPlayer = updatedGame.player(id: "P1")!
         XCTAssertEqual(updatedPlayer.dominoes.count, 0)
         XCTAssertFalse(updatedPlayer.dominoes.contains(player1Domino))
@@ -73,7 +67,7 @@ class PlaceDominoOnPlayerOperationTests: XCTestCase {
 
     func testPerformOperation_differentPlayer_addsDominoToTrain() {
         let operation = createOperation(domino: player1Domino, playerId: "P2")
-        let updatedGame = operation.perform(game: game)!
+        let updatedGame = operation.perform(gameState: game.createInitialState())!
         let updatedTrain = updatedGame.player(id: "P2")!.train
         XCTAssertEqual(updatedTrain.dominoes.count, 3)
         XCTAssertEqual(updatedTrain.dominoes[2].outerValue, .six)
@@ -90,7 +84,7 @@ class PlaceDominoOnPlayerOperationTests: XCTestCase {
                           players: [player1, player2])
     }
 
-    private func createOperation(domino: UnplayedDomino, playerId: String? = nil) -> PlaceDominoOnPlayerOperation {
-        return PlaceDominoOnPlayerOperation(ruleSet: ruleSet, domino: domino, playerId: playerId ?? game.currentPlayerId)
+    private func createOperation(domino: UnplayedDomino, playerId: String) -> PlaceDominoOnPlayerOperation {
+        return PlaceDominoOnPlayerOperation(ruleSet: ruleSet, domino: domino, playerId: playerId)
     }
 }

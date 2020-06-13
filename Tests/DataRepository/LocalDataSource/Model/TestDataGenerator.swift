@@ -14,10 +14,7 @@ func createGame(stationValue: DominoValue = .zero,
                 mexicanTrain: [PlayedDomino] = [],
                 pool: [UnplayedDomino] = []) -> Game {
     let mexicanTrain = Train(isPlayable: true, dominoes: mexicanTrain)
-    let initialPlayerId = players[0].details.id
     return Game(stationValue: stationValue,
-                currentPlayerId: initialPlayerId,
-                initialPlayerId: initialPlayerId,
                 mexicanTrain: mexicanTrain,
                 players: players,
                 pool: pool)
@@ -52,4 +49,19 @@ func createPlayer(id: String = "P1", name: String? = nil, dominoes: [UnplayedDom
 
 func createPlayer(id: String = "P1", name: String? = nil, domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> Player {
     createPlayer(id: id, name: name, dominoes: [domino], train: train, isPlayable: isPlayable)
+}
+
+extension Game {
+    func createInitialState() -> GameState {
+        GameState(game: self, currentPlayerId: players[0].details.id)
+    }
+}
+
+extension GameState {
+    func incrementedState(game: Game) -> GameState {
+        let currentIndex = game.players.firstIndex(where: { $0.details.id == currentPlayerId })!
+        let nextPlayer = game.players[safe: currentIndex + 1] ?? game.players.first!
+
+        return GameState(game: game, currentPlayerId: nextPlayer.details.id)
+    }
 }

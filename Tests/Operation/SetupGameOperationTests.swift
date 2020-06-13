@@ -26,29 +26,19 @@ class SetupGameOperationTests: XCTestCase {
     }
 
     func testDominoDistribution() {
-        let playerDetails = ["P1", "P2", "P3", "P4"]
-            .map { createPlayerDetails(id: $0) }
-
-        let game = operation.perform(playerDetails: playerDetails, initialPlayerId: "P1")
-        XCTAssertEqual(game.pool.count, 30)
-        XCTAssertEqual(game.players.count, 4)
+        let playerDetails = createPlayerDetails(id: "P1")
+        let game = operation.perform(playerDetails: playerDetails)
+        XCTAssertEqual(game.pool.count, 75)
+        XCTAssertEqual(game.players.count, 1)
         XCTAssertEqual(game.players[0].dominoes.count, 15)
-        XCTAssertEqual(game.players[1].dominoes.count, 15)
-        XCTAssertEqual(game.players[2].dominoes.count, 15)
-        XCTAssertEqual(game.players[3].dominoes.count, 15)
         XCTAssertEqual(game.mexicanTrain.dominoes.count, 0)
         XCTAssertEqual(game.players[0].train.dominoes.count, 0)
-        XCTAssertEqual(game.players[1].train.dominoes.count, 0)
-        XCTAssertEqual(game.players[2].train.dominoes.count, 0)
-        XCTAssertEqual(game.players[3].train.dominoes.count, 0)
     }
 
     func testRandomPickups() {
-        let playerDetails = ["P1", "P2"]
-            .map { createPlayerDetails(id: $0) }
-
-        let game = operation.perform(playerDetails: playerDetails, initialPlayerId: "P1")
-        let expectedPlayer1Dominoes = [
+        let playerDetails = createPlayerDetails(id: "P1")
+        let game = operation.perform(playerDetails: playerDetails)
+        let expectedDominoes = [
             domino(.eleven, .twelve),
             domino(.eleven, .eleven),
             domino(.ten, .twelve),
@@ -65,26 +55,8 @@ class SetupGameOperationTests: XCTestCase {
             domino(.eight, .eight),
             domino(.seven, .twelve)
         ]
-        let expectedPlayer2Dominoes = [
-            domino(.seven, .eleven),
-            domino(.seven, .ten),
-            domino(.seven, .nine),
-            domino(.seven, .eight),
-            domino(.seven, .seven),
-            domino(.six, .twelve),
-            domino(.six, .eleven),
-            domino(.six, .ten),
-            domino(.six, .nine),
-            domino(.six, .eight),
-            domino(.six, .seven),
-            domino(.six, .six),
-            domino(.five, .twelve),
-            domino(.five, .eleven),
-            domino(.five, .ten)
-        ]
-        XCTAssertEqual(game.players.count, 2)
-        XCTAssertEqual(game.players[0].dominoes, expectedPlayer1Dominoes)
-        XCTAssertEqual(game.players[1].dominoes, expectedPlayer2Dominoes)
+        XCTAssertEqual(game.players.count, 1)
+        XCTAssertEqual(game.players[0].dominoes, expectedDominoes)
     }
 }
 

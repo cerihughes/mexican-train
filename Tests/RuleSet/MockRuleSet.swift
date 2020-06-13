@@ -13,11 +13,11 @@ class MockRuleSet: RuleSet {
     var hasValidPlay = true
     var canPlay = true
 
-    func currentPlayerHasValidPlay(in game: Game) -> Bool {
+    func currentPlayerHasValidPlay(in gameState: GameState) -> Bool {
         return hasValidPlay
     }
 
-    func player(_ player: Player, canPlay domino: UnplayedDomino, on train: Train, in game: Game) -> Bool {
+    func player(_ player: Player, canPlay domino: UnplayedDomino, on train: Train, in gameState: GameState) -> Bool {
         return canPlay
     }
 }

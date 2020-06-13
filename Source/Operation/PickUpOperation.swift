@@ -16,15 +16,14 @@ class PickUpOperation {
         self.shuffler = shuffler
     }
 
-    func perform(game: Game) -> Game? {
-        var pool = game.pool
-        guard ruleSet.currentPlayerHasValidPlay(in: game) == false,
-            let currentPlayer = game.currentPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
+    func perform(gameState: GameState) -> Game? {
+        var pool = gameState.game.pool
+        guard ruleSet.currentPlayerHasValidPlay(in: gameState) == false,
+            let currentPlayer = gameState.currentPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
             return nil
         }
 
         let updatedPlayer = currentPlayer.with(domino: domino)
-        return game.with(updatedPlayer: updatedPlayer, pool: pool)
-            .withIncrementedPlayer()
+        return gameState.game.with(updatedPlayer: updatedPlayer, pool: pool)
     }
 }
