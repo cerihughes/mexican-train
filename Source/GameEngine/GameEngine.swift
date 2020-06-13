@@ -12,7 +12,7 @@ typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player])
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player.Details])
 }
 
 protocol GameEngine {
@@ -63,7 +63,7 @@ class GameKitGameEngine: NSObject, GameEngine {
     }
 
     var localPlayerId: String {
-        ""
+        localPlayer.gamePlayerID
     }
 
     func update(game: Game, completion: @escaping GameEngineCompletionBlock) {
@@ -122,11 +122,8 @@ private extension TimeInterval {
 }
 
 private extension GKTurnBasedMatch {
-    var localPlayerId: String {
-        ""
-    }
-
-    var players: [Player] {
-        []
+    var players: [Player.Details] {
+        participants.compactMap { $0.player }
+            .map { Player.Details(id: $0.gamePlayerID, name: $0.displayName) }
     }
 }
