@@ -8,8 +8,12 @@
 import Foundation
 
 struct Player: Equatable, Codable {
-    let id: Int
-    let name: String
+    struct Details: Equatable, Codable {
+        let id: String
+        let name: String
+    }
+
+    let details: Details
     let dominoes: [UnplayedDomino]
     let train: Train
 }
@@ -20,9 +24,8 @@ extension Player {
             .reduce(0, +)
     }
 
-    func with(name: String? = nil, dominoes: [UnplayedDomino]? = nil, train: Train? = nil) -> Player {
-        Player(id: id,
-               name: name ?? self.name,
+    func with(dominoes: [UnplayedDomino]? = nil, train: Train? = nil) -> Player {
+        Player(details: details,
                dominoes: dominoes ?? self.dominoes,
                train: train ?? self.train)
     }

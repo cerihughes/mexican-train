@@ -44,13 +44,13 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
     func testPerformOperation_incrementsCurrentPlayer() {
         let operation = createOperation(domino: player1Domino)
         let updatedGame = operation.perform(game: game)!
-        XCTAssertEqual(updatedGame.currentPlayerId, 2)
+        XCTAssertEqual(updatedGame.currentPlayerId, "P2")
     }
 
     func testPerformOperation_removesDominoFromPlayer() {
         let operation = createOperation(domino: player1Domino)
         let updatedGame = operation.perform(game: game)!
-        let updatedPlayer = updatedGame.player(id: 1)!
+        let updatedPlayer = updatedGame.player(id: "P1")!
         XCTAssertEqual(updatedPlayer.dominoes.count, 0)
         XCTAssertFalse(updatedPlayer.dominoes.contains(player1Domino))
     }
@@ -64,8 +64,8 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
     }
 
     private func createTestGameData() -> Game {
-        let player1 = createPlayer(id: 1, domino: player1Domino)
-        let player2 = createPlayer(id: 2, domino: player2Domino)
+        let player1 = createPlayer(id: "P1", domino: player1Domino)
+        let player2 = createPlayer(id: "P2", domino: player2Domino)
         return createGame(stationValue: .twelve,
                           players: [player1, player2],
                           mexicanTrain: [PlayedDomino(innerValue: .twelve, outerValue: .five)])

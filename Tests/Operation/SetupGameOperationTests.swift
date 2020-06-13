@@ -26,7 +26,10 @@ class SetupGameOperationTests: XCTestCase {
     }
 
     func testDominoDistribution() {
-        let game = operation.perform(playerNames: ["Player1", "Player2", "Player3", "Player4"])
+        let playerDetails = ["P1", "P2", "P3", "P4"]
+            .map { createPlayerDetails(id: $0) }
+
+        let game = operation.perform(playerDetails: playerDetails, initialPlayerId: "P1")
         XCTAssertEqual(game.pool.count, 30)
         XCTAssertEqual(game.players.count, 4)
         XCTAssertEqual(game.players[0].dominoes.count, 15)
@@ -41,7 +44,10 @@ class SetupGameOperationTests: XCTestCase {
     }
 
     func testRandomPickups() {
-        let game = operation.perform(playerNames: ["Player1", "Player2"])
+        let playerDetails = ["P1", "P2"]
+            .map { createPlayerDetails(id: $0) }
+
+        let game = operation.perform(playerDetails: playerDetails, initialPlayerId: "P1")
         let expectedPlayer1Dominoes = [
             domino(.eleven, .twelve),
             domino(.eleven, .eleven),

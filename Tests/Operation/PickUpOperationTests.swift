@@ -40,13 +40,13 @@ class PickUpOperationTests: XCTestCase {
 
     func testPerformOperation_incrementsCurrentPlayer() {
         let game1 = createTestGameData()
-        XCTAssertEqual(game1.currentPlayerId, 1)
+        XCTAssertEqual(game1.currentPlayerId, "P1")
 
         let game2 = operation.perform(game: game1)!
-        XCTAssertEqual(game2.currentPlayerId, 2)
+        XCTAssertEqual(game2.currentPlayerId, "P2")
 
         let game3 = operation.perform(game: game2)!
-        XCTAssertEqual(game3.currentPlayerId, 1)
+        XCTAssertEqual(game3.currentPlayerId, "P1")
     }
 
     func testPerformOperation_addsDominoes() {
@@ -68,8 +68,8 @@ class PickUpOperationTests: XCTestCase {
 
     private func createTestGameData() -> Game {
         let pool = UnplayedDomino.allDominoes()
-        let player1 = createPlayer(id: 1, dominoes: [])
-        let player2 = createPlayer(id: 2, dominoes: [])
+        let player1 = createPlayer(id: "P1", dominoes: [])
+        let player2 = createPlayer(id: "P2", dominoes: [])
         return createGame(players: [player1, player2], pool: pool)
     }
 }

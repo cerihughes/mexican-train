@@ -14,7 +14,13 @@ func createGame(stationValue: DominoValue = .zero,
                 mexicanTrain: [PlayedDomino] = [],
                 pool: [UnplayedDomino] = []) -> Game {
     let mexicanTrain = Train(isPlayable: true, dominoes: mexicanTrain)
-    return Game(stationValue: stationValue, currentPlayerId: 1, initialPlayerId: 1, mexicanTrain: mexicanTrain, players: players, pool: pool)
+    let initialPlayerId = players[0].details.id
+    return Game(stationValue: stationValue,
+                currentPlayerId: initialPlayerId,
+                initialPlayerId: initialPlayerId,
+                mexicanTrain: mexicanTrain,
+                players: players,
+                pool: pool)
 }
 
 func createGame(stationValue: DominoValue = .zero,
@@ -34,11 +40,16 @@ func createTrain(isPlayable: Bool = false, domino: PlayedDomino) -> Train {
     createTrain(isPlayable: isPlayable, dominoes: [domino])
 }
 
-func createPlayer(id: Int = 1, name: String = "Player", dominoes: [UnplayedDomino], train: [PlayedDomino] = [], isPlayable: Bool = false) -> Player {
-    let train = createTrain(isPlayable: isPlayable, dominoes: train)
-    return Player(id: id, name: name, dominoes: dominoes, train: train)
+func createPlayerDetails(id: String = "P1", name: String? = nil) -> Player.Details {
+    Player.Details(id: id, name: name ?? "Player_" + id)
 }
 
-func createPlayer(id: Int = 1, name: String = "Player", domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> Player {
+func createPlayer(id: String = "P1", name: String? = nil, dominoes: [UnplayedDomino], train: [PlayedDomino] = [], isPlayable: Bool = false) -> Player {
+    let train = createTrain(isPlayable: isPlayable, dominoes: train)
+    let details = createPlayerDetails(id: id, name: name)
+    return Player(details: details, dominoes: dominoes, train: train)
+}
+
+func createPlayer(id: String = "P1", name: String? = nil, domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> Player {
     createPlayer(id: id, name: name, dominoes: [domino], train: train, isPlayable: isPlayable)
 }
