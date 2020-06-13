@@ -9,7 +9,7 @@ import SnapKit
 import UIKit
 
 class DominoView: SuperView {
-    enum State: Equatable {
+    enum State: Hashable {
         case faceUp(DominoFaceView.Value, DominoFaceView.Value)
         case faceDown
     }

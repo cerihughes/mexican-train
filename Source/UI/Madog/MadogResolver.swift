@@ -18,7 +18,8 @@ class MadogResolver: Resolver<MadogToken> {
     override func viewControllerProviderFunctions() -> [() -> ViewControllerProvider<MadogToken>] {
         [
             DominoesViewControllerProvider.init,
-            CreateGameViewControllerProvider.init,
+            AuthenticateGameViewControllerProvider.init,
+            NewGameViewControllerProvider.init,
             GameViewControllerProvider.init
         ]
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Game: Hashable {
+struct Game: Equatable, Codable {
     let stationValue: DominoValue
     let currentPlayerId: Int
     let initialPlayerId: Int
