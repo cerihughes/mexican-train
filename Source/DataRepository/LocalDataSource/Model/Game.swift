@@ -9,6 +9,7 @@ import Foundation
 
 struct Game {
     let gameData: GameData
+    let totalPlayerCount: Int
     let playerDetails: [PlayerDetails]
     let localPlayerId: String
     let currentPlayerId: String

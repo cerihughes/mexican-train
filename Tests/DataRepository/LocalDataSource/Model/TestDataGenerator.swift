@@ -53,9 +53,13 @@ extension GameData {
             .map { PlayerDetails(id: $0, name: "Player_\($0)") }
     }
 
-    func createInitialState(localPlayerId: String) -> Game {
+    func createInitialState(totalPlayerCount: Int = 4, localPlayerId: String) -> Game {
         let playerDetails = generatedPlayerDetails
-        return Game(gameData: self, playerDetails: playerDetails, localPlayerId: localPlayerId, currentPlayerId: localPlayerId)
+        return Game(gameData: self,
+                    totalPlayerCount: totalPlayerCount,
+                    playerDetails: playerDetails,
+                    localPlayerId: localPlayerId,
+                    currentPlayerId: localPlayerId)
     }
 }
 
@@ -64,6 +68,10 @@ extension Game {
         let currentIndex = gameData.players.firstIndex(where: { $0.id == currentPlayerId })!
         let nextPlayer = gameData.players[safe: currentIndex + 1] ?? gameData.players.first!
 
-        return Game(gameData: gameData, playerDetails: gameData.generatedPlayerDetails, localPlayerId: localPlayerId, currentPlayerId: nextPlayer.id)
+        return Game(gameData: gameData,
+                    totalPlayerCount: totalPlayerCount,
+                    playerDetails: gameData.generatedPlayerDetails,
+                    localPlayerId: localPlayerId,
+                    currentPlayerId: nextPlayer.id)
     }
 }
