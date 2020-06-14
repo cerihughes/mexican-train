@@ -19,7 +19,7 @@ class PickUpOperation {
     func perform(game: Game) -> GameData? {
         var pool = game.gameData.pool
         guard ruleSet.currentPlayerHasValidPlay(in: game) == false,
-            let currentPlayer = game.currentPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
+            let currentPlayer = game.currentLocalPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
             return nil
         }
 

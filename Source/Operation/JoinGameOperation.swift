@@ -1,5 +1,5 @@
 //
-//  AddPlayerOperation.swift
+//  JoinGameOperation.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 13/06/2020.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddPlayerOperation {
+class JoinGameOperation {
     private let shuffler: Shuffler
 
     init(shuffler: Shuffler) {

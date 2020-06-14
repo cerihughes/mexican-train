@@ -30,9 +30,9 @@ extension GameEngineListenerContainer: GameEngineListener {
         }
     }
 
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerDetails]) {
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int) {
         listeners.forEach {
-            $0.gameEngine(gameEngine, didStartGameWith: players)
+            $0.gameEngine(gameEngine, didStartGameWith: player, totalPlayerCount: totalPlayerCount)
         }
     }
 }

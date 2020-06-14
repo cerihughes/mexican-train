@@ -15,7 +15,7 @@ class PlaceDominoOnMexicanTrainOperation {
     }
 
     func perform(game: Game, domino: UnplayedDomino) -> GameData? {
-        guard let currentPlayer = game.currentPlayer,
+        guard let currentPlayer = game.currentLocalPlayer,
             ruleSet.player(currentPlayer, canPlay: domino, on: game.gameData.mexicanTrain, in: game),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino),
             let trainValue = game.gameData.mexicanTrain.playableValue,

@@ -9,7 +9,7 @@ import Foundation
 
 class StandardRuleSet: RuleSet {
     func currentPlayerHasValidPlay(in game: Game) -> Bool {
-        guard let currentPlayer = game.currentPlayer else {
+        guard let currentPlayer = game.currentLocalPlayer else {
             return false
         }
 
@@ -39,7 +39,7 @@ private extension Game {
     }
 
     var playableTrains: [Train] {
-        guard let currentPlayer = currentPlayer else {
+        guard let currentPlayer = currentLocalPlayer else {
             return []
         }
 

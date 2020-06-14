@@ -12,7 +12,7 @@ typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData)
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerDetails])
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int)
 }
 
 protocol GameEngine {
@@ -24,7 +24,8 @@ protocol GameEngine {
     func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 
     var localPlayerId: String { get }
-    func update(game: GameData, completion: @escaping GameEngineCompletionBlock)
+    func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
+    func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -66,8 +67,19 @@ class GameKitGameEngine: NSObject, GameEngine {
         localPlayer.gamePlayerID
     }
 
-    func update(game: GameData, completion: @escaping GameEngineCompletionBlock) {
-        guard let match = currentMatch, let data = coder.encode(game) else {
+    func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
+        guard let match = currentMatch, let data = coder.encode(gameData) else {
+            completion(false)
+            return
+        }
+
+        match.saveCurrentTurn(withMatch: data) { error in
+            completion(error == nil)
+        }
+    }
+
+    func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
+        guard let match = currentMatch, let data = coder.encode(gameData) else {
             completion(false)
             return
         }
@@ -98,7 +110,9 @@ extension GameKitGameEngine: GKLocalPlayerListener {
             if let data = data, let game = self.coder.decode(data) {
                 self.listenerContainer.gameEngine(self, didReceive: game)
             } else {
-                self.listenerContainer.gameEngine(self, didStartGameWith: match.players)
+                self.listenerContainer.gameEngine(self,
+                                                  didStartGameWith: self.localPlayer.createPlayerDetails(),
+                                                  totalPlayerCount: match.participants.count)
             }
         }
     }
@@ -121,9 +135,8 @@ private extension TimeInterval {
     static let turnTimeout = 60.0 * 60.0 * 24.0
 }
 
-private extension GKTurnBasedMatch {
-    var players: [PlayerDetails] {
-        participants.compactMap { $0.player }
-            .map { PlayerDetails(id: $0.gamePlayerID, name: $0.displayName) }
+private extension GKPlayer {
+    func createPlayerDetails() -> PlayerDetails {
+        PlayerDetails(id: gamePlayerID, name: displayName)
     }
 }
