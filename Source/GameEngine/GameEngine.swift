@@ -25,6 +25,7 @@ protocol GameEngine {
 
     var localPlayerId: String { get }
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
+    func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -67,6 +68,17 @@ class GameKitGameEngine: NSObject, GameEngine {
     }
 
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
+        guard let match = currentMatch, let data = coder.encode(gameData) else {
+            completion(false)
+            return
+        }
+
+        match.saveCurrentTurn(withMatch: data) { error in
+            completion(error == nil)
+        }
+    }
+
+    func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
         guard let match = currentMatch, let data = coder.encode(gameData) else {
             completion(false)
             return

@@ -14,9 +14,12 @@ protocol NewGameViewModel {
 
 class NewGameViewModelImpl: NewGameViewModel {
     private let gameEngine: GameEngine
+    private let setupGameOperation: SetupGameOperation
 
-    init(gameEngine: GameEngine) {
+    init(gameEngine: GameEngine, setupGameOperation: SetupGameOperation) {
         self.gameEngine = gameEngine
+        self.setupGameOperation = setupGameOperation
+
         gameEngine.addListener(self)
     }
 
@@ -34,5 +37,7 @@ extension NewGameViewModelImpl: GameEngineListener {
     func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int) {
         print("Function: \(#function), line: \(#line)")
         print(player)
+        let gameData = setupGameOperation.perform(playerId: player.id)
+        gameEngine.update(gameData: gameData) { print($0) }
     }
 }
