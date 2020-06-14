@@ -16,7 +16,7 @@ class WelcomeViewControllerProvider: TypedViewControllerProvider {
             return nil
         }
 
-        let viewModel = WelcomeViewModelImpl()
+        let viewModel = WelcomeViewModelImpl(gameEngine: serviceProvider.gameEngine)
         return WelcomeViewController(viewModel: viewModel, context: context)
     }
 }
