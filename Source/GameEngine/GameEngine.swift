@@ -24,7 +24,7 @@ protocol GameEngine {
     func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 
     var localPlayerId: String { get }
-    func update(game: GameData, completion: @escaping GameEngineCompletionBlock)
+    func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -66,8 +66,8 @@ class GameKitGameEngine: NSObject, GameEngine {
         localPlayer.gamePlayerID
     }
 
-    func update(game: GameData, completion: @escaping GameEngineCompletionBlock) {
-        guard let match = currentMatch, let data = coder.encode(game) else {
+    func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
+        guard let match = currentMatch, let data = coder.encode(gameData) else {
             completion(false)
             return
         }
