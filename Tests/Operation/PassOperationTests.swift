@@ -41,7 +41,7 @@ class PassOperationTests: XCTestCase {
         XCTAssertNil(game2)
     }
 
-    private func createTestGameData(pool: [UnplayedDomino] = []) -> Game {
+    private func createTestGameData(pool: [UnplayedDomino] = []) -> GameData {
         let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .six, value2: .nine))
         let player2 = createPlayer(id: "P2", domino: UnplayedDomino(value1: .six, value2: .ten))
         return createGame(players: [player1, player2], pool: pool)

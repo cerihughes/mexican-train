@@ -14,7 +14,7 @@ class PassOperation {
         self.ruleSet = ruleSet
     }
 
-    func perform(gameState: GameState) -> Game? {
+    func perform(gameState: GameState) -> GameData? {
         guard ruleSet.currentPlayerHasValidPlay(in: gameState) == false,
             gameState.game.pool.isEmpty else {
             return nil

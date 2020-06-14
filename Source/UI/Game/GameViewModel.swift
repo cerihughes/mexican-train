@@ -20,9 +20,9 @@ protocol GameViewModel {
 }
 
 class GameViewModelImpl: GameViewModel {
-    private var game: Game
+    private var game: GameData
 
-    private let gameSubject = PassthroughSubject<Game, Never>()
+    private let gameSubject = PassthroughSubject<GameData, Never>()
 
     let player1Dominoes: AnyPublisher<[DominoView.State], Never>
     let player2Dominoes: AnyPublisher<[DominoView.State], Never>
@@ -31,7 +31,7 @@ class GameViewModelImpl: GameViewModel {
     let player2Train: AnyPublisher<[DominoView.State], Never>
 
     init(operation: SetupGameOperation) {
-        let playerDetails = Player.Details(id: "P1", name: "Player1")
+        let playerDetails = PlayerData.Details(id: "P1", name: "Player1")
         game = operation.perform(playerDetails: playerDetails)
 
         let player1 = gameSubject

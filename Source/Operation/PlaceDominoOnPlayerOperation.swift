@@ -14,7 +14,7 @@ class PlaceDominoOnPlayerOperation {
         self.ruleSet = ruleSet
     }
 
-    func perform(gameState: GameState, domino: UnplayedDomino, playerId: String) -> Game? {
+    func perform(gameState: GameState, domino: UnplayedDomino, playerId: String) -> GameData? {
         guard let currentPlayer = gameState.currentPlayer,
             let player = gameState.game.player(id: playerId),
             ruleSet.player(currentPlayer, canPlay: domino, on: player.train, in: gameState),

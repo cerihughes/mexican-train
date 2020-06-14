@@ -27,7 +27,7 @@ class StandardRuleSet: RuleSet {
         }
     }
 
-    func player(_ player: Player, canPlay domino: UnplayedDomino, on train: Train, in gameState: GameState) -> Bool {
+    func player(_ player: PlayerData, canPlay domino: UnplayedDomino, on train: Train, in gameState: GameState) -> Bool {
         return true
     }
 }

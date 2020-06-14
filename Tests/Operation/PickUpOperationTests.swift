@@ -57,7 +57,7 @@ class PickUpOperationTests: XCTestCase {
         XCTAssertEqual(game3.players[1].dominoes.count, 1)
     }
 
-    private func createTestGameData() -> Game {
+    private func createTestGameData() -> GameData {
         let pool = UnplayedDomino.allDominoes()
         let player1 = createPlayer(id: "P1", dominoes: [])
         let player2 = createPlayer(id: "P2", dominoes: [])

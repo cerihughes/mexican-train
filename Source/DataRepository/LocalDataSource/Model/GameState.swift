@@ -8,16 +8,16 @@
 import Foundation
 
 struct GameState {
-    let game: Game
+    let game: GameData
     let currentPlayerId: String
 }
 
 extension GameState {
-    var currentPlayer: Player? {
+    var currentPlayer: PlayerData? {
         game.player(id: currentPlayerId)
     }
 
-    var otherPlayers: [Player] {
+    var otherPlayers: [PlayerData] {
         guard let currentPlayer = currentPlayer else {
             return game.players
         }

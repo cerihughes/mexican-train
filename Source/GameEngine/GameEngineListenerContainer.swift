@@ -24,13 +24,13 @@ class GameEngineListenerContainer {
 }
 
 extension GameEngineListenerContainer: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData) {
         listeners.forEach {
             $0.gameEngine(gameEngine, didReceive: game)
         }
     }
 
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player.Details]) {
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerData.Details]) {
         listeners.forEach {
             $0.gameEngine(gameEngine, didStartGameWith: players)
         }
