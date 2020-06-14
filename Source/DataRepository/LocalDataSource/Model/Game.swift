@@ -10,19 +10,24 @@ import Foundation
 struct Game {
     let gameData: GameData
     let playerDetails: [PlayerDetails]
+    let localPlayerId: String
     let currentPlayerId: String
 }
 
 extension Game {
-    var currentPlayer: PlayerData? {
-        gameData.player(id: currentPlayerId)
+    var currentLocalPlayer: PlayerData? {
+        currentPlayerId == localPlayerId ? localPlayer : nil
+    }
+
+    var localPlayer: PlayerData? {
+        gameData.player(id: localPlayerId)
     }
 
     var otherPlayers: [PlayerData] {
-        guard let currentPlayer = currentPlayer else {
+        guard let localPlayer = localPlayer else {
             return gameData.players
         }
 
-        return gameData.players.filter { $0.id != currentPlayer.id }
+        return gameData.players.filter { $0.id != localPlayer.id }
     }
 }

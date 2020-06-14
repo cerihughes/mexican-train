@@ -9,7 +9,7 @@ import Foundation
 
 class ChangeTrainPlayableStateOperation {
     func perform(game: Game) -> GameData? {
-        guard let currentPlayer = game.currentPlayer else {
+        guard let currentPlayer = game.currentLocalPlayer else {
             return nil
         }
 

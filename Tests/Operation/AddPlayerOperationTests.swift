@@ -30,20 +30,20 @@ class AddPlayerOperationTests: XCTestCase {
 
     func testDominoDistribution() {
         let game1 = setupOperation.perform(playerId: "P1")
-        var state = game1.createInitialState()
-        XCTAssertEqual(state.currentPlayerId, "P1")
+        let state1 = game1.createInitialState(localPlayerId: "P1")
+        XCTAssertEqual(state1.currentPlayerId, "P1")
 
-        let game2 = addOperation.perform(game: state, playerId: "P2")
-        state = state.incrementedState(gameData: game2)
-        XCTAssertEqual(state.currentPlayerId, "P2")
+        let game2 = addOperation.perform(game: state1, playerId: "P2")
+        let state2 = game2.createInitialState(localPlayerId: "P2")
+        XCTAssertEqual(state2.currentPlayerId, "P2")
 
-        let game3 = addOperation.perform(game: state, playerId: "P3")
-        state = state.incrementedState(gameData: game3)
-        XCTAssertEqual(state.currentPlayerId, "P3")
+        let game3 = addOperation.perform(game: state2, playerId: "P3")
+        let state3 = game3.createInitialState(localPlayerId: "P3")
+        XCTAssertEqual(state3.currentPlayerId, "P3")
 
-        let game4 = addOperation.perform(game: state, playerId: "P4")
-        state = state.incrementedState(gameData: game4)
-        XCTAssertEqual(state.currentPlayerId, "P4")
+        let game4 = addOperation.perform(game: state3, playerId: "P4")
+        let state4 = game4.createInitialState(localPlayerId: "P4")
+        XCTAssertEqual(state4.currentPlayerId, "P4")
 
         XCTAssertEqual(game4.pool.count, 30)
         XCTAssertEqual(game4.players.count, 4)
@@ -60,7 +60,7 @@ class AddPlayerOperationTests: XCTestCase {
 
     func testRandomPickups() {
         let game1 = setupOperation.perform(playerId: "P1")
-        var state = game1.createInitialState()
+        var state = game1.createInitialState(localPlayerId: "P1")
         XCTAssertEqual(state.currentPlayerId, "P1")
 
         let game2 = addOperation.perform(game: state, playerId: "P2")

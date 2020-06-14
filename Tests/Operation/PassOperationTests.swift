@@ -31,13 +31,13 @@ class PassOperationTests: XCTestCase {
     func testPerformOperation_withValidMove() {
         ruleSet.hasValidPlay = true
         let game1 = createTestGameData()
-        let game2 = operation.perform(game: game1.createInitialState())
+        let game2 = operation.perform(game: game1.createInitialState(localPlayerId: "P1"))
         XCTAssertNil(game2)
     }
 
     func testPerformOperation_withRemainingPool() {
         let game1 = createTestGameData(pool: [UnplayedDomino(value1: .twelve, value2: .nine)])
-        let game2 = operation.perform(game: game1.createInitialState())
+        let game2 = operation.perform(game: game1.createInitialState(localPlayerId: "P1"))
         XCTAssertNil(game2)
     }
 
