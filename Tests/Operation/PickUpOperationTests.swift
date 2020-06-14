@@ -34,7 +34,7 @@ class PickUpOperationTests: XCTestCase {
     func testPerformOperation_withValidMove() {
         ruleSet.hasValidPlay = true
         let game1 = createTestGameData()
-        let game2 = operation.perform(gameState: game1.createInitialState())
+        let game2 = operation.perform(game: game1.createInitialState())
         XCTAssertNil(game2)
     }
 
@@ -45,19 +45,19 @@ class PickUpOperationTests: XCTestCase {
         XCTAssertEqual(game1.players[0].dominoes.count, 0)
         XCTAssertEqual(game1.players[1].dominoes.count, 0)
 
-        let game2 = operation.perform(gameState: state)!
-        state = state.incrementedState(game: game2)
+        let game2 = operation.perform(game: state)!
+        state = state.incrementedState(gameData: game2)
         XCTAssertEqual(game2.pool.count, 90)
         XCTAssertEqual(game2.players[0].dominoes.count, 1)
         XCTAssertEqual(game2.players[1].dominoes.count, 0)
 
-        let game3 = operation.perform(gameState: state)!
+        let game3 = operation.perform(game: state)!
         XCTAssertEqual(game3.pool.count, 89)
         XCTAssertEqual(game3.players[0].dominoes.count, 1)
         XCTAssertEqual(game3.players[1].dominoes.count, 1)
     }
 
-    private func createTestGameData() -> Game {
+    private func createTestGameData() -> GameData {
         let pool = UnplayedDomino.allDominoes()
         let player1 = createPlayer(id: "P1", dominoes: [])
         let player2 = createPlayer(id: "P2", dominoes: [])

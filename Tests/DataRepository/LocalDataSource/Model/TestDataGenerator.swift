@@ -10,21 +10,21 @@ import Foundation
 @testable import MexicanTrain
 
 func createGame(stationValue: DominoValue = .zero,
-                players: [Player],
+                players: [PlayerData],
                 mexicanTrain: [PlayedDomino] = [],
-                pool: [UnplayedDomino] = []) -> Game {
+                pool: [UnplayedDomino] = []) -> GameData {
     let mexicanTrain = Train(isPlayable: true, dominoes: mexicanTrain)
-    return Game(stationValue: stationValue,
-                mexicanTrain: mexicanTrain,
-                players: players,
-                pool: pool)
+    return GameData(stationValue: stationValue,
+                    mexicanTrain: mexicanTrain,
+                    players: players,
+                    pool: pool)
 }
 
 func createGame(stationValue: DominoValue = .zero,
                 playerDominoes: [UnplayedDomino],
                 playerTrain: [PlayedDomino] = [],
                 mexicanTrain: [PlayedDomino] = [],
-                pool: [UnplayedDomino] = []) -> Game {
+                pool: [UnplayedDomino] = []) -> GameData {
     let player = createPlayer(dominoes: playerDominoes, train: playerTrain)
     return createGame(stationValue: stationValue, players: [player], mexicanTrain: mexicanTrain, pool: pool)
 }
@@ -37,31 +37,32 @@ func createTrain(isPlayable: Bool = false, domino: PlayedDomino) -> Train {
     createTrain(isPlayable: isPlayable, dominoes: [domino])
 }
 
-func createPlayerDetails(id: String = "P1", name: String? = nil) -> Player.Details {
-    Player.Details(id: id, name: name ?? "Player_" + id)
-}
-
-func createPlayer(id: String = "P1", name: String? = nil, dominoes: [UnplayedDomino], train: [PlayedDomino] = [], isPlayable: Bool = false) -> Player {
+func createPlayer(id: String = "P1", dominoes: [UnplayedDomino], train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
     let train = createTrain(isPlayable: isPlayable, dominoes: train)
-    let details = createPlayerDetails(id: id, name: name)
-    return Player(details: details, dominoes: dominoes, train: train)
+    return PlayerData(id: id, dominoes: dominoes, train: train)
 }
 
-func createPlayer(id: String = "P1", name: String? = nil, domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> Player {
-    createPlayer(id: id, name: name, dominoes: [domino], train: train, isPlayable: isPlayable)
+func createPlayer(id: String = "P1", domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
+    createPlayer(id: id, dominoes: [domino], train: train, isPlayable: isPlayable)
 }
 
-extension Game {
-    func createInitialState() -> GameState {
-        GameState(game: self, currentPlayerId: players[0].details.id)
+extension GameData {
+    var generatedPlayerDetails: [PlayerDetails] {
+        players.map { $0.id }
+            .map { PlayerDetails(id: $0, name: "Player_\($0)") }
+    }
+
+    func createInitialState() -> Game {
+        let playerDetails = generatedPlayerDetails
+        return Game(gameData: self, playerDetails: playerDetails, currentPlayerId: playerDetails[0].id)
     }
 }
 
-extension GameState {
-    func incrementedState(game: Game) -> GameState {
-        let currentIndex = game.players.firstIndex(where: { $0.details.id == currentPlayerId })!
-        let nextPlayer = game.players[safe: currentIndex + 1] ?? game.players.first!
+extension Game {
+    func incrementedState(gameData: GameData) -> Game {
+        let currentIndex = gameData.players.firstIndex(where: { $0.id == currentPlayerId })!
+        let nextPlayer = gameData.players[safe: currentIndex + 1] ?? gameData.players.first!
 
-        return GameState(game: game, currentPlayerId: nextPlayer.details.id)
+        return Game(gameData: gameData, playerDetails: gameData.generatedPlayerDetails, currentPlayerId: nextPlayer.id)
     }
 }

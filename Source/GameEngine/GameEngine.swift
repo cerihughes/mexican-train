@@ -11,8 +11,8 @@ typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
 typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player.Details])
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData)
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerDetails])
 }
 
 protocol GameEngine {
@@ -24,7 +24,7 @@ protocol GameEngine {
     func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 
     var localPlayerId: String { get }
-    func update(game: Game, completion: @escaping GameEngineCompletionBlock)
+    func update(game: GameData, completion: @escaping GameEngineCompletionBlock)
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -66,7 +66,7 @@ class GameKitGameEngine: NSObject, GameEngine {
         localPlayer.gamePlayerID
     }
 
-    func update(game: Game, completion: @escaping GameEngineCompletionBlock) {
+    func update(game: GameData, completion: @escaping GameEngineCompletionBlock) {
         guard let match = currentMatch, let data = coder.encode(game) else {
             completion(false)
             return
@@ -122,8 +122,8 @@ private extension TimeInterval {
 }
 
 private extension GKTurnBasedMatch {
-    var players: [Player.Details] {
+    var players: [PlayerDetails] {
         participants.compactMap { $0.player }
-            .map { Player.Details(id: $0.gamePlayerID, name: $0.displayName) }
+            .map { PlayerDetails(id: $0.gamePlayerID, name: $0.displayName) }
     }
 }

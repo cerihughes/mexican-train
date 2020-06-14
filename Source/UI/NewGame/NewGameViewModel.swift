@@ -26,12 +26,12 @@ class NewGameViewModelImpl: NewGameViewModel {
 }
 
 extension NewGameViewModelImpl: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData) {
         print("Function: \(#function), line: \(#line)")
         print(game)
     }
 
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [Player.Details]) {
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerDetails]) {
         print("Function: \(#function), line: \(#line)")
         print(players)
     }
