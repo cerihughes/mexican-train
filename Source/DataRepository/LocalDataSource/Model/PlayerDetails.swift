@@ -2,7 +2,7 @@
 //  PlayerDetails.swift
 //  MexicanTrain
 //
-//  Created by Home on 14/06/2020.
+//  Created by Ceri on 14/06/2020.
 //
 
 import Foundation
