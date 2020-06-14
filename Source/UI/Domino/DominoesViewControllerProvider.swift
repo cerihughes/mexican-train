@@ -8,18 +8,12 @@
 import Madog
 import UIKit
 
-private let dominoesTestIdentifier = "dominoesTest"
-
 class DominoesViewControllerProvider: TypedViewControllerProvider {
     override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
-        guard token.identifier == dominoesTestIdentifier else {
+        guard token == .dominoesTest else {
             return nil
         }
 
         return DominoesViewController()
     }
-}
-
-extension MadogToken {
-    static let dominoesTest = MadogToken(identifier: dominoesTestIdentifier)
 }
