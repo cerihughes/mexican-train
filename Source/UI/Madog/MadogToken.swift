@@ -7,12 +7,11 @@
 
 import Foundation
 
-struct MadogToken {
-    let identifier: String
-    let components: [String]
+enum MadogToken {
+    case welcome
 
-    init(identifier: String, components: [String] = []) {
-        self.identifier = identifier
-        self.components = components
-    }
+    // Playground
+    case gameTest
+    case dominoesTest
+    case newGame
 }
