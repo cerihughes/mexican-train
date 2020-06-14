@@ -14,10 +14,10 @@ class SetupGameOperation {
         self.shuffler = shuffler
     }
 
-    func perform(stationValue: DominoValue = .twelve, playerDetails: PlayerData.Details) -> GameData {
+    func perform(stationValue: DominoValue = .twelve, playerId: String) -> GameData {
         let mexicanTrain = Train(isPlayable: true, dominoes: [])
         var pool = UnplayedDomino.allDominoes(except: stationValue)
-        let player = PlayerData(details: playerDetails,
+        let player = PlayerData(id: playerId,
                                 dominoes: pool.removeRandomElements(15, using: shuffler),
                                 train: Train(isPlayable: false, dominoes: []))
         return GameData(stationValue: stationValue,

@@ -8,12 +8,7 @@
 import Foundation
 
 struct PlayerData: Equatable, Codable {
-    struct Details: Equatable, Codable {
-        let id: String
-        let name: String
-    }
-
-    let details: Details
+    let id: String
     let dominoes: [UnplayedDomino]
     let train: Train
 }
@@ -25,7 +20,7 @@ extension PlayerData {
     }
 
     func with(dominoes: [UnplayedDomino]? = nil, train: Train? = nil) -> PlayerData {
-        PlayerData(details: details,
+        PlayerData(id: id,
                    dominoes: dominoes ?? self.dominoes,
                    train: train ?? self.train)
     }

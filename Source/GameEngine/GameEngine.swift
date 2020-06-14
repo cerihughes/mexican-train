@@ -12,7 +12,7 @@ typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData)
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerData.Details])
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerDetails])
 }
 
 protocol GameEngine {
@@ -122,8 +122,8 @@ private extension TimeInterval {
 }
 
 private extension GKTurnBasedMatch {
-    var players: [PlayerData.Details] {
+    var players: [PlayerDetails] {
         participants.compactMap { $0.player }
-            .map { PlayerData.Details(id: $0.gamePlayerID, name: $0.displayName) }
+            .map { PlayerDetails(id: $0.gamePlayerID, name: $0.displayName) }
     }
 }

@@ -31,8 +31,7 @@ class GameViewModelImpl: GameViewModel {
     let player2Train: AnyPublisher<[DominoView.State], Never>
 
     init(operation: SetupGameOperation) {
-        let playerDetails = PlayerData.Details(id: "P1", name: "Player1")
-        game = operation.perform(playerDetails: playerDetails)
+        game = operation.perform(playerId: "P1")
 
         let player1 = gameSubject
             .map { $0.players[0] }

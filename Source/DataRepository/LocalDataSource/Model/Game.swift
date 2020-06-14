@@ -9,6 +9,7 @@ import Foundation
 
 struct Game {
     let gameData: GameData
+    let playerDetails: [PlayerDetails]
     let currentPlayerId: String
 }
 
@@ -22,6 +23,6 @@ extension Game {
             return gameData.players
         }
 
-        return gameData.players.filter { $0.details.id != currentPlayer.details.id }
+        return gameData.players.filter { $0.id != currentPlayer.id }
     }
 }

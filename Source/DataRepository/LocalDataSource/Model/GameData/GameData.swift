@@ -16,7 +16,7 @@ struct GameData: Equatable, Codable {
 
 extension GameData {
     func player(id: String) -> PlayerData? {
-        players.filter { $0.details.id == id }
+        players.filter { $0.id == id }
             .first
     }
 
@@ -28,7 +28,7 @@ extension GameData {
     }
 
     func with(updatedPlayer: PlayerData, mexicanTrain: Train? = nil, pool: [UnplayedDomino]? = nil) -> GameData {
-        let updatedPlayers = players.map { $0.details.id == updatedPlayer.details.id ? updatedPlayer : $0 }
+        let updatedPlayers = players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 }
         return with(mexicanTrain: mexicanTrain, players: updatedPlayers, pool: pool)
     }
 }

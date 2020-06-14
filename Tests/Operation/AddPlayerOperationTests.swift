@@ -29,19 +29,19 @@ class AddPlayerOperationTests: XCTestCase {
     }
 
     func testDominoDistribution() {
-        let game1 = setupOperation.perform(playerDetails: createPlayerDetails(id: "P1"))
+        let game1 = setupOperation.perform(playerId: "P1")
         var state = game1.createInitialState()
         XCTAssertEqual(state.currentPlayerId, "P1")
 
-        let game2 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P2"))
+        let game2 = addOperation.perform(game: state, playerId: "P2")
         state = state.incrementedState(gameData: game2)
         XCTAssertEqual(state.currentPlayerId, "P2")
 
-        let game3 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P3"))
+        let game3 = addOperation.perform(game: state, playerId: "P3")
         state = state.incrementedState(gameData: game3)
         XCTAssertEqual(state.currentPlayerId, "P3")
 
-        let game4 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P4"))
+        let game4 = addOperation.perform(game: state, playerId: "P4")
         state = state.incrementedState(gameData: game4)
         XCTAssertEqual(state.currentPlayerId, "P4")
 
@@ -59,11 +59,11 @@ class AddPlayerOperationTests: XCTestCase {
     }
 
     func testRandomPickups() {
-        let game1 = setupOperation.perform(playerDetails: createPlayerDetails(id: "P1"))
+        let game1 = setupOperation.perform(playerId: "P1")
         var state = game1.createInitialState()
         XCTAssertEqual(state.currentPlayerId, "P1")
 
-        let game2 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P2"))
+        let game2 = addOperation.perform(game: state, playerId: "P2")
         state = state.incrementedState(gameData: game2)
         XCTAssertEqual(state.currentPlayerId, "P2")
 

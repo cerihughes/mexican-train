@@ -14,9 +14,9 @@ class AddPlayerOperation {
         self.shuffler = shuffler
     }
 
-    func perform(game: Game, playerDetails: PlayerData.Details) -> GameData {
+    func perform(game: Game, playerId: String) -> GameData {
         var pool = game.gameData.pool
-        let player = PlayerData(details: playerDetails,
+        let player = PlayerData(id: playerId,
                                 dominoes: pool.removeRandomElements(15, using: shuffler),
                                 train: Train(isPlayable: false, dominoes: []))
         var players = game.gameData.players

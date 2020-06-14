@@ -30,7 +30,7 @@ extension GameEngineListenerContainer: GameEngineListener {
         }
     }
 
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerData.Details]) {
+    func gameEngine(_ gameEngine: GameEngine, didStartGameWith players: [PlayerDetails]) {
         listeners.forEach {
             $0.gameEngine(gameEngine, didStartGameWith: players)
         }

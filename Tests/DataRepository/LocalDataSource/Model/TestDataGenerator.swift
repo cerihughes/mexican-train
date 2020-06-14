@@ -37,31 +37,32 @@ func createTrain(isPlayable: Bool = false, domino: PlayedDomino) -> Train {
     createTrain(isPlayable: isPlayable, dominoes: [domino])
 }
 
-func createPlayerDetails(id: String = "P1", name: String? = nil) -> PlayerData.Details {
-    PlayerData.Details(id: id, name: name ?? "Player_" + id)
-}
-
-func createPlayer(id: String = "P1", name: String? = nil, dominoes: [UnplayedDomino], train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
+func createPlayer(id: String = "P1", dominoes: [UnplayedDomino], train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
     let train = createTrain(isPlayable: isPlayable, dominoes: train)
-    let details = createPlayerDetails(id: id, name: name)
-    return PlayerData(details: details, dominoes: dominoes, train: train)
+    return PlayerData(id: id, dominoes: dominoes, train: train)
 }
 
-func createPlayer(id: String = "P1", name: String? = nil, domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
-    createPlayer(id: id, name: name, dominoes: [domino], train: train, isPlayable: isPlayable)
+func createPlayer(id: String = "P1", domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
+    createPlayer(id: id, dominoes: [domino], train: train, isPlayable: isPlayable)
 }
 
 extension GameData {
+    var generatedPlayerDetails: [PlayerDetails] {
+        players.map { $0.id }
+            .map { PlayerDetails(id: $0, name: "Player_\($0)") }
+    }
+
     func createInitialState() -> Game {
-        Game(gameData: self, currentPlayerId: players[0].details.id)
+        let playerDetails = generatedPlayerDetails
+        return Game(gameData: self, playerDetails: playerDetails, currentPlayerId: playerDetails[0].id)
     }
 }
 
 extension Game {
     func incrementedState(gameData: GameData) -> Game {
-        let currentIndex = gameData.players.firstIndex(where: { $0.details.id == currentPlayerId })!
+        let currentIndex = gameData.players.firstIndex(where: { $0.id == currentPlayerId })!
         let nextPlayer = gameData.players[safe: currentIndex + 1] ?? gameData.players.first!
 
-        return Game(gameData: gameData, currentPlayerId: nextPlayer.details.id)
+        return Game(gameData: gameData, playerDetails: gameData.generatedPlayerDetails, currentPlayerId: nextPlayer.id)
     }
 }
