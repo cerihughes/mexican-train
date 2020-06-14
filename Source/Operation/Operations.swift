@@ -8,8 +8,8 @@
 import Foundation
 
 class Operations {
-    let addPlayer: AddPlayerOperation
     let changeTrain: ChangeTrainPlayableStateOperation
+    let joinGame: JoinGameOperation
     let pass: PassOperation
     let pickUp: PickUpOperation
     let playOnMexicanTrain: PlaceDominoOnMexicanTrainOperation
@@ -17,8 +17,8 @@ class Operations {
     let setup: SetupGameOperation
 
     init(ruleSet: RuleSet, shuffler: Shuffler) {
-        addPlayer = AddPlayerOperation(shuffler: shuffler)
         changeTrain = ChangeTrainPlayableStateOperation()
+        joinGame = JoinGameOperation(shuffler: shuffler)
         pass = PassOperation(ruleSet: ruleSet)
         pickUp = PickUpOperation(ruleSet: ruleSet, shuffler: shuffler)
         playOnMexicanTrain = PlaceDominoOnMexicanTrainOperation(ruleSet: ruleSet)
