@@ -8,14 +8,14 @@
 import Foundation
 
 class ChangeTrainPlayableStateOperation {
-    func perform(gameState: GameState) -> GameData? {
-        guard let currentPlayer = gameState.currentPlayer else {
+    func perform(game: Game) -> GameData? {
+        guard let currentPlayer = game.currentPlayer else {
             return nil
         }
 
         let train = currentPlayer.train
         let updatedTrain = currentPlayer.train.with(isPlayable: !train.isPlayable)
         let updatedPlayer = currentPlayer.with(train: updatedTrain)
-        return gameState.game.with(updatedPlayer: updatedPlayer)
+        return game.gameData.with(updatedPlayer: updatedPlayer)
     }
 }

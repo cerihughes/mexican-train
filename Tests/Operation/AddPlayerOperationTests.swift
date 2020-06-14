@@ -33,16 +33,16 @@ class AddPlayerOperationTests: XCTestCase {
         var state = game1.createInitialState()
         XCTAssertEqual(state.currentPlayerId, "P1")
 
-        let game2 = addOperation.perform(gameState: state, playerDetails: createPlayerDetails(id: "P2"))
-        state = state.incrementedState(game: game2)
+        let game2 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P2"))
+        state = state.incrementedState(gameData: game2)
         XCTAssertEqual(state.currentPlayerId, "P2")
 
-        let game3 = addOperation.perform(gameState: state, playerDetails: createPlayerDetails(id: "P3"))
-        state = state.incrementedState(game: game3)
+        let game3 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P3"))
+        state = state.incrementedState(gameData: game3)
         XCTAssertEqual(state.currentPlayerId, "P3")
 
-        let game4 = addOperation.perform(gameState: state, playerDetails: createPlayerDetails(id: "P4"))
-        state = state.incrementedState(game: game4)
+        let game4 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P4"))
+        state = state.incrementedState(gameData: game4)
         XCTAssertEqual(state.currentPlayerId, "P4")
 
         XCTAssertEqual(game4.pool.count, 30)
@@ -63,8 +63,8 @@ class AddPlayerOperationTests: XCTestCase {
         var state = game1.createInitialState()
         XCTAssertEqual(state.currentPlayerId, "P1")
 
-        let game2 = addOperation.perform(gameState: state, playerDetails: createPlayerDetails(id: "P2"))
-        state = state.incrementedState(game: game2)
+        let game2 = addOperation.perform(game: state, playerDetails: createPlayerDetails(id: "P2"))
+        state = state.incrementedState(gameData: game2)
         XCTAssertEqual(state.currentPlayerId, "P2")
 
         let expectedPlayer1Dominoes = [

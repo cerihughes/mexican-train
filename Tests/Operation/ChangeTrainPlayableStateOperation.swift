@@ -30,12 +30,12 @@ class ChangeTrainPlayableStateOperationTests: XCTestCase {
         var state = game1.createInitialState()
         XCTAssertFalse(state.currentPlayer!.train.isPlayable)
 
-        let game2 = operation.perform(gameState: state)!
-        state = state.incrementedState(game: game2)
+        let game2 = operation.perform(game: state)!
+        state = state.incrementedState(gameData: game2)
         XCTAssertTrue(state.currentPlayer!.train.isPlayable)
 
-        let game3 = operation.perform(gameState: state)!
-        state = state.incrementedState(game: game3)
+        let game3 = operation.perform(game: state)!
+        state = state.incrementedState(gameData: game3)
         XCTAssertFalse(state.currentPlayer!.train.isPlayable)
     }
 }

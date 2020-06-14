@@ -14,13 +14,13 @@ class AddPlayerOperation {
         self.shuffler = shuffler
     }
 
-    func perform(gameState: GameState, playerDetails: PlayerData.Details) -> GameData {
-        var pool = gameState.game.pool
+    func perform(game: Game, playerDetails: PlayerData.Details) -> GameData {
+        var pool = game.gameData.pool
         let player = PlayerData(details: playerDetails,
                                 dominoes: pool.removeRandomElements(15, using: shuffler),
                                 train: Train(isPlayable: false, dominoes: []))
-        var players = gameState.game.players
+        var players = game.gameData.players
         players.append(player)
-        return gameState.game.with(players: players, pool: pool)
+        return game.gameData.with(players: players, pool: pool)
     }
 }

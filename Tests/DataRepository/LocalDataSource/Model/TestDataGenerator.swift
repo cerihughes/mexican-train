@@ -52,16 +52,16 @@ func createPlayer(id: String = "P1", name: String? = nil, domino: UnplayedDomino
 }
 
 extension GameData {
-    func createInitialState() -> GameState {
-        GameState(game: self, currentPlayerId: players[0].details.id)
+    func createInitialState() -> Game {
+        Game(gameData: self, currentPlayerId: players[0].details.id)
     }
 }
 
-extension GameState {
-    func incrementedState(game: GameData) -> GameState {
-        let currentIndex = game.players.firstIndex(where: { $0.details.id == currentPlayerId })!
-        let nextPlayer = game.players[safe: currentIndex + 1] ?? game.players.first!
+extension Game {
+    func incrementedState(gameData: GameData) -> Game {
+        let currentIndex = gameData.players.firstIndex(where: { $0.details.id == currentPlayerId })!
+        let nextPlayer = gameData.players[safe: currentIndex + 1] ?? gameData.players.first!
 
-        return GameState(game: game, currentPlayerId: nextPlayer.details.id)
+        return Game(gameData: gameData, currentPlayerId: nextPlayer.details.id)
     }
 }

@@ -35,22 +35,22 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
 
     func testPerformOperation_invalidTurn() {
         ruleSet.canPlay = false
-        XCTAssertNil(operation.perform(gameState: game.createInitialState(), domino: player1Domino))
+        XCTAssertNil(operation.perform(game: game.createInitialState(), domino: player1Domino))
     }
 
     func testPerformOperation_invalidDomino() {
-        XCTAssertNil(operation.perform(gameState: game.createInitialState(), domino: player2Domino))
+        XCTAssertNil(operation.perform(game: game.createInitialState(), domino: player2Domino))
     }
 
     func testPerformOperation_removesDominoFromPlayer() {
-        let updatedGame = operation.perform(gameState: game.createInitialState(), domino: player1Domino)!
+        let updatedGame = operation.perform(game: game.createInitialState(), domino: player1Domino)!
         let updatedPlayer = updatedGame.player(id: "P1")!
         XCTAssertEqual(updatedPlayer.dominoes.count, 0)
         XCTAssertFalse(updatedPlayer.dominoes.contains(player1Domino))
     }
 
     func testPerformOperation_addsDominoToTrain() {
-        let updatedGame = operation.perform(gameState: game.createInitialState(), domino: player1Domino)!
+        let updatedGame = operation.perform(game: game.createInitialState(), domino: player1Domino)!
         let updatedTrain = updatedGame.mexicanTrain
         XCTAssertEqual(updatedTrain.dominoes.count, 2)
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)

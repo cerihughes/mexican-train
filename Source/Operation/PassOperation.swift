@@ -14,12 +14,12 @@ class PassOperation {
         self.ruleSet = ruleSet
     }
 
-    func perform(gameState: GameState) -> GameData? {
-        guard ruleSet.currentPlayerHasValidPlay(in: gameState) == false,
-            gameState.game.pool.isEmpty else {
+    func perform(game: Game) -> GameData? {
+        guard ruleSet.currentPlayerHasValidPlay(in: game) == false,
+            game.gameData.pool.isEmpty else {
             return nil
         }
 
-        return gameState.game
+        return game.gameData
     }
 }

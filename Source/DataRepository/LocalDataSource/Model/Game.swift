@@ -1,5 +1,5 @@
 //
-//  GameState.swift
+//  Game.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 13/06/2020.
@@ -7,21 +7,21 @@
 
 import Foundation
 
-struct GameState {
-    let game: GameData
+struct Game {
+    let gameData: GameData
     let currentPlayerId: String
 }
 
-extension GameState {
+extension Game {
     var currentPlayer: PlayerData? {
-        game.player(id: currentPlayerId)
+        gameData.player(id: currentPlayerId)
     }
 
     var otherPlayers: [PlayerData] {
         guard let currentPlayer = currentPlayer else {
-            return game.players
+            return gameData.players
         }
 
-        return game.players.filter { $0.details.id != currentPlayer.details.id }
+        return gameData.players.filter { $0.details.id != currentPlayer.details.id }
     }
 }

@@ -14,16 +14,16 @@ class PlaceDominoOnMexicanTrainOperation {
         self.ruleSet = ruleSet
     }
 
-    func perform(gameState: GameState, domino: UnplayedDomino) -> GameData? {
-        guard let currentPlayer = gameState.currentPlayer,
-            ruleSet.player(currentPlayer, canPlay: domino, on: gameState.game.mexicanTrain, in: gameState),
+    func perform(game: Game, domino: UnplayedDomino) -> GameData? {
+        guard let currentPlayer = game.currentPlayer,
+            ruleSet.player(currentPlayer, canPlay: domino, on: game.gameData.mexicanTrain, in: game),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino),
-            let trainValue = gameState.game.mexicanTrain.playableValue,
+            let trainValue = game.gameData.mexicanTrain.playableValue,
             let playedDomino = domino.playedDomino(on: trainValue) else {
             return nil
         }
 
-        let updatedTrain = gameState.game.mexicanTrain.with(domino: playedDomino)
-        return gameState.game.with(updatedPlayer: updatedCurrentPlayer, mexicanTrain: updatedTrain)
+        let updatedTrain = game.gameData.mexicanTrain.with(domino: playedDomino)
+        return game.gameData.with(updatedPlayer: updatedCurrentPlayer, mexicanTrain: updatedTrain)
     }
 }
