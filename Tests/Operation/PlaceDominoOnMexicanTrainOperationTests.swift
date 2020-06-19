@@ -15,6 +15,7 @@ private let player2Domino = UnplayedDomino(value1: .five, value2: .seven)
 class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
     private var ruleSet: MockRuleSet!
     private var game: GameData!
+    private var engine: FakeGameEngine!
     private var operation: PlaceDominoOnMexicanTrainOperation!
 
     override func setUp() {
@@ -22,12 +23,14 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
 
         ruleSet = MockRuleSet()
         game = createTestGameData()
+        engine = FakeGameEngine(gameData: game, localPlayerId: "P1")
         operation = PlaceDominoOnMexicanTrainOperation(ruleSet: ruleSet)
     }
 
     override func tearDown() {
         ruleSet = nil
         game = nil
+        engine = nil
         operation = nil
 
         super.tearDown()
@@ -35,22 +38,26 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
 
     func testPerformOperation_invalidTurn() {
         ruleSet.canPlay = false
-        XCTAssertNil(operation.perform(game: game.createInitialState(localPlayerId: "P1"), domino: player1Domino))
+        let state = engine.createInitialState()
+        XCTAssertNil(operation.perform(game: state, domino: player1Domino))
     }
 
     func testPerformOperation_invalidDomino() {
-        XCTAssertNil(operation.perform(game: game.createInitialState(localPlayerId: "P1"), domino: player2Domino))
+        let state = engine.createInitialState()
+        XCTAssertNil(operation.perform(game: state, domino: player2Domino))
     }
 
     func testPerformOperation_removesDominoFromPlayer() {
-        let updatedGame = operation.perform(game: game.createInitialState(localPlayerId: "P1"), domino: player1Domino)!
+        let state = engine.createInitialState()
+        let updatedGame = operation.perform(game: state, domino: player1Domino)!
         let updatedPlayer = updatedGame.player(id: "P1")!
         XCTAssertEqual(updatedPlayer.dominoes.count, 0)
         XCTAssertFalse(updatedPlayer.dominoes.contains(player1Domino))
     }
 
     func testPerformOperation_addsDominoToTrain() {
-        let updatedGame = operation.perform(game: game.createInitialState(localPlayerId: "P1"), domino: player1Domino)!
+        let state = engine.createInitialState()
+        let updatedGame = operation.perform(game: state, domino: player1Domino)!
         let updatedTrain = updatedGame.mexicanTrain
         XCTAssertEqual(updatedTrain.dominoes.count, 2)
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)
