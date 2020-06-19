@@ -9,6 +9,7 @@ import GameKit
 import UIKit
 
 protocol NewGameViewModelDelegate: AnyObject {
+    func newGameViewModelDidResume(_ viewModel: NewGameViewModel)
     func newGameViewModelDidStart(_ viewModel: NewGameViewModel)
     func newGameViewModelDidFailToStart(_ viewModel: NewGameViewModel)
 }
@@ -39,7 +40,7 @@ class NewGameViewModelImpl: NewGameViewModel {
 extension NewGameViewModelImpl: GameEngineListener {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData) {
         print("Function: \(#function), line: \(#line)")
-        print(game)
+        delegate?.newGameViewModelDidResume(self)
     }
 
     func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int) {

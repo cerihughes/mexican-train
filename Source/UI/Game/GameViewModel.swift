@@ -20,8 +20,7 @@ protocol GameViewModel {
 }
 
 class GameViewModelImpl: GameViewModel {
-    private var game: GameData
-
+    private let gameEngine: GameEngine
     private let gameSubject = PassthroughSubject<GameData, Never>()
 
     let player1Dominoes: AnyPublisher<[DominoView.State], Never>
@@ -30,8 +29,8 @@ class GameViewModelImpl: GameViewModel {
     let player1Train: AnyPublisher<[DominoView.State], Never>
     let player2Train: AnyPublisher<[DominoView.State], Never>
 
-    init(operation: SetupGameOperation) {
-        game = operation.perform(playerId: "P1")
+    init(gameEngine: GameEngine) {
+        self.gameEngine = gameEngine
 
         let player1 = gameSubject
             .compactMap { $0.players.first }
@@ -70,7 +69,8 @@ class GameViewModelImpl: GameViewModel {
     }
 
     func reload() {
-        gameSubject.send(game)
+        guard let gameData = gameEngine.currentGameData else { return }
+        gameSubject.send(gameData)
     }
 }
 

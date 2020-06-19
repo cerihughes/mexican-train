@@ -24,6 +24,7 @@ protocol GameEngine {
     func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 
     var localPlayerId: String { get }
+    var currentGameData: GameData? { get }
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
     func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
 }
@@ -34,6 +35,7 @@ class GameKitGameEngine: NSObject, GameEngine {
     private let localPlayer = GKLocalPlayer.local
 
     private var currentMatch: GKTurnBasedMatch?
+    var currentGameData: GameData?
 
     override init() {
         super.init()
@@ -107,8 +109,9 @@ extension GameKitGameEngine: GKLocalPlayerListener {
                 return
             }
 
-            if let data = data, let game = self.coder.decode(data) {
-                self.listenerContainer.gameEngine(self, didReceive: game)
+            if let data = data, let gameData = self.coder.decode(data) {
+                self.currentGameData = gameData
+                self.listenerContainer.gameEngine(self, didReceive: gameData)
             } else {
                 self.listenerContainer.gameEngine(self,
                                                   didStartGameWith: self.localPlayer.createPlayerDetails(),
