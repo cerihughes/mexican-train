@@ -1,5 +1,5 @@
 //
-//  DominoCollectionViewCell.swift
+//  DominoCell.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 30/05/2020.
@@ -8,7 +8,7 @@
 import SnapKit
 import UIKit
 
-class DominoCollectionViewCell: UICollectionViewCell {
+class DominoCell: UICollectionViewCell {
     let dominoView = DominoView()
 
     override init(frame: CGRect) {

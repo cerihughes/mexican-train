@@ -9,9 +9,8 @@ import Foundation
 
 enum MadogToken: Equatable {
     case welcome
+    case newGame
 
     // Playground
     case gameTest(Int)
-    case dominoesTest
-    case newGame
 }
