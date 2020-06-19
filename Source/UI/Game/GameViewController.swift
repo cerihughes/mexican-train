@@ -34,7 +34,9 @@ class GameViewController: UIViewController {
 
         subscribe(to: viewModel.player1Dominoes, collectionView: gameView.player1Dominoes.collectionView)
             .store(in: &subscriptions)
-        subscribe(to: viewModel.player2Dominoes, collectionView: gameView.player2Dominoes.collectionView)
+        subscribe(to: viewModel.player1Train, collectionView: gameView.player1Train.collectionView)
+            .store(in: &subscriptions)
+        subscribe(to: viewModel.player2Train, collectionView: gameView.player1Train.collectionView)
             .store(in: &subscriptions)
 
         viewModel.reload()

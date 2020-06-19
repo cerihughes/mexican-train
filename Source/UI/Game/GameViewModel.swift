@@ -33,9 +33,9 @@ class GameViewModelImpl: GameViewModel {
         self.gameEngine = gameEngine
 
         let player1 = gameSubject
-            .compactMap { $0.players.first }
+            .compactMap { $0.players[safe: 0] }
         let player2 = gameSubject
-            .compactMap { $0.players.last }
+            .compactMap { $0.players[safe: 1] }
 
         player1Dominoes = player1
             .map { $0.dominoes }
