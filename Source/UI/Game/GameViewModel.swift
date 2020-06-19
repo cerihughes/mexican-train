@@ -9,12 +9,29 @@ import Combine
 import UIKit
 
 protocol GameViewModel {
+    var totalPlayerCount: Int { get }
+
     var playerDominoes: AnyPublisher<[DominoView.State], Never> { get }
     var mexicanTrain: AnyPublisher<[DominoView.State], Never> { get }
     var player1Train: AnyPublisher<[DominoView.State], Never> { get }
     var player2Train: AnyPublisher<[DominoView.State], Never> { get }
+    var player3Train: AnyPublisher<[DominoView.State], Never> { get }
+    var player4Train: AnyPublisher<[DominoView.State], Never> { get }
 
     func playDomino(at index: Int, completion: @escaping (Bool) -> Void)
+}
+
+extension GameViewModel {
+    func train(for player: Int) -> AnyPublisher<[DominoView.State], Never>? {
+        guard player < totalPlayerCount else { return nil }
+        switch player {
+        case 0: return player1Train
+        case 1: return player2Train
+        case 2: return player3Train
+        case 3: return player4Train
+        default: return nil
+        }
+    }
 }
 
 class GameViewModelImpl: GameViewModel {
@@ -26,15 +43,19 @@ class GameViewModelImpl: GameViewModel {
     private var latestGame: Game = Game.createFakeGame()
     private var subscription: AnyCancellable?
 
+    let totalPlayerCount: Int
     let playerDominoes: AnyPublisher<[DominoView.State], Never>
     let mexicanTrain: AnyPublisher<[DominoView.State], Never>
     let player1Train: AnyPublisher<[DominoView.State], Never>
     let player2Train: AnyPublisher<[DominoView.State], Never>
+    let player3Train: AnyPublisher<[DominoView.State], Never>
+    let player4Train: AnyPublisher<[DominoView.State], Never>
 
-    init(gameEngine: GameEngine, ruleSet: RuleSet, operations: Operations) {
+    init(gameEngine: GameEngine, ruleSet: RuleSet, operations: Operations, totalPlayerCount: Int) {
         self.gameEngine = gameEngine
         self.ruleSet = ruleSet
         self.operations = operations
+        self.totalPlayerCount = totalPlayerCount
 
         localPlayerId = gameEngine.localPlayerId
 
@@ -55,18 +76,29 @@ class GameViewModelImpl: GameViewModel {
             .removeDuplicates()
             .eraseToAnyPublisher()
 
-        let player1 = gameData
+        player1Train = gameData
             .compactMap { $0.players[safe: 0] }
-        let player2 = gameData
-            .compactMap { $0.players[safe: 1] }
-
-        player1Train = player1
             .map { $0.train.dominoes }
             .arrayMap { $0.faceUpState }
             .removeDuplicates()
             .eraseToAnyPublisher()
 
-        player2Train = player2
+        player2Train = gameData
+            .compactMap { $0.players[safe: 1] }
+            .map { $0.train.dominoes }
+            .arrayMap { $0.faceUpState }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+
+        player3Train = gameData
+            .compactMap { $0.players[safe: 2] }
+            .map { $0.train.dominoes }
+            .arrayMap { $0.faceUpState }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+
+        player4Train = gameData
+            .compactMap { $0.players[safe: 3] }
             .map { $0.train.dominoes }
             .arrayMap { $0.faceUpState }
             .removeDuplicates()

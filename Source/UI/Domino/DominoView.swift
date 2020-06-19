@@ -9,6 +9,8 @@ import SnapKit
 import UIKit
 
 class DominoView: SuperView {
+    static let aspectRatio: CGFloat = 115.0 / 216.0
+
     enum State: Hashable {
         case faceUp(DominoFaceView.Value, DominoFaceView.Value)
         case faceDown

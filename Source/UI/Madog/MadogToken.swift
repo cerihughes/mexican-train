@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum MadogToken {
+enum MadogToken: Equatable {
     case welcome
 
     // Playground
-    case gameTest
+    case gameTest(Int)
     case dominoesTest
     case newGame
 }

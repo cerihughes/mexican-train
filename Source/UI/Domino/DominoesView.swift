@@ -8,12 +8,8 @@
 import SnapKit
 import UIKit
 
-private let dominoWidth = 115.0
-private let dominoHeight = 216.0
-private let dominoSize = CGSize(width: dominoWidth, height: dominoHeight)
-
 class DominoesView: SuperView {
-    let collectionView = UICollectionView.createCollectionView()
+    let collectionView = UICollectionView.create()
 
     override func commonInit() {
         super.commonInit()
@@ -24,19 +20,31 @@ class DominoesView: SuperView {
         addSubview(collectionView)
 
         collectionView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(8)
-            make.centerY.equalToSuperview()
-            make.height.equalTo(dominoHeight)
+            make.edges.equalToSuperview().inset(8)
         }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let newLayout = UICollectionViewFlowLayout.create(itemHeight: collectionView.frame.height)
+        collectionView.setCollectionViewLayout(newLayout, animated: true)
     }
 }
 
 private extension UICollectionView {
-    static func createCollectionView() -> UICollectionView {
+    static func create() -> UICollectionView {
+        let layout = UICollectionViewFlowLayout.create()
+        return UICollectionView(frame: .zero, collectionViewLayout: layout)
+    }
+}
+
+private extension UICollectionViewFlowLayout {
+    static func create(itemHeight: CGFloat = 0.0) -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = dominoSize
+        layout.itemSize = CGSize(width: itemHeight * DominoView.aspectRatio, height: itemHeight)
         layout.minimumInteritemSpacing = 8.0
         layout.scrollDirection = .horizontal
-        return UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return layout
     }
 }
