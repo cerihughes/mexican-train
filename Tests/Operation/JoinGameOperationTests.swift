@@ -30,20 +30,24 @@ class JoinGameOperationTests: XCTestCase {
 
     func testDominoDistribution() {
         let game1 = setupOperation.perform(playerId: "P1")
-        let state1 = game1.createInitialState(localPlayerId: "P1")
-        XCTAssertEqual(state1.currentPlayerId, "P1")
+        let engine1 = FakeGameEngine(gameData: game1, localPlayerId: "P1")
+        let state1 = engine1.createInitialState()
+        XCTAssertEqual(state1.isCurrentPlayer, true)
 
         let game2 = joinOperation.perform(game: state1, playerId: "P2")
-        let state2 = game2.createInitialState(localPlayerId: "P2")
-        XCTAssertEqual(state2.currentPlayerId, "P2")
+        let engine2 = FakeGameEngine(gameData: game2, localPlayerId: "P2")
+        let state2 = engine2.createInitialState()
+        XCTAssertEqual(state2.isCurrentPlayer, true)
 
         let game3 = joinOperation.perform(game: state2, playerId: "P3")
-        let state3 = game3.createInitialState(localPlayerId: "P3")
-        XCTAssertEqual(state3.currentPlayerId, "P3")
+        let engine3 = FakeGameEngine(gameData: game3, localPlayerId: "P3")
+        let state3 = engine3.createInitialState()
+        XCTAssertEqual(state3.isCurrentPlayer, true)
 
         let game4 = joinOperation.perform(game: state3, playerId: "P4")
-        let state4 = game4.createInitialState(localPlayerId: "P4")
-        XCTAssertEqual(state4.currentPlayerId, "P4")
+        let engine4 = FakeGameEngine(gameData: game4, localPlayerId: "P4")
+        let state4 = engine4.createInitialState()
+        XCTAssertEqual(state4.isCurrentPlayer, true)
 
         XCTAssertEqual(game4.pool.count, 30)
         XCTAssertEqual(game4.players.count, 4)
@@ -60,12 +64,13 @@ class JoinGameOperationTests: XCTestCase {
 
     func testRandomPickups() {
         let game1 = setupOperation.perform(playerId: "P1")
-        var state = game1.createInitialState(localPlayerId: "P1")
-        XCTAssertEqual(state.currentPlayerId, "P1")
+        let engine = FakeGameEngine(gameData: game1, localPlayerId: "P1")
+        var state = engine.createInitialState()
+        XCTAssertEqual(state.isCurrentPlayer, true)
 
         let game2 = joinOperation.perform(game: state, playerId: "P2")
-        state = state.incrementedState(gameData: game2)
-        XCTAssertEqual(state.currentPlayerId, "P2")
+        state = engine.incrementedState(gameData: game2)
+        XCTAssertEqual(state.isCurrentPlayer, false)
 
         let expectedPlayer1Dominoes = [
             domino(.eleven, .twelve),

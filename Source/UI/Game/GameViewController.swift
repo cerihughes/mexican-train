@@ -32,6 +32,9 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        viewModel.currentPlayerTurn.sink { [weak self] isCurrent in self?.gameView.playerDominoes.backgroundColor = isCurrent ? .green : .white }
+            .store(in: &subscriptions)
+
         subscribe(to: viewModel.playerDominoes, collectionView: gameView.playerDominoes.collectionView)
             .store(in: &subscriptions)
         gameView.playerTrains.enumerated().forEach {

@@ -34,19 +34,22 @@ class PickUpOperationTests: XCTestCase {
     func testPerformOperation_withValidMove() {
         ruleSet.hasValidPlay = true
         let game1 = createTestGameData()
-        let game2 = operation.perform(game: game1.createInitialState(localPlayerId: "P1"))
+        let engine = FakeGameEngine(gameData: game1, localPlayerId: "P1")
+        let game2 = operation.perform(game: engine.createInitialState())
         XCTAssertNil(game2)
     }
 
     func testPerformOperation_addsDominoes() {
         let game1 = createTestGameData()
-        let state1 = game1.createInitialState(localPlayerId: "P1")
+        let engine1 = FakeGameEngine(gameData: game1, localPlayerId: "P1")
+        let state1 = engine1.createInitialState()
         XCTAssertEqual(game1.pool.count, 91)
         XCTAssertEqual(game1.players[0].dominoes.count, 0)
         XCTAssertEqual(game1.players[1].dominoes.count, 0)
 
         let game2 = operation.perform(game: state1)!
-        let state2 = game2.createInitialState(localPlayerId: "P2")
+        let engine2 = FakeGameEngine(gameData: game2, localPlayerId: "P2")
+        let state2 = engine2.createInitialState()
         XCTAssertEqual(game2.pool.count, 90)
         XCTAssertEqual(game2.players[0].dominoes.count, 1)
         XCTAssertEqual(game2.players[1].dominoes.count, 0)

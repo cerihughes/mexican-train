@@ -27,6 +27,7 @@ protocol GameEngine {
     var localPlayerId: String { get }
 
     var gamePublisher: Published<Game>.Publisher { get }
+    func refresh()
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
     func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
 }
@@ -74,15 +75,29 @@ class GameKitGameEngine: NSObject, GameEngine {
         localPlayer.gamePlayerID
     }
 
+    func refresh() {
+        guard let currentMatch = currentMatch else { return }
+        GKTurnBasedMatch.load(withID: currentMatch.matchID) { [weak self] match, _ in
+            guard let self = self, let match = match else { return }
+
+            self.currentMatch = match
+
+            match.loadGame(coder: self.coder, localPlayer: self.localPlayer) { [weak self] matchState in
+                guard let self = self, case let .inProgress(game) = matchState else { return }
+                self.currentGamePublished = game
+            }
+        }
+    }
+
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
         guard let currentMatch = currentMatch, let data = coder.encode(gameData) else {
             completion(false)
             return
         }
 
-        let localPlayerId = localPlayer.gamePlayerID
         currentMatch.saveCurrentTurn(withMatch: data) { [weak self] error in
-            self?.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayerId: localPlayerId)
+            guard let self = self else { return }
+            self.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayer: self.localPlayer)
             completion(error == nil)
         }
     }
@@ -93,11 +108,11 @@ class GameKitGameEngine: NSObject, GameEngine {
             return
         }
 
-        let localPlayerId = localPlayer.gamePlayerID
         currentMatch.endTurn(withNextParticipants: currentMatch.nextParticipants,
                              turnTimeout: GKTurnTimeoutNone,
                              match: data) { [weak self] error in
-            self?.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayerId: localPlayerId)
+            guard let self = self else { return }
+            self.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayer: self.localPlayer)
             completion(error == nil)
         }
     }
@@ -160,7 +175,7 @@ private extension GKTurnBasedMatch {
 
             let totalPlayerCount = self.participants.count
             if let data = data, let gameData = coder.decode(data) {
-                let game = self.createGame(gameData: gameData, localPlayerId: localPlayer.gamePlayerID)
+                let game = self.createGame(gameData: gameData, localPlayer: localPlayer)
                 completion(.inProgress(game))
             } else {
                 let localPlayerDetails = localPlayer.createPlayerDetails()
@@ -169,15 +184,15 @@ private extension GKTurnBasedMatch {
         }
     }
 
-    func createGame(gameData: GameData, localPlayerId: String) -> Game {
+    func createGame(gameData: GameData, localPlayer: GKLocalPlayer) -> Game {
         let playerDetails = participants.compactMap { $0.player }
             .map { $0.createPlayerDetails() }
-        let currentPlayerId = currentParticipant?.player?.gamePlayerID
+        let isCurrentPlayer = currentParticipant?.player == localPlayer
         return Game(gameData: gameData,
                     totalPlayerCount: participants.count,
                     playerDetails: playerDetails,
-                    localPlayerId: localPlayerId,
-                    currentPlayerId: currentPlayerId)
+                    localPlayerId: localPlayer.gamePlayerID,
+                    isCurrentPlayer: isCurrentPlayer)
     }
 
     var nextParticipants: [GKTurnBasedParticipant] {

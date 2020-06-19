@@ -11,6 +11,7 @@ import UIKit
 protocol GameViewModel {
     var totalPlayerCount: Int { get }
 
+    var currentPlayerTurn: AnyPublisher<Bool, Never> { get }
     var playerDominoes: AnyPublisher<[DominoView.State], Never> { get }
     var mexicanTrain: AnyPublisher<[DominoView.State], Never> { get }
     var player1Train: AnyPublisher<[DominoView.State], Never> { get }
@@ -43,8 +44,10 @@ class GameViewModelImpl: GameViewModel {
     private var localPlayerId: String
     private var latestGame: Game = Game.createFakeGame()
     private var subscription: AnyCancellable?
+    private var timer: Timer?
 
     let totalPlayerCount: Int
+    let currentPlayerTurn: AnyPublisher<Bool, Never>
     let playerDominoes: AnyPublisher<[DominoView.State], Never>
     let mexicanTrain: AnyPublisher<[DominoView.State], Never>
     let player1Train: AnyPublisher<[DominoView.State], Never>
@@ -65,6 +68,10 @@ class GameViewModelImpl: GameViewModel {
         let player = gameEngine.gamePublisher
             .compactMap { $0.localPlayer }
 
+        currentPlayerTurn = gameEngine.gamePublisher
+            .map { $0.isCurrentPlayer }
+            .eraseToAnyPublisher()
+
         playerDominoes = player
             .map { $0.dominoes }
             .arrayMap { $0.faceUpState }
@@ -78,35 +85,23 @@ class GameViewModelImpl: GameViewModel {
             .eraseToAnyPublisher()
 
         player1Train = gameData
-            .compactMap { $0.players[safe: 0] }
-            .map { $0.train.dominoes }
-            .arrayMap { $0.faceUpState }
-            .removeDuplicates()
-            .eraseToAnyPublisher()
+            .playerTrain(at: 0)
 
         player2Train = gameData
-            .compactMap { $0.players[safe: 1] }
-            .map { $0.train.dominoes }
-            .arrayMap { $0.faceUpState }
-            .removeDuplicates()
-            .eraseToAnyPublisher()
+            .playerTrain(at: 1)
 
         player3Train = gameData
-            .compactMap { $0.players[safe: 2] }
-            .map { $0.train.dominoes }
-            .arrayMap { $0.faceUpState }
-            .removeDuplicates()
-            .eraseToAnyPublisher()
+            .playerTrain(at: 2)
 
         player4Train = gameData
-            .compactMap { $0.players[safe: 3] }
-            .map { $0.train.dominoes }
-            .arrayMap { $0.faceUpState }
-            .removeDuplicates()
-            .eraseToAnyPublisher()
+            .playerTrain(at: 3)
 
         subscription = gameEngine.gamePublisher
             .assign(to: \.latestGame, on: self)
+
+        timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+            gameEngine.refresh()
+        }
     }
 
     func playDomino(at index: Int, completion: @escaping (Bool) -> Void) {
@@ -127,6 +122,16 @@ class GameViewModelImpl: GameViewModel {
         }
 
         gameEngine.endTurn(gameData: update) { completion($0) }
+    }
+}
+
+private extension Publishers.Map where Upstream == Published<Game>.Publisher, Output == GameData {
+    func playerTrain(at index: Int) -> AnyPublisher<[DominoView.State], Never> {
+        return compactMap { $0.players[safe: index] }
+            .map { $0.train.dominoes }
+            .arrayMap { $0.faceUpState }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
     }
 }
 
