@@ -10,6 +10,11 @@ import Foundation
 struct Train: Equatable, Codable {
     let isPlayable: Bool
     let dominoes: [PlayedDomino]
+
+    private enum CodingKeys: String, CodingKey {
+        case isPlayable = "p"
+        case dominoes = "d"
+    }
 }
 
 extension Train {

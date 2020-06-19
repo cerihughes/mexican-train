@@ -10,4 +10,9 @@ import Foundation
 struct PlayedDomino: Equatable, Codable {
     let innerValue: DominoValue
     let outerValue: DominoValue
+
+    private enum CodingKeys: String, CodingKey {
+        case innerValue = "i"
+        case outerValue = "o"
+    }
 }
