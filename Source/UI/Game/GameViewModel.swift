@@ -19,6 +19,7 @@ protocol GameViewModel {
     var player4Train: AnyPublisher<[DominoView.State], Never> { get }
 
     func playDomino(at index: Int, completion: @escaping (Bool) -> Void)
+    func pickup(completion: @escaping (Bool) -> Void)
 }
 
 extension GameViewModel {
@@ -112,6 +113,15 @@ class GameViewModelImpl: GameViewModel {
         guard let localPlayerData = latestGame.gameData.player(id: localPlayerId),
             let unplayedDomino = localPlayerData.dominoes[safe: index],
             let update = operations.playOnPlayer.perform(game: latestGame, domino: unplayedDomino, playerId: localPlayerData.id) else {
+            completion(false)
+            return
+        }
+
+        gameEngine.endTurn(gameData: update) { completion($0) }
+    }
+
+    func pickup(completion: @escaping (Bool) -> Void) {
+        guard let update = operations.pickUp.perform(game: latestGame) else {
             completion(false)
             return
         }

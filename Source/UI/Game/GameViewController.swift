@@ -42,6 +42,9 @@ class GameViewController: UIViewController {
         }
 
         gameView.playerDominoes.collectionView.delegate = self
+
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(pickupTapped))
+        gameView.pickupView.addGestureRecognizer(tapGestureRecognizer)
     }
 
     private func subscribe(to publisher: AnyPublisher<[DominoView.State], Never>, collectionView: UICollectionView) -> AnyCancellable {
@@ -53,6 +56,10 @@ class GameViewController: UIViewController {
         }
 
         return publisher.bind(subscriber: collectionView.itemsSubscriber(controller))
+    }
+
+    @objc private func pickupTapped(_ sender: UITapGestureRecognizer) {
+        viewModel.pickup { print($0) }
     }
 }
 
