@@ -102,7 +102,7 @@ class GameKitGameEngine: NSObject, GameEngine {
                         currentPlayerId: nextPlayerId)
 
         match.endTurn(withNextParticipants: nextParticipants,
-                      turnTimeout: .turnTimeout,
+                      turnTimeout: GKTurnTimeoutNone,
                       match: data) { [weak self] error in
             self?.currentGamePublished = game
             completion(error == nil)
@@ -147,10 +147,6 @@ extension GameKitGameEngine: GKLocalPlayerListener {
     func player(_ player: GKPlayer, matchEnded match: GKTurnBasedMatch) {
         print("Function: \(#function), line: \(#line)")
     }
-}
-
-private extension TimeInterval {
-    static let turnTimeout = 60.0 * 60.0 * 24.0
 }
 
 private extension GKPlayer {
