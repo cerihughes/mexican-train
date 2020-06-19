@@ -12,7 +12,7 @@ struct Game {
     let totalPlayerCount: Int
     let playerDetails: [PlayerDetails]
     let localPlayerId: String
-    let currentPlayerId: String
+    let currentPlayerId: String?
 }
 
 extension Game {

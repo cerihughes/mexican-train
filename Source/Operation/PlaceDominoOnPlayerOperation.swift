@@ -23,9 +23,12 @@ class PlaceDominoOnPlayerOperation {
         }
 
         let updatedGame = game.gameData.with(updatedPlayer: updatedCurrentPlayer)
-        guard let refreshedPlayer = updatedGame.player(id: playerId),
-            let trainValue = refreshedPlayer.train.playableValue,
-            let playedDomino = domino.playedDomino(on: trainValue) else {
+        guard let refreshedPlayer = updatedGame.player(id: playerId) else {
+            return nil
+        }
+
+        let trainValue = refreshedPlayer.train.playableValue ?? game.gameData.stationValue
+        guard let playedDomino = domino.playedDomino(on: trainValue) else {
             return nil
         }
 

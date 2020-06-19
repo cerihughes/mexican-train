@@ -36,8 +36,10 @@ class GameViewController: UIViewController {
             .store(in: &subscriptions)
         subscribe(to: viewModel.player1Train, collectionView: gameView.player1Train.collectionView)
             .store(in: &subscriptions)
-        subscribe(to: viewModel.player2Train, collectionView: gameView.player1Train.collectionView)
+        subscribe(to: viewModel.player2Train, collectionView: gameView.player2Train.collectionView)
             .store(in: &subscriptions)
+
+        gameView.player1Dominoes.collectionView.delegate = self
 
         viewModel.reload()
     }
@@ -51,5 +53,13 @@ class GameViewController: UIViewController {
         }
 
         return publisher.bind(subscriber: collectionView.itemsSubscriber(controller))
+    }
+}
+
+extension GameViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("Function: \(#function), line: \(#line)")
+        collectionView.deselectItem(at: indexPath, animated: true)
+        viewModel.playDomino(at: indexPath.row) { print($0) }
     }
 }

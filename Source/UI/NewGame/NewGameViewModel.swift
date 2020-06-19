@@ -38,7 +38,7 @@ class NewGameViewModelImpl: NewGameViewModel {
 }
 
 extension NewGameViewModelImpl: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData) {
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
         print("Function: \(#function), line: \(#line)")
         delegate?.newGameViewModelDidResume(self)
     }
