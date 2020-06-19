@@ -75,36 +75,29 @@ class GameKitGameEngine: NSObject, GameEngine {
     }
 
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
-        guard let match = currentMatch, let data = coder.encode(gameData) else {
+        guard let currentMatch = currentMatch, let data = coder.encode(gameData) else {
             completion(false)
             return
         }
 
-        match.saveCurrentTurn(withMatch: data) { error in
+        let localPlayerId = localPlayer.gamePlayerID
+        currentMatch.saveCurrentTurn(withMatch: data) { [weak self] error in
+            self?.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayerId: localPlayerId)
             completion(error == nil)
         }
     }
 
     func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
-        guard let match = currentMatch, let data = coder.encode(gameData) else {
+        guard let currentMatch = currentMatch, let data = coder.encode(gameData) else {
             completion(false)
             return
         }
 
-        let nextParticipants = match.otherParticipants
-        let playerDetails = nextParticipants.compactMap { $0.player }
-            .map { $0.createPlayerDetails() }
-        let nextPlayerId = nextParticipants.first?.player?.gamePlayerID
-        let game = Game(gameData: gameData,
-                        totalPlayerCount: match.nextParticipants.count,
-                        playerDetails: playerDetails,
-                        localPlayerId: localPlayer.gamePlayerID,
-                        currentPlayerId: nextPlayerId)
-
-        match.endTurn(withNextParticipants: nextParticipants,
-                      turnTimeout: GKTurnTimeoutNone,
-                      match: data) { [weak self] error in
-            self?.currentGamePublished = game
+        let localPlayerId = localPlayer.gamePlayerID
+        currentMatch.endTurn(withNextParticipants: currentMatch.nextParticipants,
+                             turnTimeout: GKTurnTimeoutNone,
+                             match: data) { [weak self] error in
+            self?.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayerId: localPlayerId)
             completion(error == nil)
         }
     }
@@ -167,14 +160,7 @@ private extension GKTurnBasedMatch {
 
             let totalPlayerCount = self.participants.count
             if let data = data, let gameData = coder.decode(data) {
-                let playerDetails = self.participants.compactMap { $0.player }
-                    .map { $0.createPlayerDetails() }
-                let currentPlayerId = self.currentParticipant?.player?.gamePlayerID
-                let game = Game(gameData: gameData,
-                                totalPlayerCount: totalPlayerCount,
-                                playerDetails: playerDetails,
-                                localPlayerId: localPlayer.gamePlayerID,
-                                currentPlayerId: currentPlayerId)
+                let game = self.createGame(gameData: gameData, localPlayerId: localPlayer.gamePlayerID)
                 completion(.inProgress(game))
             } else {
                 let localPlayerDetails = localPlayer.createPlayerDetails()
@@ -183,11 +169,24 @@ private extension GKTurnBasedMatch {
         }
     }
 
+    func createGame(gameData: GameData, localPlayerId: String) -> Game {
+        let playerDetails = participants.compactMap { $0.player }
+            .map { $0.createPlayerDetails() }
+        let currentPlayerId = currentParticipant?.player?.gamePlayerID
+        return Game(gameData: gameData,
+                    totalPlayerCount: participants.count,
+                    playerDetails: playerDetails,
+                    localPlayerId: localPlayerId,
+                    currentPlayerId: currentPlayerId)
+    }
+
     var nextParticipants: [GKTurnBasedParticipant] {
-        guard let currentParticipant = currentParticipant else {
+        guard let currentParticipant = currentParticipant,
+            let index = participants.firstIndex(of: currentParticipant),
+            let nextParticipant = participants[safe: index + 1] ?? participants.first else {
             return otherParticipants
         }
-        return otherParticipants + [currentParticipant]
+        return [nextParticipant]
     }
 
     var otherParticipants: [GKTurnBasedParticipant] {
