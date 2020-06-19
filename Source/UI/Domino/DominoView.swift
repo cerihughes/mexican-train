@@ -10,6 +10,7 @@ import UIKit
 
 class DominoView: SuperView {
     static let aspectRatio: CGFloat = 115.0 / 216.0
+    static let spacing: CGFloat = 8.0
 
     enum State: Hashable {
         case faceUp(DominoFaceView.Value, DominoFaceView.Value)

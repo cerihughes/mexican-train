@@ -43,7 +43,7 @@ private extension UICollectionViewFlowLayout {
     static func create(itemHeight: CGFloat = 0.0) -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: itemHeight * DominoView.aspectRatio, height: itemHeight)
-        layout.minimumInteritemSpacing = 8.0
+        layout.minimumInteritemSpacing = DominoView.spacing
         layout.scrollDirection = .horizontal
         return layout
     }

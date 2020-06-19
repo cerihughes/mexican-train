@@ -9,7 +9,7 @@ import Combine
 import CombineDataSources
 import UIKit
 
-private let cellIdentifier = String(describing: DominoCollectionViewCell.self)
+private let cellIdentifier = String(describing: DominoCell.self)
 
 class GameViewController: UIViewController {
     private let viewModel: GameViewModel
@@ -42,17 +42,24 @@ class GameViewController: UIViewController {
         }
 
         gameView.playerDominoes.collectionView.delegate = self
+
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(pickupTapped))
+        gameView.pickupView.addGestureRecognizer(tapGestureRecognizer)
     }
 
     private func subscribe(to publisher: AnyPublisher<[DominoView.State], Never>, collectionView: UICollectionView) -> AnyCancellable {
-        collectionView.register(DominoCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
+        collectionView.register(DominoCell.self, forCellWithReuseIdentifier: cellIdentifier)
 
         let controller = CollectionViewItemsController<[[DominoView.State]]>(cellIdentifier: cellIdentifier,
-                                                                             cellType: DominoCollectionViewCell.self) { cell, _, state in
+                                                                             cellType: DominoCell.self) { cell, _, state in
             cell.dominoView.state = state
         }
 
         return publisher.bind(subscriber: collectionView.itemsSubscriber(controller))
+    }
+
+    @objc private func pickupTapped(_ sender: UITapGestureRecognizer) {
+        viewModel.pickup { print($0) }
     }
 }
 
