@@ -11,7 +11,7 @@ typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
 typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameData)
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
     func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int)
 }
 
@@ -24,8 +24,16 @@ protocol GameEngine {
     func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 
     var localPlayerId: String { get }
+    var currentGame: Game? { get }
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
     func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
+}
+
+extension GameEngine {
+    var localPlayerData: PlayerData? {
+        guard let currentGame = currentGame else { return nil }
+        return currentGame.gameData.player(id: localPlayerId)
+    }
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -34,6 +42,7 @@ class GameKitGameEngine: NSObject, GameEngine {
     private let localPlayer = GKLocalPlayer.local
 
     private var currentMatch: GKTurnBasedMatch?
+    var currentGame: Game?
 
     override init() {
         super.init()
@@ -84,7 +93,7 @@ class GameKitGameEngine: NSObject, GameEngine {
             return
         }
 
-        match.endTurn(withNextParticipants: [],
+        match.endTurn(withNextParticipants: match.nextParticipants,
                       turnTimeout: .turnTimeout,
                       match: data) { error in
             completion(error == nil)
@@ -102,17 +111,17 @@ extension GameKitGameEngine: GKLocalPlayerListener {
     func player(_ player: GKPlayer, receivedTurnEventFor match: GKTurnBasedMatch, didBecomeActive: Bool) {
         print("Function: \(#function), line: \(#line)")
         currentMatch = match
-        match.loadMatchData { [weak self] data, _ in
-            guard let self = self else {
-                return
-            }
+        match.loadGame(coder: coder, localPlayer: localPlayer) { [weak self] matchState in
+            guard let self = self else { return }
 
-            if let data = data, let game = self.coder.decode(data) {
-                self.listenerContainer.gameEngine(self, didReceive: game)
-            } else {
+            switch matchState {
+            case let .new(localPlayerDetails, totalPlayerCount):
                 self.listenerContainer.gameEngine(self,
-                                                  didStartGameWith: self.localPlayer.createPlayerDetails(),
-                                                  totalPlayerCount: match.participants.count)
+                                                  didStartGameWith: localPlayerDetails,
+                                                  totalPlayerCount: totalPlayerCount)
+            case let .inProgress(game):
+                self.currentGame = game
+                self.listenerContainer.gameEngine(self, didReceive: game)
             }
         }
     }
@@ -138,5 +147,48 @@ private extension TimeInterval {
 private extension GKPlayer {
     func createPlayerDetails() -> PlayerDetails {
         PlayerDetails(id: gamePlayerID, name: displayName)
+    }
+}
+
+private extension GKTurnBasedMatch {
+    enum MatchState {
+        case new(PlayerDetails, Int)
+        case inProgress(Game)
+    }
+
+    func loadGame(coder: GameCoder, localPlayer: GKLocalPlayer, completion: @escaping (MatchState) -> Void) {
+        loadMatchData { [weak self] data, _ in
+            guard let self = self else { return }
+
+            let totalPlayerCount = self.participants.count
+            if let data = data, let gameData = coder.decode(data) {
+                let playerDetails = self.participants.compactMap { $0.player }
+                    .map { $0.createPlayerDetails() }
+                let currentPlayerId = self.currentParticipant?.player?.gamePlayerID
+                let game = Game(gameData: gameData,
+                                totalPlayerCount: totalPlayerCount,
+                                playerDetails: playerDetails,
+                                localPlayerId: localPlayer.gamePlayerID,
+                                currentPlayerId: currentPlayerId)
+                completion(.inProgress(game))
+            } else {
+                let localPlayerDetails = localPlayer.createPlayerDetails()
+                completion(.new(localPlayerDetails, totalPlayerCount))
+            }
+        }
+    }
+
+    var nextParticipants: [GKTurnBasedParticipant] {
+        guard let currentParticipant = currentParticipant else {
+            return otherParticipants
+        }
+        return otherParticipants + [currentParticipant]
+    }
+
+    var otherParticipants: [GKTurnBasedParticipant] {
+        guard let currentParticipant = currentParticipant else {
+            return participants
+        }
+        return participants.removing(currentParticipant)
     }
 }

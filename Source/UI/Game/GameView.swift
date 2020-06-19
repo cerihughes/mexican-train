@@ -10,20 +10,27 @@ import UIKit
 
 class GameView: SuperView {
     let player1Dominoes = DominoesView()
-    let player2Dominoes = DominoesView()
+    let player1Train = DominoesView()
+    let player2Train = DominoesView()
 
     override func commonInit() {
         addSubview(player1Dominoes)
-        addSubview(player2Dominoes)
+        addSubview(player1Train)
+        addSubview(player2Train)
 
         player1Dominoes.snp.makeConstraints { make in
             make.top.leading.trailing.equalTo(safeAreaLayoutGuide)
             make.height.equalTo(250)
         }
 
-        player2Dominoes.snp.makeConstraints { make in
-            make.height.equalTo(player1Dominoes)
-            make.bottom.leading.trailing.equalTo(safeAreaLayoutGuide)
+        player1Train.snp.makeConstraints { make in
+            make.height.leading.trailing.equalTo(player1Dominoes)
+            make.top.equalTo(player1Dominoes.snp.bottom)
+        }
+
+        player2Train.snp.makeConstraints { make in
+            make.height.leading.trailing.equalTo(player1Dominoes)
+            make.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
 }

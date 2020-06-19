@@ -17,10 +17,13 @@ protocol GameViewModel {
     var player2Train: AnyPublisher<[DominoView.State], Never> { get }
 
     func reload()
+    func playDomino(at index: Int, completion: @escaping (Bool) -> Void)
 }
 
 class GameViewModelImpl: GameViewModel {
-    private var game: GameData
+    private let gameEngine: GameEngine
+    private let ruleSet: RuleSet
+    private let operations: Operations
 
     private let gameSubject = PassthroughSubject<GameData, Never>()
 
@@ -30,13 +33,15 @@ class GameViewModelImpl: GameViewModel {
     let player1Train: AnyPublisher<[DominoView.State], Never>
     let player2Train: AnyPublisher<[DominoView.State], Never>
 
-    init(operation: SetupGameOperation) {
-        game = operation.perform(playerId: "P1")
+    init(gameEngine: GameEngine, ruleSet: RuleSet, operations: Operations) {
+        self.gameEngine = gameEngine
+        self.ruleSet = ruleSet
+        self.operations = operations
 
         let player1 = gameSubject
-            .map { $0.players[0] }
+            .compactMap { $0.players[safe: 0] }
         let player2 = gameSubject
-            .map { $0.players[1] }
+            .compactMap { $0.players[safe: 1] }
 
         player1Dominoes = player1
             .map { $0.dominoes }
@@ -70,7 +75,21 @@ class GameViewModelImpl: GameViewModel {
     }
 
     func reload() {
-        gameSubject.send(game)
+        guard let game = gameEngine.currentGame else { return }
+        gameSubject.send(game.gameData)
+    }
+
+    func playDomino(at index: Int, completion: @escaping (Bool) -> Void) {
+        guard let game = gameEngine.currentGame,
+            let localPlayerData = gameEngine.localPlayerData,
+            let unplayedDomino = localPlayerData.dominoes[safe: index],
+            let update = operations.playOnPlayer.perform(game: game, domino: unplayedDomino, playerId: localPlayerData.id) else {
+            completion(false)
+            return
+        }
+
+        gameSubject.send(game.gameData)
+        gameEngine.endTurn(gameData: update) { completion($0) }
     }
 }
 
