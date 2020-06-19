@@ -5,6 +5,7 @@
 //  Created by Ceri on 12/06/2020.
 //
 
+import Combine
 import GameKit
 
 typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
@@ -24,16 +25,10 @@ protocol GameEngine {
     func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
 
     var localPlayerId: String { get }
-    var currentGame: Game? { get }
+
+    var gamePublisher: Published<Game>.Publisher { get }
     func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
     func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
-}
-
-extension GameEngine {
-    var localPlayerData: PlayerData? {
-        guard let currentGame = currentGame else { return nil }
-        return currentGame.gameData.player(id: localPlayerId)
-    }
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -42,7 +37,10 @@ class GameKitGameEngine: NSObject, GameEngine {
     private let localPlayer = GKLocalPlayer.local
 
     private var currentMatch: GKTurnBasedMatch?
-    var currentGame: Game?
+
+    @Published
+    private var currentGamePublished: Game = .createFakeGame()
+    var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     override init() {
         super.init()
@@ -93,9 +91,20 @@ class GameKitGameEngine: NSObject, GameEngine {
             return
         }
 
-        match.endTurn(withNextParticipants: match.nextParticipants,
+        let nextParticipants = match.otherParticipants
+        let playerDetails = nextParticipants.compactMap { $0.player }
+            .map { $0.createPlayerDetails() }
+        let nextPlayerId = nextParticipants.first?.player?.gamePlayerID
+        let game = Game(gameData: gameData,
+                        totalPlayerCount: match.nextParticipants.count,
+                        playerDetails: playerDetails,
+                        localPlayerId: localPlayer.gamePlayerID,
+                        currentPlayerId: nextPlayerId)
+
+        match.endTurn(withNextParticipants: nextParticipants,
                       turnTimeout: .turnTimeout,
-                      match: data) { error in
+                      match: data) { [weak self] error in
+            self?.currentGamePublished = game
             completion(error == nil)
         }
     }
@@ -120,7 +129,7 @@ extension GameKitGameEngine: GKLocalPlayerListener {
                                                   didStartGameWith: localPlayerDetails,
                                                   totalPlayerCount: totalPlayerCount)
             case let .inProgress(game):
-                self.currentGame = game
+                self.currentGamePublished = game
                 self.listenerContainer.gameEngine(self, didReceive: game)
             }
         }

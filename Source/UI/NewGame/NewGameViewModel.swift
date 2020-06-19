@@ -21,13 +21,13 @@ protocol NewGameViewModel {
 
 class NewGameViewModelImpl: NewGameViewModel {
     private let gameEngine: GameEngine
-    private let setupGameOperation: SetupGameOperation
+    private let operations: Operations
 
     weak var delegate: NewGameViewModelDelegate?
 
-    init(gameEngine: GameEngine, setupGameOperation: SetupGameOperation) {
+    init(gameEngine: GameEngine, operations: Operations) {
         self.gameEngine = gameEngine
-        self.setupGameOperation = setupGameOperation
+        self.operations = operations
 
         gameEngine.addListener(self)
     }
@@ -40,13 +40,18 @@ class NewGameViewModelImpl: NewGameViewModel {
 extension NewGameViewModelImpl: GameEngineListener {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
         print("Function: \(#function), line: \(#line)")
-        delegate?.newGameViewModelDidResume(self)
+        if game.localPlayer != nil {
+            delegate?.newGameViewModelDidResume(self)
+        } else {
+            let gameData = operations.joinGame.perform(game: game, playerId: gameEngine.localPlayerId)
+            gameEngine.update(gameData: gameData) { print($0) }
+        }
     }
 
     func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int) {
         print("Function: \(#function), line: \(#line)")
         print(player)
-        let gameData = setupGameOperation.perform(playerId: player.id)
+        let gameData = operations.setup.perform(playerId: player.id)
         gameEngine.update(gameData: gameData) { [weak self] success in
             guard let self = self else { return }
             if success {

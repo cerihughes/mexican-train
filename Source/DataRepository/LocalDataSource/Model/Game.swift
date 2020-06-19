@@ -31,4 +31,9 @@ extension Game {
 
         return gameData.players.filter { $0.id != localPlayer.id }
     }
+
+    static func createFakeGame() -> Game {
+        let initialGameData = GameData(stationValue: .twelve, mexicanTrain: Train(isPlayable: true, dominoes: []), players: [], pool: [])
+        return Game(gameData: initialGameData, totalPlayerCount: 0, playerDetails: [], localPlayerId: "", currentPlayerId: nil)
+    }
 }
