@@ -32,16 +32,14 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        subscribe(to: viewModel.player1Dominoes, collectionView: gameView.player1Dominoes.collectionView)
+        subscribe(to: viewModel.playerDominoes, collectionView: gameView.playerDominoes.collectionView)
             .store(in: &subscriptions)
         subscribe(to: viewModel.player1Train, collectionView: gameView.player1Train.collectionView)
             .store(in: &subscriptions)
         subscribe(to: viewModel.player2Train, collectionView: gameView.player2Train.collectionView)
             .store(in: &subscriptions)
 
-        gameView.player1Dominoes.collectionView.delegate = self
-
-        viewModel.reload()
+        gameView.playerDominoes.collectionView.delegate = self
     }
 
     private func subscribe(to publisher: AnyPublisher<[DominoView.State], Never>, collectionView: UICollectionView) -> AnyCancellable {
