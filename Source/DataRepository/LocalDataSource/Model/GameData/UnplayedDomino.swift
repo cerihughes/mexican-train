@@ -10,6 +10,11 @@ import Foundation
 struct UnplayedDomino: Equatable, Codable {
     let value1: DominoValue
     let value2: DominoValue
+
+    private enum CodingKeys: String, CodingKey {
+        case value1 = "a"
+        case value2 = "b"
+    }
 }
 
 extension UnplayedDomino {

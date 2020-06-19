@@ -11,6 +11,12 @@ struct PlayerData: Equatable, Codable {
     let id: String
     let dominoes: [UnplayedDomino]
     let train: Train
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case dominoes = "d"
+        case train = "t"
+    }
 }
 
 extension PlayerData {
