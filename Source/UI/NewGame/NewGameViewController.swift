@@ -46,19 +46,19 @@ extension NewGameViewController: GKTurnBasedMatchmakerViewControllerDelegate {
 }
 
 extension NewGameViewController: NewGameViewModelDelegate {
-    func newGameViewModelDidResume(_ viewModel: NewGameViewModel) {
+    func newGameViewModel(_ viewModel: NewGameViewModel, didResumeGame totalPlayerCount: Int) {
         print("Function: \(#function), line: \(#line)")
         dismiss(animated: true)
-        context?.navigateForward(token: MadogToken.gameTest, animated: true)
+        context?.navigateForward(token: MadogToken.gameTest(totalPlayerCount), animated: true)
     }
 
-    func newGameViewModelDidStart(_ viewModel: NewGameViewModel) {
+    func newGameViewModel(_ viewModel: NewGameViewModel, didStartGame totalPlayerCount: Int) {
         print("Function: \(#function), line: \(#line)")
         dismiss(animated: true)
-        context?.navigateForward(token: MadogToken.gameTest, animated: true)
+        context?.navigateForward(token: MadogToken.gameTest(totalPlayerCount), animated: true)
     }
 
-    func newGameViewModelDidFailToStart(_ viewModel: NewGameViewModel) {
+    func newGameViewModelDidFailToStartGame(_ viewModel: NewGameViewModel) {
         print("Function: \(#function), line: \(#line)")
     }
 }

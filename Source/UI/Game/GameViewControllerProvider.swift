@@ -10,11 +10,14 @@ import UIKit
 
 class GameViewControllerProvider: TypedViewControllerProvider {
     override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
-        guard token == .gameTest else {
+        guard case let .gameTest(totalPlayerCount) = token else {
             return nil
         }
 
-        let viewModel = GameViewModelImpl(gameEngine: serviceProvider.gameEngine, ruleSet: serviceProvider.ruleSet, operations: serviceProvider.operations)
+        let viewModel = GameViewModelImpl(gameEngine: serviceProvider.gameEngine,
+                                          ruleSet: serviceProvider.ruleSet,
+                                          operations: serviceProvider.operations,
+                                          totalPlayerCount: totalPlayerCount)
         return GameViewController(viewModel: viewModel)
     }
 }

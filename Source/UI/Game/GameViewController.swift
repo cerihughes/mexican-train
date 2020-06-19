@@ -13,7 +13,7 @@ private let cellIdentifier = String(describing: DominoCollectionViewCell.self)
 
 class GameViewController: UIViewController {
     private let viewModel: GameViewModel
-    private lazy var gameView = GameView()
+    private lazy var gameView = GameView(frame: .zero, numberOfTrains: viewModel.totalPlayerCount)
     private var subscriptions = [AnyCancellable]()
 
     init(viewModel: GameViewModel) {
@@ -34,10 +34,12 @@ class GameViewController: UIViewController {
 
         subscribe(to: viewModel.playerDominoes, collectionView: gameView.playerDominoes.collectionView)
             .store(in: &subscriptions)
-        subscribe(to: viewModel.player1Train, collectionView: gameView.player1Train.collectionView)
-            .store(in: &subscriptions)
-        subscribe(to: viewModel.player2Train, collectionView: gameView.player2Train.collectionView)
-            .store(in: &subscriptions)
+        gameView.playerTrains.enumerated().forEach {
+            if let trainPublisher = viewModel.train(for: $0.offset) {
+                subscribe(to: trainPublisher, collectionView: $0.element.collectionView)
+                    .store(in: &subscriptions)
+            }
+        }
 
         gameView.playerDominoes.collectionView.delegate = self
     }

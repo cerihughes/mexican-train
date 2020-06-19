@@ -9,9 +9,9 @@ import GameKit
 import UIKit
 
 protocol NewGameViewModelDelegate: AnyObject {
-    func newGameViewModelDidResume(_ viewModel: NewGameViewModel)
-    func newGameViewModelDidStart(_ viewModel: NewGameViewModel)
-    func newGameViewModelDidFailToStart(_ viewModel: NewGameViewModel)
+    func newGameViewModel(_ viewModel: NewGameViewModel, didResumeGame totalPlayerCount: Int)
+    func newGameViewModel(_ viewModel: NewGameViewModel, didStartGame totalPlayerCount: Int)
+    func newGameViewModelDidFailToStartGame(_ viewModel: NewGameViewModel)
 }
 
 protocol NewGameViewModel {
@@ -41,7 +41,7 @@ extension NewGameViewModelImpl: GameEngineListener {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
         print("Function: \(#function), line: \(#line)")
         if game.localPlayer != nil {
-            delegate?.newGameViewModelDidResume(self)
+            delegate?.newGameViewModel(self, didResumeGame: game.totalPlayerCount)
         } else {
             let gameData = operations.joinGame.perform(game: game, playerId: gameEngine.localPlayerId)
             gameEngine.update(gameData: gameData) { print($0) }
@@ -55,9 +55,9 @@ extension NewGameViewModelImpl: GameEngineListener {
         gameEngine.update(gameData: gameData) { [weak self] success in
             guard let self = self else { return }
             if success {
-                self.delegate?.newGameViewModelDidStart(self)
+                self.delegate?.newGameViewModel(self, didStartGame: totalPlayerCount)
             } else {
-                self.delegate?.newGameViewModelDidFailToStart(self)
+                self.delegate?.newGameViewModelDidFailToStartGame(self)
             }
         }
     }
