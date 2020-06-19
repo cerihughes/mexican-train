@@ -12,12 +12,12 @@ struct Game {
     let totalPlayerCount: Int
     let playerDetails: [PlayerDetails]
     let localPlayerId: String
-    let currentPlayerId: String?
+    let isCurrentPlayer: Bool
 }
 
 extension Game {
     var currentLocalPlayer: PlayerData? {
-        currentPlayerId == localPlayerId ? localPlayer : nil
+        isCurrentPlayer ? localPlayer : nil
     }
 
     var localPlayer: PlayerData? {
@@ -34,6 +34,6 @@ extension Game {
 
     static func createFakeGame() -> Game {
         let initialGameData = GameData(stationValue: .twelve, mexicanTrain: Train(isPlayable: true, dominoes: []), players: [], pool: [])
-        return Game(gameData: initialGameData, totalPlayerCount: 0, playerDetails: [], localPlayerId: "", currentPlayerId: nil)
+        return Game(gameData: initialGameData, totalPlayerCount: 0, playerDetails: [], localPlayerId: "", isCurrentPlayer: false)
     }
 }

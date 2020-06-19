@@ -43,6 +43,7 @@ class GameViewModelImpl: GameViewModel {
     private var localPlayerId: String
     private var latestGame: Game = Game.createFakeGame()
     private var subscription: AnyCancellable?
+    private var timer: Timer?
 
     let totalPlayerCount: Int
     let playerDominoes: AnyPublisher<[DominoView.State], Never>
@@ -107,6 +108,10 @@ class GameViewModelImpl: GameViewModel {
 
         subscription = gameEngine.gamePublisher
             .assign(to: \.latestGame, on: self)
+
+        timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+            gameEngine.refresh()
+        }
     }
 
     func playDomino(at index: Int, completion: @escaping (Bool) -> Void) {
