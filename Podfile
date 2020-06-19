@@ -6,7 +6,6 @@ target 'MexicanTrain' do
 
   # Pods for MexicanTrain
   pod 'Firebase/Analytics'
-  pod 'Firebase/Database'
   pod 'Firebase/Crashlytics'
 
   target 'Tests' do
