@@ -34,9 +34,9 @@ class GameViewModelImpl: GameViewModel {
         game = operation.perform(playerId: "P1")
 
         let player1 = gameSubject
-            .map { $0.players[0] }
+            .compactMap { $0.players.first }
         let player2 = gameSubject
-            .map { $0.players[1] }
+            .compactMap { $0.players.last }
 
         player1Dominoes = player1
             .map { $0.dominoes }

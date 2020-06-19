@@ -23,6 +23,12 @@ class NewGameViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        viewModel.delegate = self
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         let matchRequest = viewModel.createMatchRequest()
         let viewController = GKTurnBasedMatchmakerViewController(matchRequest: matchRequest)
@@ -37,4 +43,16 @@ extension NewGameViewController: GKTurnBasedMatchmakerViewControllerDelegate {
     }
 
     func turnBasedMatchmakerViewController(_ viewController: GKTurnBasedMatchmakerViewController, didFailWithError error: Error) {}
+}
+
+extension NewGameViewController: NewGameViewModelDelegate {
+    func newGameViewModelDidStart(_ viewModel: NewGameViewModel) {
+        print("Function: \(#function), line: \(#line)")
+        dismiss(animated: true)
+        context?.navigateForward(token: MadogToken.gameTest, animated: true)
+    }
+
+    func newGameViewModelDidFailToStart(_ viewModel: NewGameViewModel) {
+        print("Function: \(#function), line: \(#line)")
+    }
 }
