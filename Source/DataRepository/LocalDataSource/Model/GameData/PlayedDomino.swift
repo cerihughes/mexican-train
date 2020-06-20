@@ -21,4 +21,8 @@ extension PlayedDomino {
     var isDouble: Bool {
         innerValue == outerValue
     }
+
+    func isDouble(_ value: DominoValue) -> Bool {
+        isDouble && innerValue == value
+    }
 }

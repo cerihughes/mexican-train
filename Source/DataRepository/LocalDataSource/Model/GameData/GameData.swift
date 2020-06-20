@@ -24,6 +24,10 @@ struct GameData: Equatable, Codable {
 }
 
 extension GameData {
+    var firstOpenGate: DominoValue? {
+        openGates.first
+    }
+
     func player(id: String) -> PlayerData? {
         players.filter { $0.id == id }
             .first

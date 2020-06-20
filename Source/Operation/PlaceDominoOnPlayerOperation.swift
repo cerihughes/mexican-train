@@ -9,6 +9,27 @@ import Foundation
 
 class PlaceDominoOnPlayerOperation {
     func perform(game: Game, domino: UnplayedDomino, playerId: String) -> GameData? {
+        if let gate = game.gameData.firstOpenGate {
+            return performOpenGate(game: game, domino: domino, playerId: playerId, gate: gate)
+        } else {
+            return performNoOpenGate(game: game, domino: domino, playerId: playerId)
+        }
+    }
+
+    private func performOpenGate(game: Game, domino: UnplayedDomino, playerId: String, gate: DominoValue) -> GameData? {
+        guard let playerTrain = game.gameData.player(id: playerId)?.train,
+            let lastTrainDomino = playerTrain.dominoes.last,
+            lastTrainDomino.isDouble(gate),
+            let update = performNoOpenGate(game: game, domino: domino, playerId: playerId) else {
+            return nil
+        }
+
+        var openGates = game.gameData.openGates
+        openGates.remove(at: 0)
+        return update.with(openGates: openGates)
+    }
+
+    private func performNoOpenGate(game: Game, domino: UnplayedDomino, playerId: String) -> GameData? {
         guard let currentPlayer = game.currentLocalPlayer,
             let player = game.gameData.player(id: playerId),
             currentPlayer.canPlayOn(train: player.train),

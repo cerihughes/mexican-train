@@ -41,6 +41,10 @@ extension Game {
             return false
         }
 
+        if let openGate = gameData.firstOpenGate {
+            return currentLocalPlayerHasValidPlayFor(double: openGate)
+        }
+
         let playerDominoes = currentPlayer.dominoes
         if currentPlayer.train.isStarted {
             return !playerDominoes
@@ -52,6 +56,16 @@ extension Game {
                 .filter { $0.has(value: stationValue) }
                 .isEmpty
         }
+    }
+
+    private func currentLocalPlayerHasValidPlayFor(double: DominoValue) -> Bool {
+        guard let playerDominoes = currentLocalPlayer?.dominoes else {
+            return false
+        }
+
+        return !playerDominoes
+            .filter { $0.has(value: double) }
+            .isEmpty
     }
 }
 
