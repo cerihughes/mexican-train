@@ -48,6 +48,9 @@ class GameViewController: UIViewController {
             if let trainPublisher = viewModel.train(for: index) {
                 subscribe(to: trainPublisher, dominoesView: dominoesView)
             }
+
+            dominoesView.trainButton.tag = index
+            dominoesView.trainButton.addTarget(self, action: #selector(trainButtonTapped), for: .touchUpInside)
         }
 
         gameView.playerDominoes.collectionView.dragDelegate = self
@@ -75,7 +78,7 @@ class GameViewController: UIViewController {
 
     private func subscribe(to publisher: AnyPublisher<TrainState, Never>, dominoesView: DominoesView) {
         publisher.map { $0.isPlayable }
-            .sink { isPlayable in dominoesView.label.isHidden = !isPlayable }
+            .sink { isPlayable in dominoesView.trainButton.isHidden = !isPlayable }
             .store(in: &subscriptions)
 
         let dominoesPublisher = publisher
@@ -85,7 +88,11 @@ class GameViewController: UIViewController {
     }
 
     @objc private func pickupTapped(_ sender: UITapGestureRecognizer) {
-        viewModel.pickup { print($0) }
+        viewModel.pickUp { print($0) }
+    }
+
+    @objc private func trainButtonTapped(_ sender: UIButton) {
+        viewModel.pickUpTrain(at: sender.tag) { print($0) }
     }
 }
 

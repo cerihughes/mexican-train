@@ -10,7 +10,7 @@ import UIKit
 
 class DominoesView: SuperView {
     let collectionView = UICollectionView.create()
-    let label = UILabel()
+    let trainButton = UIButton(type: .roundedRect)
 
     override func commonInit() {
         super.commonInit()
@@ -18,19 +18,19 @@ class DominoesView: SuperView {
         backgroundColor = .white
         collectionView.backgroundColor = .white
 
-        label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.textColor = .black
-        label.text = "*"
-        label.isHidden = true
+        trainButton.titleLabel?.font = .systemFont(ofSize: 32, weight: .bold)
+        trainButton.titleLabel?.textColor = .black
+        trainButton.setTitle("*", for: .normal)
+        trainButton.isHidden = true
 
         addSubview(collectionView)
-        addSubview(label)
+        addSubview(trainButton)
 
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(8)
         }
 
-        label.snp.makeConstraints { make in
+        trainButton.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(16)
         }
     }

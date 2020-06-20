@@ -31,7 +31,8 @@ protocol GameViewModel {
 
     func canPlayDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Bool
     func playDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain, completion: @escaping (Bool) -> Void)
-    func pickup(completion: @escaping (Bool) -> Void)
+    func pickUp(completion: @escaping (Bool) -> Void)
+    func pickUpTrain(at index: Int, completion: @escaping (Bool) -> Void)
 }
 
 extension GameViewModel {
@@ -123,16 +124,27 @@ class GameViewModelImpl: GameViewModel {
             return
         }
 
-        gameEngine.endTurn(gameData: update) { completion($0) }
+        gameEngine.endTurn(gameData: update, completion: completion)
     }
 
-    func pickup(completion: @escaping (Bool) -> Void) {
+    func pickUp(completion: @escaping (Bool) -> Void) {
         guard let update = operations.pickUp.perform(game: latestGame) else {
             completion(false)
             return
         }
 
-        gameEngine.endTurn(gameData: update) { completion($0) }
+        gameEngine.endTurn(gameData: update, completion: completion)
+    }
+
+    func pickUpTrain(at index: Int, completion: @escaping (Bool) -> Void) {
+        guard latestGame.currentLocalPlayer != nil,
+            index == latestGame.localPlayerIndex,
+            let update = operations.changeTrain.perform(game: latestGame) else {
+            completion(false)
+            return
+        }
+
+        gameEngine.update(gameData: update, completion: completion)
     }
 
     private func play(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> GameData? {
