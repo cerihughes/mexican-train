@@ -21,7 +21,8 @@ class PickUpOperation {
             return nil
         }
 
-        let updatedPlayer = currentPlayer.with(domino: domino)
+        let updatedTrain = currentPlayer.train.with(isPlayable: true)
+        let updatedPlayer = currentPlayer.with(domino: domino, train: updatedTrain)
         return game.gameData.with(updatedPlayer: updatedPlayer, pool: pool)
     }
 }
