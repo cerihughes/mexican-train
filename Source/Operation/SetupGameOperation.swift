@@ -20,7 +20,8 @@ class SetupGameOperation {
         let player = PlayerData(id: playerId,
                                 dominoes: pool.removeRandomElements(15, using: shuffler),
                                 train: Train(isPlayable: false, dominoes: []),
-                                currentTurn: [])
+                                currentTurn: [],
+                                score: 0)
         return GameData(stationValue: stationValue,
                         mexicanTrain: mexicanTrain,
                         players: [player],
