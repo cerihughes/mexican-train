@@ -16,3 +16,9 @@ struct PlayedDomino: Equatable, Codable {
         case outerValue = "o"
     }
 }
+
+extension PlayedDomino {
+    var isDouble: Bool {
+        innerValue == outerValue
+    }
+}

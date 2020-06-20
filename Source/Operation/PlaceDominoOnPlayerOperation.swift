@@ -28,6 +28,10 @@ class PlaceDominoOnPlayerOperation {
 
         let updatedTrain = refreshedPlayer.train.with(domino: playedDomino)
         let updatedPlayer = refreshedPlayer.with(train: updatedTrain)
-        return updatedGame.with(updatedPlayer: updatedPlayer)
+        var openGates = updatedGame.openGates
+        if domino.isDouble {
+            openGates.append(domino.value1)
+        }
+        return updatedGame.with(updatedPlayer: updatedPlayer, openGates: openGates)
     }
 }

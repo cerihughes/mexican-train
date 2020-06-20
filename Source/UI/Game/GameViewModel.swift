@@ -119,12 +119,18 @@ class GameViewModelImpl: GameViewModel {
     }
 
     func playDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain, completion: @escaping (Bool) -> Void) {
+        let lastDouble = latestGame.gameData.openGates.last
         guard let update = play(at: playerDominoIndex, on: destinationTrain) else {
             completion(false)
             return
         }
 
-        gameEngine.endTurn(gameData: update, completion: completion)
+        let updatedLastDouble = update.openGates.last
+        if lastDouble != updatedLastDouble {
+            gameEngine.update(gameData: update, completion: completion)
+        } else {
+            gameEngine.endTurn(gameData: update, completion: completion)
+        }
     }
 
     func pickUp(completion: @escaping (Bool) -> Void) {

@@ -21,6 +21,10 @@ class PlaceDominoOnMexicanTrainOperation {
         }
 
         let updatedTrain = game.gameData.mexicanTrain.with(domino: playedDomino)
-        return game.gameData.with(updatedPlayer: updatedCurrentPlayer, mexicanTrain: updatedTrain)
+        var openGates = game.gameData.openGates
+        if domino.isDouble {
+            openGates.append(domino.value1)
+        }
+        return game.gameData.with(updatedPlayer: updatedCurrentPlayer, mexicanTrain: updatedTrain, openGates: openGates)
     }
 }

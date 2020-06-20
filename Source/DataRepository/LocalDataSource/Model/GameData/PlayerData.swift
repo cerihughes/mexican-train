@@ -51,6 +51,10 @@ extension PlayerData {
             return false
         }
 
+        if let last = train.dominoes.last, last.isDouble {
+            return true
+        }
+
         return train.isPlayable
     }
 }
