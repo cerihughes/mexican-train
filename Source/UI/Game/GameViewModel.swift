@@ -8,6 +8,11 @@
 import Combine
 import UIKit
 
+enum DestinationTrain {
+    case player(Int)
+    case mexican
+}
+
 protocol GameViewModel {
     var totalPlayerCount: Int { get }
 
@@ -19,8 +24,8 @@ protocol GameViewModel {
     var player3Train: AnyPublisher<[DominoView.State], Never> { get }
     var player4Train: AnyPublisher<[DominoView.State], Never> { get }
 
-    func canPlayDomino(at playerDominoIndex: Int, on trainIndex: Int) -> Bool
-    func playDomino(at playerDominoIndex: Int, on trainIndex: Int, completion: @escaping (Bool) -> Void)
+    func canPlayDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Bool
+    func playDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain, completion: @escaping (Bool) -> Void)
     func pickup(completion: @escaping (Bool) -> Void)
 }
 
@@ -103,12 +108,12 @@ class GameViewModelImpl: GameViewModel {
         }
     }
 
-    func canPlayDomino(at playerDominoIndex: Int, on trainIndex: Int) -> Bool {
-        playOnPlayer(at: playerDominoIndex, on: trainIndex) != nil
+    func canPlayDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Bool {
+        play(at: playerDominoIndex, on: destinationTrain) != nil
     }
 
-    func playDomino(at playerDominoIndex: Int, on trainIndex: Int, completion: @escaping (Bool) -> Void) {
-        guard let update = playOnPlayer(at: playerDominoIndex, on: trainIndex) else {
+    func playDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain, completion: @escaping (Bool) -> Void) {
+        guard let update = play(at: playerDominoIndex, on: destinationTrain) else {
             completion(false)
             return
         }
@@ -125,14 +130,26 @@ class GameViewModelImpl: GameViewModel {
         gameEngine.endTurn(gameData: update) { completion($0) }
     }
 
-    private func playOnPlayer(at playerDominoIndex: Int, on trainIndex: Int) -> GameData? {
+    private func play(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> GameData? {
         guard let localPlayerData = latestGame.gameData.player(id: localPlayerId),
-            let targetPlayer = latestGame.gameData.players[safe: trainIndex],
             let unplayedDomino = localPlayerData.dominoes[safe: playerDominoIndex] else {
             return nil
         }
+        return destinationTrain.update(operations: operations, game: latestGame, unplayedDomino: unplayedDomino)
+    }
+}
 
-        return operations.playOnPlayer.perform(game: latestGame, domino: unplayedDomino, playerId: targetPlayer.id)
+private extension DestinationTrain {
+    func update(operations: Operations, game: Game, unplayedDomino: UnplayedDomino) -> GameData? {
+        switch self {
+        case let .player(index):
+            guard let targetPlayer = game.gameData.players[safe: index] else {
+                return nil
+            }
+            return operations.playOnPlayer.perform(game: game, domino: unplayedDomino, playerId: targetPlayer.id)
+        case .mexican:
+            return operations.playOnMexicanTrain.perform(game: game, domino: unplayedDomino)
+        }
     }
 }
 

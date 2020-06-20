@@ -11,9 +11,12 @@ class PlaceDominoOnMexicanTrainOperation {
     func perform(game: Game, domino: UnplayedDomino) -> GameData? {
         guard let currentPlayer = game.currentLocalPlayer,
             currentPlayer.canPlayOn(train: game.gameData.mexicanTrain),
-            let updatedCurrentPlayer = currentPlayer.without(domino: domino),
-            let trainValue = game.gameData.mexicanTrain.playableValue,
-            let playedDomino = domino.playedDomino(on: trainValue) else {
+            let updatedCurrentPlayer = currentPlayer.without(domino: domino) else {
+            return nil
+        }
+
+        let trainValue = game.gameData.mexicanTrain.playableValue ?? game.gameData.stationValue
+        guard let playedDomino = domino.playedDomino(on: trainValue) else {
             return nil
         }
 
