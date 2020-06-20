@@ -8,15 +8,9 @@
 import Foundation
 
 class PlaceDominoOnMexicanTrainOperation {
-    private let ruleSet: RuleSet
-
-    init(ruleSet: RuleSet) {
-        self.ruleSet = ruleSet
-    }
-
     func perform(game: Game, domino: UnplayedDomino) -> GameData? {
         guard let currentPlayer = game.currentLocalPlayer,
-            ruleSet.player(currentPlayer, canPlay: domino, on: game.gameData.mexicanTrain, in: game),
+            currentPlayer.canPlayOn(train: game.gameData.mexicanTrain),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino),
             let trainValue = game.gameData.mexicanTrain.playableValue,
             let playedDomino = domino.playedDomino(on: trainValue) else {
