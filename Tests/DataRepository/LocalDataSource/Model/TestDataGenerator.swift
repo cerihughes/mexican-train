@@ -41,7 +41,7 @@ func createTrain(isPlayable: Bool = false, domino: PlayedDomino) -> Train {
 
 func createPlayer(id: String, dominoes: [UnplayedDomino], train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
     let train = createTrain(isPlayable: isPlayable, dominoes: train)
-    return PlayerData(id: id, dominoes: dominoes, train: train)
+    return PlayerData(id: id, dominoes: dominoes, train: train, currentTurn: [])
 }
 
 func createPlayer(id: String, domino: UnplayedDomino, train: [PlayedDomino] = [], isPlayable: Bool = false) -> PlayerData {
