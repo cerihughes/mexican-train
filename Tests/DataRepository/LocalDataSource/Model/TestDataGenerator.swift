@@ -17,7 +17,8 @@ func createGame(stationValue: DominoValue = .zero,
     return GameData(stationValue: stationValue,
                     mexicanTrain: mexicanTrain,
                     players: players,
-                    pool: pool)
+                    pool: pool,
+                    openGates: [])
 }
 
 func createGame(stationValue: DominoValue = .zero,

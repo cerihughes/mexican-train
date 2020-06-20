@@ -42,6 +42,10 @@ extension UnplayedDomino {
 }
 
 extension UnplayedDomino {
+    var isDouble: Bool {
+        value1 == value2
+    }
+
     var pointsValue: Int {
         value1.rawValue + value2.rawValue
     }

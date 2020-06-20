@@ -23,6 +23,7 @@ class SetupGameOperation {
         return GameData(stationValue: stationValue,
                         mexicanTrain: mexicanTrain,
                         players: [player],
-                        pool: pool)
+                        pool: pool,
+                        openGates: [])
     }
 }

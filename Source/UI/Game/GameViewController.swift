@@ -78,11 +78,13 @@ class GameViewController: UIViewController {
 
     private func subscribe(to publisher: AnyPublisher<TrainState, Never>, dominoesView: DominoesView) {
         publisher.map { $0.isPlayable }
+            .removeDuplicates()
             .sink { isPlayable in dominoesView.trainButton.isHidden = !isPlayable }
             .store(in: &subscriptions)
 
         let dominoesPublisher = publisher
             .map { $0.dominoes }
+            .removeDuplicates()
             .eraseToAnyPublisher()
         subscribe(to: dominoesPublisher, collectionView: dominoesView.collectionView)
     }

@@ -41,6 +41,10 @@ extension Game {
             return false
         }
 
+        if let openGate = gameData.firstOpenGate {
+            return currentLocalPlayerHasValidPlayFor(double: openGate)
+        }
+
         let playerDominoes = currentPlayer.dominoes
         if currentPlayer.train.isStarted {
             return !playerDominoes
@@ -53,11 +57,21 @@ extension Game {
                 .isEmpty
         }
     }
+
+    private func currentLocalPlayerHasValidPlayFor(double: DominoValue) -> Bool {
+        guard let playerDominoes = currentLocalPlayer?.dominoes else {
+            return false
+        }
+
+        return !playerDominoes
+            .filter { $0.has(value: double) }
+            .isEmpty
+    }
 }
 
 extension Game {
     static func createFakeGame() -> Game {
-        let initialGameData = GameData(stationValue: .twelve, mexicanTrain: Train(isPlayable: true, dominoes: []), players: [], pool: [])
+        let initialGameData = GameData(stationValue: .twelve, mexicanTrain: Train(isPlayable: true, dominoes: []), players: [], pool: [], openGates: [])
         return Game(gameData: initialGameData, totalPlayerCount: 0, playerDetails: [], localPlayerId: "", isCurrentPlayer: false)
     }
 }
