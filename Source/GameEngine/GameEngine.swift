@@ -103,7 +103,11 @@ class GameKitGameEngine: NSObject, GameEngine {
     }
 
     func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
-        guard let currentMatch = currentMatch, let data = coder.encode(gameData) else {
+        // Wipe all player turn progress when a turn ends...
+        let players = gameData.players.map { $0.with(currentTurn: []) }
+        let updatedGameData = gameData.with(players: players)
+
+        guard let currentMatch = currentMatch, let data = coder.encode(updatedGameData) else {
             completion(false)
             return
         }
