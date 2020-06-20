@@ -38,13 +38,21 @@ class GameViewController: UIViewController {
         subscribe(to: viewModel.playerDominoes, collectionView: gameView.playerDominoes.collectionView)
             .store(in: &subscriptions)
         gameView.playerTrains.enumerated().forEach {
-            if let trainPublisher = viewModel.train(for: $0.offset) {
-                subscribe(to: trainPublisher, collectionView: $0.element.collectionView)
+            let index = $0.offset
+            let dominoesView = $0.element
+
+            dominoesView.collectionView.dropDelegate = self
+            if let trainPublisher = viewModel.train(for: index) {
+                subscribe(to: trainPublisher, collectionView: dominoesView.collectionView)
                     .store(in: &subscriptions)
             }
         }
 
-        gameView.playerDominoes.collectionView.delegate = self
+        gameView.playerDominoes.collectionView.dragDelegate = self
+        gameView.playerDominoes.collectionView.dragInteractionEnabled = true
+
+        gameView.playerDominoes.collectionView.dragDelegate = self
+        gameView.playerDominoes.collectionView.dragInteractionEnabled = true
 
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(pickupTapped))
         gameView.pickupView.addGestureRecognizer(tapGestureRecognizer)
@@ -66,10 +74,36 @@ class GameViewController: UIViewController {
     }
 }
 
-extension GameViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+extension GameViewController: UICollectionViewDragDelegate {
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         print("Function: \(#function), line: \(#line)")
-        collectionView.deselectItem(at: indexPath, animated: true)
+        let dragItem = UIDragItem(itemProvider: indexPath.toItemProvider())
+        dragItem.localObject = indexPath
+        return [dragItem]
+    }
+}
+
+extension GameViewController: UICollectionViewDropDelegate {
+    func collectionView(_ collectionView: UICollectionView,
+                        dropSessionDidUpdate session: UIDropSession,
+                        withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        print("Function: \(#function), line: \(#line)")
+        return UICollectionViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        print("Function: \(#function), line: \(#line)")
+        guard let item = coordinator.items.first, let indexPath = item.dragItem.localObject as? IndexPath else {
+            return
+        }
+
         viewModel.playDomino(at: indexPath.row) { print($0) }
+    }
+}
+
+private extension IndexPath {
+    func toItemProvider() -> NSItemProvider {
+        let object = String(row) as NSString
+        return NSItemProvider(object: object)
     }
 }
