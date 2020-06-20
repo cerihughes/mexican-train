@@ -19,7 +19,8 @@ protocol GameViewModel {
     var player3Train: AnyPublisher<[DominoView.State], Never> { get }
     var player4Train: AnyPublisher<[DominoView.State], Never> { get }
 
-    func playDomino(at index: Int, completion: @escaping (Bool) -> Void)
+    func canPlayDomino(at playerDominoIndex: Int, on trainIndex: Int) -> Bool
+    func playDomino(at playerDominoIndex: Int, on trainIndex: Int, completion: @escaping (Bool) -> Void)
     func pickup(completion: @escaping (Bool) -> Void)
 }
 
@@ -104,10 +105,12 @@ class GameViewModelImpl: GameViewModel {
         }
     }
 
-    func playDomino(at index: Int, completion: @escaping (Bool) -> Void) {
-        guard let localPlayerData = latestGame.gameData.player(id: localPlayerId),
-            let unplayedDomino = localPlayerData.dominoes[safe: index],
-            let update = operations.playOnPlayer.perform(game: latestGame, domino: unplayedDomino, playerId: localPlayerData.id) else {
+    func canPlayDomino(at playerDominoIndex: Int, on trainIndex: Int) -> Bool {
+        playOnPlayer(at: playerDominoIndex, on: trainIndex) != nil
+    }
+
+    func playDomino(at playerDominoIndex: Int, on trainIndex: Int, completion: @escaping (Bool) -> Void) {
+        guard let update = playOnPlayer(at: playerDominoIndex, on: trainIndex) else {
             completion(false)
             return
         }
@@ -122,6 +125,16 @@ class GameViewModelImpl: GameViewModel {
         }
 
         gameEngine.endTurn(gameData: update) { completion($0) }
+    }
+
+    private func playOnPlayer(at playerDominoIndex: Int, on trainIndex: Int) -> GameData? {
+        guard let localPlayerData = latestGame.gameData.player(id: localPlayerId),
+            let targetPlayer = latestGame.gameData.players[safe: trainIndex],
+            let unplayedDomino = localPlayerData.dominoes[safe: playerDominoIndex] else {
+            return nil
+        }
+
+        return operations.playOnPlayer.perform(game: latestGame, domino: unplayedDomino, playerId: targetPlayer.id)
     }
 }
 
