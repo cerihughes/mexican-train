@@ -14,22 +14,6 @@ class GameView: UIView {
     let divider = UIView()
     let playerTrains: [DominoesView]
 
-    var player1Train: DominoesView? {
-        playerTrains[safe: 0]
-    }
-
-    var player2Train: DominoesView? {
-        playerTrains[safe: 1]
-    }
-
-    var player3Train: DominoesView? {
-        playerTrains[safe: 2]
-    }
-
-    var player4Train: DominoesView? {
-        playerTrains[safe: 3]
-    }
-
     init(frame: CGRect, numberOfTrains: Int) {
         playerTrains = (0 ..< numberOfTrains)
             .map { _ in DominoesView() }
@@ -83,5 +67,10 @@ class GameView: UIView {
         previousView.snp.makeConstraints { make in
             make.bottom.equalTo(safeAreaLayoutGuide)
         }
+    }
+
+    func indexOfTrainCollectionView(_ collectionView: UICollectionView) -> Int? {
+        playerTrains.map { $0.collectionView }
+            .firstIndex(of: collectionView)
     }
 }

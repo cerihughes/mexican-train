@@ -88,16 +88,25 @@ extension GameViewController: UICollectionViewDropDelegate {
                         dropSessionDidUpdate session: UIDropSession,
                         withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         print("Function: \(#function), line: \(#line)")
+        guard let trainIndex = gameView.indexOfTrainCollectionView(collectionView),
+            let item = session.items.first,
+            let indexPath = item.localObject as? IndexPath,
+            viewModel.canPlayDomino(at: indexPath.row, on: trainIndex) else {
+            return UICollectionViewDropProposal(operation: .forbidden)
+        }
+
         return UICollectionViewDropProposal(operation: .move, intent: .insertIntoDestinationIndexPath)
     }
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         print("Function: \(#function), line: \(#line)")
-        guard let item = coordinator.items.first, let indexPath = item.dragItem.localObject as? IndexPath else {
+        guard let trainIndex = gameView.indexOfTrainCollectionView(collectionView),
+            let item = coordinator.items.first,
+            let indexPath = item.dragItem.localObject as? IndexPath else {
             return
         }
 
-        viewModel.playDomino(at: indexPath.row) { print($0) }
+        viewModel.playDomino(at: indexPath.row, on: trainIndex) { print($0) }
     }
 }
 
