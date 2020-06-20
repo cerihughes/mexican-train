@@ -18,7 +18,9 @@ class JoinGameOperation {
         var pool = game.gameData.pool
         let player = PlayerData(id: playerId,
                                 dominoes: pool.removeRandomElements(15, using: shuffler),
-                                train: Train(isPlayable: false, dominoes: []))
+                                train: Train(isPlayable: false, dominoes: []),
+                                currentTurn: [],
+                                score: 0)
         var players = game.gameData.players
         players.append(player)
         return game.gameData.with(players: players, pool: pool)

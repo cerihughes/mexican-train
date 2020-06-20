@@ -24,8 +24,15 @@ struct GameData: Equatable, Codable {
 }
 
 extension GameData {
-    var firstOpenGate: DominoValue? {
-        openGates.first
+    var gateThatMustBeClosed: DominoValue? {
+        if hasAnyPlayerPlayedDoubleInThisTurn {
+            return nil
+        }
+        return openGates.first
+    }
+
+    var hasAnyPlayerPlayedDoubleInThisTurn: Bool {
+        !players.allSatisfy { !$0.hasPlayedDoubleInThisTurn }
     }
 
     func player(id: String) -> PlayerData? {

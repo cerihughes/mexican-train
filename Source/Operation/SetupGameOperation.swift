@@ -19,7 +19,9 @@ class SetupGameOperation {
         var pool = UnplayedDomino.allDominoes(except: stationValue)
         let player = PlayerData(id: playerId,
                                 dominoes: pool.removeRandomElements(15, using: shuffler),
-                                train: Train(isPlayable: false, dominoes: []))
+                                train: Train(isPlayable: false, dominoes: []),
+                                currentTurn: [],
+                                score: 0)
         return GameData(stationValue: stationValue,
                         mexicanTrain: mexicanTrain,
                         players: [player],
