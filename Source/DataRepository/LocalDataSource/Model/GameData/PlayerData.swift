@@ -41,4 +41,16 @@ extension PlayerData {
         }
         return with(dominoes: dominoes)
     }
+
+    func canPlayOn(train: Train) -> Bool {
+        if self.train == train {
+            return true
+        }
+
+        guard self.train.isStarted else {
+            return false
+        }
+
+        return train.isPlayable
+    }
 }

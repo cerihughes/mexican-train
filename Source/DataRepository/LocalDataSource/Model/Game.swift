@@ -32,8 +32,45 @@ extension Game {
         return gameData.players.filter { $0.id != localPlayer.id }
     }
 
+    var currentLocalPlayerHasValidPlay: Bool {
+        guard let currentPlayer = currentLocalPlayer else {
+            return false
+        }
+
+        let playerDominoes = currentPlayer.dominoes
+        if currentPlayer.train.isStarted {
+            return !playerDominoes
+                .filter { $0.isPlayable(with: playableTrainValues) }
+                .isEmpty
+        } else {
+            let stationValue = gameData.stationValue
+            return !playerDominoes
+                .filter { $0.has(value: stationValue) }
+                .isEmpty
+        }
+    }
+}
+
+extension Game {
     static func createFakeGame() -> Game {
         let initialGameData = GameData(stationValue: .twelve, mexicanTrain: Train(isPlayable: true, dominoes: []), players: [], pool: [])
         return Game(gameData: initialGameData, totalPlayerCount: 0, playerDetails: [], localPlayerId: "", isCurrentPlayer: false)
+    }
+}
+
+private extension Game {
+    var playableTrainValues: [DominoValue] {
+        return playableTrains
+            .compactMap { $0.dominoes.last?.outerValue }
+    }
+
+    var playableTrains: [Train] {
+        guard let currentPlayer = currentLocalPlayer else {
+            return []
+        }
+
+        return [gameData.mexicanTrain, currentPlayer.train] +
+            otherPlayers.map { $0.train }
+            .filter { $0.isPlayable }
     }
 }

@@ -8,16 +8,10 @@
 import Foundation
 
 class PlaceDominoOnPlayerOperation {
-    private let ruleSet: RuleSet
-
-    init(ruleSet: RuleSet) {
-        self.ruleSet = ruleSet
-    }
-
     func perform(game: Game, domino: UnplayedDomino, playerId: String) -> GameData? {
         guard let currentPlayer = game.currentLocalPlayer,
             let player = game.gameData.player(id: playerId),
-            ruleSet.player(currentPlayer, canPlay: domino, on: player.train, in: game),
+            currentPlayer.canPlayOn(train: player.train),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino) else {
             return nil
         }

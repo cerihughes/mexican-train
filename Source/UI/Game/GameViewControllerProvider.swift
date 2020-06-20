@@ -15,7 +15,6 @@ class GameViewControllerProvider: TypedViewControllerProvider {
         }
 
         let viewModel = GameViewModelImpl(gameEngine: serviceProvider.gameEngine,
-                                          ruleSet: serviceProvider.ruleSet,
                                           operations: serviceProvider.operations,
                                           totalPlayerCount: totalPlayerCount)
         return GameViewController(viewModel: viewModel)

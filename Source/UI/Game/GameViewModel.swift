@@ -39,7 +39,6 @@ extension GameViewModel {
 
 class GameViewModelImpl: GameViewModel {
     private let gameEngine: GameEngine
-    private let ruleSet: RuleSet
     private let operations: Operations
 
     private var localPlayerId: String
@@ -56,9 +55,8 @@ class GameViewModelImpl: GameViewModel {
     let player3Train: AnyPublisher<[DominoView.State], Never>
     let player4Train: AnyPublisher<[DominoView.State], Never>
 
-    init(gameEngine: GameEngine, ruleSet: RuleSet, operations: Operations, totalPlayerCount: Int) {
+    init(gameEngine: GameEngine, operations: Operations, totalPlayerCount: Int) {
         self.gameEngine = gameEngine
-        self.ruleSet = ruleSet
         self.operations = operations
         self.totalPlayerCount = totalPlayerCount
 

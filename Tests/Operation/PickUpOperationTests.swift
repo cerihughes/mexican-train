@@ -10,21 +10,17 @@ import XCTest
 @testable import MexicanTrain
 
 class PickUpOperationTests: XCTestCase {
-    private var ruleSet: MockRuleSet!
     private var shuffler: MockShuffler!
     private var operation: PickUpOperation!
 
     override func setUp() {
         super.setUp()
 
-        ruleSet = MockRuleSet()
-        ruleSet.hasValidPlay = false
         shuffler = MockShuffler()
-        operation = PickUpOperation(ruleSet: ruleSet, shuffler: shuffler)
+        operation = PickUpOperation(shuffler: shuffler)
     }
 
     override func tearDown() {
-        ruleSet = nil
         operation = nil
         shuffler = nil
 
@@ -32,15 +28,22 @@ class PickUpOperationTests: XCTestCase {
     }
 
     func testPerformOperation_withValidMove() {
-        ruleSet.hasValidPlay = true
-        let game1 = createTestGameData()
+        let pool = UnplayedDomino.allDominoes()
+        let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .zero, value2: .nine))
+        let player2 = createPlayer(id: "P2", dominoes: [])
+        let game1 = createGame(players: [player1, player2], pool: pool)
+
         let engine = FakeGameEngine(gameData: game1, localPlayerId: "P1")
         let game2 = operation.perform(game: engine.createInitialState())
         XCTAssertNil(game2)
     }
 
     func testPerformOperation_addsDominoes() {
-        let game1 = createTestGameData()
+        let pool = UnplayedDomino.allDominoes()
+        let player1 = createPlayer(id: "P1", dominoes: [])
+        let player2 = createPlayer(id: "P2", dominoes: [])
+        let game1 = createGame(players: [player1, player2], pool: pool)
+
         let engine1 = FakeGameEngine(gameData: game1, localPlayerId: "P1")
         let state1 = engine1.createInitialState()
         XCTAssertEqual(game1.pool.count, 91)
@@ -58,12 +61,5 @@ class PickUpOperationTests: XCTestCase {
         XCTAssertEqual(game3.pool.count, 89)
         XCTAssertEqual(game3.players[0].dominoes.count, 1)
         XCTAssertEqual(game3.players[1].dominoes.count, 1)
-    }
-
-    private func createTestGameData() -> GameData {
-        let pool = UnplayedDomino.allDominoes()
-        let player1 = createPlayer(id: "P1", dominoes: [])
-        let player2 = createPlayer(id: "P2", dominoes: [])
-        return createGame(players: [player1, player2], pool: pool)
     }
 }

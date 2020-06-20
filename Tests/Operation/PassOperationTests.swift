@@ -10,27 +10,25 @@ import XCTest
 @testable import MexicanTrain
 
 class PassOperationTests: XCTestCase {
-    private var ruleSet: MockRuleSet!
     private var operation: PassOperation!
 
     override func setUp() {
         super.setUp()
 
-        ruleSet = MockRuleSet()
-        ruleSet.hasValidPlay = false
-        operation = PassOperation(ruleSet: ruleSet)
+        operation = PassOperation()
     }
 
     override func tearDown() {
-        ruleSet = nil
         operation = nil
 
         super.tearDown()
     }
 
     func testPerformOperation_withValidMove() {
-        ruleSet.hasValidPlay = true
-        let game1 = createTestGameData()
+        let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .zero, value2: .nine))
+        let player2 = createPlayer(id: "P2", domino: UnplayedDomino(value1: .six, value2: .ten))
+        let game1 = createGame(players: [player1, player2], pool: [])
+
         let engine = FakeGameEngine(gameData: game1, localPlayerId: "P1")
         let state = engine.createInitialState()
         let game2 = operation.perform(game: state)
@@ -38,16 +36,13 @@ class PassOperationTests: XCTestCase {
     }
 
     func testPerformOperation_withRemainingPool() {
-        let game1 = createTestGameData(pool: [UnplayedDomino(value1: .twelve, value2: .nine)])
+        let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .six, value2: .nine))
+        let player2 = createPlayer(id: "P2", domino: UnplayedDomino(value1: .six, value2: .ten))
+        let pool = [UnplayedDomino(value1: .twelve, value2: .nine)]
+        let game1 = createGame(players: [player1, player2], pool: pool)
         let engine = FakeGameEngine(gameData: game1, localPlayerId: "P1")
         let state = engine.createInitialState()
         let game2 = operation.perform(game: state)
         XCTAssertNil(game2)
-    }
-
-    private func createTestGameData(pool: [UnplayedDomino] = []) -> GameData {
-        let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .six, value2: .nine))
-        let player2 = createPlayer(id: "P2", domino: UnplayedDomino(value1: .six, value2: .ten))
-        return createGame(players: [player1, player2], pool: pool)
     }
 }

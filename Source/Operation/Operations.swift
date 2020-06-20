@@ -16,13 +16,13 @@ class Operations {
     let playOnPlayer: PlaceDominoOnPlayerOperation
     let setup: SetupGameOperation
 
-    init(ruleSet: RuleSet, shuffler: Shuffler) {
+    init(shuffler: Shuffler) {
         changeTrain = ChangeTrainPlayableStateOperation()
         joinGame = JoinGameOperation(shuffler: shuffler)
-        pass = PassOperation(ruleSet: ruleSet)
-        pickUp = PickUpOperation(ruleSet: ruleSet, shuffler: shuffler)
-        playOnMexicanTrain = PlaceDominoOnMexicanTrainOperation(ruleSet: ruleSet)
-        playOnPlayer = PlaceDominoOnPlayerOperation(ruleSet: ruleSet)
+        pass = PassOperation()
+        pickUp = PickUpOperation(shuffler: shuffler)
+        playOnMexicanTrain = PlaceDominoOnMexicanTrainOperation()
+        playOnPlayer = PlaceDominoOnPlayerOperation()
         setup = SetupGameOperation(shuffler: shuffler)
     }
 }
