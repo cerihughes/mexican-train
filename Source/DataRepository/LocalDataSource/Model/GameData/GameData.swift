@@ -12,12 +12,14 @@ struct GameData: Equatable, Codable {
     let mexicanTrain: Train
     let players: [PlayerData]
     let pool: [UnplayedDomino]
+    let openGates: [DominoValue]
 
     private enum CodingKeys: String, CodingKey {
         case stationValue = "s"
         case mexicanTrain = "mt"
         case players = "ps"
         case pool = "p"
+        case openGates = "g"
     }
 }
 
@@ -27,11 +29,12 @@ extension GameData {
             .first
     }
 
-    func with(mexicanTrain: Train? = nil, players: [PlayerData]? = nil, pool: [UnplayedDomino]? = nil) -> GameData {
+    func with(mexicanTrain: Train? = nil, players: [PlayerData]? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> GameData {
         GameData(stationValue: stationValue,
                  mexicanTrain: mexicanTrain ?? self.mexicanTrain,
                  players: players ?? self.players,
-                 pool: pool ?? self.pool)
+                 pool: pool ?? self.pool,
+                 openGates: openGates ?? self.openGates)
     }
 
     func with(updatedPlayer: PlayerData, mexicanTrain: Train? = nil, pool: [UnplayedDomino]? = nil) -> GameData {
