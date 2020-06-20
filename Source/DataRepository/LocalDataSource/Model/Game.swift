@@ -41,7 +41,7 @@ extension Game {
             return false
         }
 
-        if let openGate = gameData.firstOpenGate {
+        if let openGate = gameData.gateThatMustBeClosed {
             return currentLocalPlayerHasValidPlayFor(double: openGate)
         }
 

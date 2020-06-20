@@ -62,4 +62,8 @@ extension PlayerData {
 
         return train.isPlayable
     }
+
+    var hasPlayedDoubleInThisTurn: Bool {
+        !currentTurn.isEmpty
+    }
 }

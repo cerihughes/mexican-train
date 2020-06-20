@@ -9,7 +9,7 @@ import Foundation
 
 class PlaceDominoOnPlayerOperation {
     func perform(game: Game, domino: UnplayedDomino, playerId: String) -> GameData? {
-        if let gate = game.gameData.firstOpenGate {
+        if let gate = game.gameData.gateThatMustBeClosed {
             return performOpenGate(game: game, domino: domino, playerId: playerId, gate: gate)
         } else {
             return performNoOpenGate(game: game, domino: domino, playerId: playerId)
@@ -25,7 +25,7 @@ class PlaceDominoOnPlayerOperation {
         }
 
         var openGates = game.gameData.openGates
-        openGates.remove(at: 0)
+        openGates.removeAll(where: { $0 == gate })
         return update.with(openGates: openGates)
     }
 
