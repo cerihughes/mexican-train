@@ -42,7 +42,9 @@ extension PlayerData {
         guard let dominoes = dominoes.without(domino) else {
             return nil
         }
-        return with(dominoes: dominoes)
+        var currentTurn = self.currentTurn
+        currentTurn.append(domino)
+        return with(dominoes: dominoes, currentTurn: currentTurn)
     }
 
     func canPlayOn(train: Train) -> Bool {
