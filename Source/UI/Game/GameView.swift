@@ -12,6 +12,7 @@ class GameView: UIView {
     let pickupView = PickupView()
     let playerDominoes = DominoesView()
     let divider = UIView()
+    let mexicanTrain = DominoesView()
     let playerTrains: [DominoesView]
 
     init(frame: CGRect, numberOfTrains: Int) {
@@ -34,6 +35,7 @@ class GameView: UIView {
         addSubview(pickupView)
         addSubview(playerDominoes)
         addSubview(divider)
+        addSubview(mexicanTrain)
         playerTrains.forEach { addSubview($0) }
 
         pickupView.snp.makeConstraints { make in
@@ -53,7 +55,13 @@ class GameView: UIView {
             make.height.equalTo(2)
         }
 
-        var previousView: UIView = divider
+        mexicanTrain.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(divider)
+            make.top.equalTo(divider.snp.bottom)
+            make.height.equalTo(playerDominoes)
+        }
+
+        var previousView: UIView = mexicanTrain
         playerTrains.forEach {
             $0.snp.makeConstraints { make in
                 make.leading.trailing.equalTo(previousView)

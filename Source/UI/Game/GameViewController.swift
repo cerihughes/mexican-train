@@ -37,6 +37,11 @@ class GameViewController: UIViewController {
 
         subscribe(to: viewModel.playerDominoes, collectionView: gameView.playerDominoes.collectionView)
             .store(in: &subscriptions)
+
+        gameView.mexicanTrain.collectionView.dropDelegate = self
+        subscribe(to: viewModel.mexicanTrain, collectionView: gameView.mexicanTrain.collectionView)
+            .store(in: &subscriptions)
+
         gameView.playerTrains.enumerated().forEach {
             let index = $0.offset
             let dominoesView = $0.element
@@ -88,10 +93,10 @@ extension GameViewController: UICollectionViewDropDelegate {
                         dropSessionDidUpdate session: UIDropSession,
                         withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         print("Function: \(#function), line: \(#line)")
-        guard let trainIndex = gameView.indexOfTrainCollectionView(collectionView),
+        guard let destinationTrain = destinationTrain(for: collectionView),
             let item = session.items.first,
             let indexPath = item.localObject as? IndexPath,
-            viewModel.canPlayDomino(at: indexPath.row, on: trainIndex) else {
+            viewModel.canPlayDomino(at: indexPath.row, on: destinationTrain) else {
             return UICollectionViewDropProposal(operation: .forbidden)
         }
 
@@ -100,13 +105,22 @@ extension GameViewController: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         print("Function: \(#function), line: \(#line)")
-        guard let trainIndex = gameView.indexOfTrainCollectionView(collectionView),
+        guard let destinationTrain = destinationTrain(for: collectionView),
             let item = coordinator.items.first,
             let indexPath = item.dragItem.localObject as? IndexPath else {
             return
         }
 
-        viewModel.playDomino(at: indexPath.row, on: trainIndex) { print($0) }
+        viewModel.playDomino(at: indexPath.row, on: destinationTrain) { print($0) }
+    }
+
+    private func destinationTrain(for collectionView: UICollectionView) -> DestinationTrain? {
+        if let trainIndex = gameView.indexOfTrainCollectionView(collectionView) {
+            return .player(trainIndex)
+        } else if collectionView == gameView.mexicanTrain.collectionView {
+            return .mexican
+        }
+        return nil
     }
 }
 
