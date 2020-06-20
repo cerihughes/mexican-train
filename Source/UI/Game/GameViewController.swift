@@ -36,11 +36,9 @@ class GameViewController: UIViewController {
             .store(in: &subscriptions)
 
         subscribe(to: viewModel.playerDominoes, collectionView: gameView.playerDominoes.collectionView)
-            .store(in: &subscriptions)
 
         gameView.mexicanTrain.collectionView.dropDelegate = self
-        subscribe(to: viewModel.mexicanTrain, collectionView: gameView.mexicanTrain.collectionView)
-            .store(in: &subscriptions)
+        subscribe(to: viewModel.mexicanTrain, dominoesView: gameView.mexicanTrain)
 
         gameView.playerTrains.enumerated().forEach {
             let index = $0.offset
@@ -48,9 +46,11 @@ class GameViewController: UIViewController {
 
             dominoesView.collectionView.dropDelegate = self
             if let trainPublisher = viewModel.train(for: index) {
-                subscribe(to: trainPublisher, collectionView: dominoesView.collectionView)
-                    .store(in: &subscriptions)
+                subscribe(to: trainPublisher, dominoesView: dominoesView)
             }
+
+            dominoesView.trainButton.tag = index
+            dominoesView.trainButton.addTarget(self, action: #selector(trainButtonTapped), for: .touchUpInside)
         }
 
         gameView.playerDominoes.collectionView.dragDelegate = self
@@ -63,7 +63,7 @@ class GameViewController: UIViewController {
         gameView.pickupView.addGestureRecognizer(tapGestureRecognizer)
     }
 
-    private func subscribe(to publisher: AnyPublisher<[DominoView.State], Never>, collectionView: UICollectionView) -> AnyCancellable {
+    private func subscribe(to publisher: AnyPublisher<[DominoView.State], Never>, collectionView: UICollectionView) {
         collectionView.register(DominoCell.self, forCellWithReuseIdentifier: cellIdentifier)
 
         let controller = CollectionViewItemsController<[[DominoView.State]]>(cellIdentifier: cellIdentifier,
@@ -71,11 +71,28 @@ class GameViewController: UIViewController {
             cell.dominoView.state = state
         }
 
-        return publisher.bind(subscriber: collectionView.itemsSubscriber(controller))
+        publisher
+            .bind(subscriber: collectionView.itemsSubscriber(controller))
+            .store(in: &subscriptions)
+    }
+
+    private func subscribe(to publisher: AnyPublisher<TrainState, Never>, dominoesView: DominoesView) {
+        publisher.map { $0.isPlayable }
+            .sink { isPlayable in dominoesView.trainButton.isHidden = !isPlayable }
+            .store(in: &subscriptions)
+
+        let dominoesPublisher = publisher
+            .map { $0.dominoes }
+            .eraseToAnyPublisher()
+        subscribe(to: dominoesPublisher, collectionView: dominoesView.collectionView)
     }
 
     @objc private func pickupTapped(_ sender: UITapGestureRecognizer) {
-        viewModel.pickup { print($0) }
+        viewModel.pickUp { print($0) }
+    }
+
+    @objc private func trainButtonTapped(_ sender: UIButton) {
+        viewModel.pickUpTrain(at: sender.tag) { print($0) }
     }
 }
 

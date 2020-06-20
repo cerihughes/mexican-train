@@ -24,6 +24,10 @@ extension Game {
         gameData.player(id: localPlayerId)
     }
 
+    var localPlayerIndex: Int? {
+        playerDetails.firstIndex(where: { $0.id == localPlayerId })
+    }
+
     var otherPlayers: [PlayerData] {
         guard let localPlayer = localPlayer else {
             return gameData.players

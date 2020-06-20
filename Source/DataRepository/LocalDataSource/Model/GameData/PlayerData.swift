@@ -31,8 +31,8 @@ extension PlayerData {
                    train: train ?? self.train)
     }
 
-    func with(domino: UnplayedDomino) -> PlayerData {
-        with(dominoes: dominoes.with(domino))
+    func with(domino: UnplayedDomino, train: Train? = nil) -> PlayerData {
+        with(dominoes: dominoes.with(domino), train: train)
     }
 
     func without(domino: UnplayedDomino) -> PlayerData? {
