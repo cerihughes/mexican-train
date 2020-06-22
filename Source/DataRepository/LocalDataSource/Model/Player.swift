@@ -1,5 +1,5 @@
 //
-//  PlayerData.swift
+//  Player.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 10/05/2020.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PlayerData: Equatable, Codable {
+struct Player: Equatable, Codable {
     let id: String
     let dominoes: [UnplayedDomino]
     let train: Train
@@ -23,25 +23,25 @@ struct PlayerData: Equatable, Codable {
     }
 }
 
-extension PlayerData {
+extension Player {
     var pointsValue: Int {
         dominoes.map { $0.pointsValue }
             .reduce(0, +)
     }
 
-    func with(dominoes: [UnplayedDomino]? = nil, train: Train? = nil, currentTurn: [UnplayedDomino]? = nil, score: Int? = nil) -> PlayerData {
-        PlayerData(id: id,
+    func with(dominoes: [UnplayedDomino]? = nil, train: Train? = nil, currentTurn: [UnplayedDomino]? = nil, score: Int? = nil) -> Player {
+        Player(id: id,
                    dominoes: dominoes ?? self.dominoes,
                    train: train ?? self.train,
                    currentTurn: currentTurn ?? self.currentTurn,
                    score: score ?? self.score)
     }
 
-    func with(domino: UnplayedDomino, train: Train? = nil) -> PlayerData {
+    func with(domino: UnplayedDomino, train: Train? = nil) -> Player {
         with(dominoes: dominoes.with(domino), train: train)
     }
 
-    func without(domino: UnplayedDomino) -> PlayerData? {
+    func without(domino: UnplayedDomino) -> Player? {
         guard let dominoes = dominoes.without(domino) else {
             return nil
         }

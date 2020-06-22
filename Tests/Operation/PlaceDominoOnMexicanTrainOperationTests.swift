@@ -15,7 +15,7 @@ private let unplayed1 = UnplayedDomino(value1: .five, value2: .six)
 private let unplayed2 = UnplayedDomino(value1: .five, value2: .seven)
 
 class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
-    private var game: GameData!
+    private var game: Game!
     private var engine: FakeGameEngine!
     private var operation: PlaceDominoOnMexicanTrainOperation!
 
@@ -57,7 +57,7 @@ class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)
     }
 
-    private func createTestGameData() -> GameData {
+    private func createTestGameData() -> Game {
         let player1 = createPlayer(id: "P1", dominoes: [unplayed1, unplayed2], train: [playerPlayed])
         return createGame(stationValue: .twelve,
                           players: [player1],

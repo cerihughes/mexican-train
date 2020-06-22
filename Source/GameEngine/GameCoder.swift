@@ -11,11 +11,11 @@ class GameCoder {
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
-    func encode(_ game: GameData) -> Data? {
+    func encode(_ game: Game) -> Data? {
         try? encoder.encode(game)
     }
 
-    func decode(_ data: Data) -> GameData? {
-        try? decoder.decode(GameData.self, from: data)
+    func decode(_ data: Data) -> Game? {
+        try? decoder.decode(Game.self, from: data)
     }
 }

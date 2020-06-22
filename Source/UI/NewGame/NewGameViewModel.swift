@@ -38,7 +38,7 @@ class NewGameViewModelImpl: NewGameViewModel {
 }
 
 extension NewGameViewModelImpl: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameTurn) {
         print("Function: \(#function), line: \(#line)")
         if game.localPlayer != nil {
             delegate?.newGameViewModel(self, didResumeGame: game.totalPlayerCount)
