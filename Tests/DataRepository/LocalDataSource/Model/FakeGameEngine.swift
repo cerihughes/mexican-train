@@ -10,32 +10,32 @@ import Foundation
 @testable import MexicanTrain
 
 class FakeGameEngine {
-    private var gameData: GameData
+    private var gameData: Game
     private let totalPlayerCount: Int
     private let localPlayerId: String
 
     private var currentPlayerIndex = 0
 
-    init(gameData: GameData, totalPlayerCount: Int = 4, localPlayerId: String) {
+    init(gameData: Game, totalPlayerCount: Int = 4, localPlayerId: String) {
         self.gameData = gameData
         self.totalPlayerCount = totalPlayerCount
         self.localPlayerId = localPlayerId
     }
 
-    func createInitialState() -> Game {
+    func createInitialState() -> GameTurn {
         let playerDetails = generatedPlayerDetails
-        return Game(gameData: gameData,
+        return GameTurn(gameData: gameData,
                     totalPlayerCount: totalPlayerCount,
                     playerDetails: playerDetails,
                     localPlayerId: localPlayerId,
                     isCurrentPlayer: isCurrentPlayer)
     }
 
-    func incrementedState(gameData: GameData) -> Game {
+    func incrementedState(gameData: Game) -> GameTurn {
         currentPlayerIndex += 1
         currentPlayerIndex %= totalPlayerCount
 
-        return Game(gameData: gameData,
+        return GameTurn(gameData: gameData,
                     totalPlayerCount: totalPlayerCount,
                     playerDetails: generatedPlayerDetails,
                     localPlayerId: localPlayerId,

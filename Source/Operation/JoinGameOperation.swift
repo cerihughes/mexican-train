@@ -14,9 +14,9 @@ class JoinGameOperation {
         self.shuffler = shuffler
     }
 
-    func perform(game: Game, playerId: String) -> GameData {
+    func perform(game: GameTurn, playerId: String) -> Game {
         var pool = game.gameData.pool
-        let player = PlayerData(id: playerId,
+        let player = Player(id: playerId,
                                 dominoes: pool.removeRandomElements(15, using: shuffler),
                                 train: Train(isPlayable: false, dominoes: []),
                                 currentTurn: [],

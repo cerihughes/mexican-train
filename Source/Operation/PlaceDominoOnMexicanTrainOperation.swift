@@ -8,7 +8,7 @@
 import Foundation
 
 class PlaceDominoOnMexicanTrainOperation {
-    func perform(game: Game, domino: UnplayedDomino) -> GameData? {
+    func perform(game: GameTurn, domino: UnplayedDomino) -> Game? {
         if let gate = game.gameData.gateThatMustBeClosed {
             return performOpenGate(game: game, domino: domino, gate: gate)
         } else {
@@ -16,7 +16,7 @@ class PlaceDominoOnMexicanTrainOperation {
         }
     }
 
-    private func performOpenGate(game: Game, domino: UnplayedDomino, gate: DominoValue) -> GameData? {
+    private func performOpenGate(game: GameTurn, domino: UnplayedDomino, gate: DominoValue) -> Game? {
         guard let lastTrainDomino = game.gameData.mexicanTrain.dominoes.last,
             lastTrainDomino.isDouble(gate),
             let update = performNoOpenGate(game: game, domino: domino) else {
@@ -28,7 +28,7 @@ class PlaceDominoOnMexicanTrainOperation {
         return update.with(openGates: openGates)
     }
 
-    private func performNoOpenGate(game: Game, domino: UnplayedDomino) -> GameData? {
+    private func performNoOpenGate(game: GameTurn, domino: UnplayedDomino) -> Game? {
         guard let currentPlayer = game.currentLocalPlayer,
             currentPlayer.canPlayOn(train: game.gameData.mexicanTrain),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino) else {

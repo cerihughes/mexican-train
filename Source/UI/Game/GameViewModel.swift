@@ -53,7 +53,7 @@ class GameViewModelImpl: GameViewModel {
     private let operations: Operations
 
     private var localPlayerId: String
-    private var latestGame: Game = Game.createFakeGame()
+    private var latestGame: GameTurn = GameTurn.createFakeGame()
     private var subscription: AnyCancellable?
     private var timer: Timer?
 
@@ -153,7 +153,7 @@ class GameViewModelImpl: GameViewModel {
         gameEngine.update(gameData: update, completion: completion)
     }
 
-    private func play(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> GameData? {
+    private func play(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Game? {
         guard let localPlayerData = latestGame.gameData.player(id: localPlayerId),
             let unplayedDomino = localPlayerData.dominoes[safe: playerDominoIndex] else {
             return nil
@@ -163,7 +163,7 @@ class GameViewModelImpl: GameViewModel {
 }
 
 private extension DestinationTrain {
-    func update(operations: Operations, game: Game, unplayedDomino: UnplayedDomino) -> GameData? {
+    func update(operations: Operations, game: GameTurn, unplayedDomino: UnplayedDomino) -> Game? {
         switch self {
         case let .player(index):
             guard let targetPlayer = game.gameData.players[safe: index] else {
@@ -176,7 +176,7 @@ private extension DestinationTrain {
     }
 }
 
-private extension Publishers.Map where Upstream == Published<Game>.Publisher, Output == GameData {
+private extension Publishers.Map where Upstream == Published<GameTurn>.Publisher, Output == Game {
     func playerTrain(at index: Int) -> AnyPublisher<TrainState, Never> {
         return compactMap { $0.players[safe: index]?.train }
             .map { $0.toState() }

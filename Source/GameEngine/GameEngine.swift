@@ -12,7 +12,7 @@ typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
 typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameTurn)
     func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int)
 }
 
@@ -26,10 +26,10 @@ protocol GameEngine {
 
     var localPlayerId: String { get }
 
-    var gamePublisher: Published<Game>.Publisher { get }
+    var gamePublisher: Published<GameTurn>.Publisher { get }
     func refresh()
-    func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
-    func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock)
+    func update(gameData: Game, completion: @escaping GameEngineCompletionBlock)
+    func endTurn(gameData: Game, completion: @escaping GameEngineCompletionBlock)
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -40,8 +40,8 @@ class GameKitGameEngine: NSObject, GameEngine {
     private var currentMatch: GKTurnBasedMatch?
 
     @Published
-    private var currentGamePublished: Game = .createFakeGame()
-    var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
+    private var currentGamePublished: GameTurn = .createFakeGame()
+    var gamePublisher: Published<GameTurn>.Publisher { $currentGamePublished }
 
     override init() {
         super.init()
@@ -89,7 +89,7 @@ class GameKitGameEngine: NSObject, GameEngine {
         }
     }
 
-    func update(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
+    func update(gameData: Game, completion: @escaping GameEngineCompletionBlock) {
         guard let currentMatch = currentMatch, let data = coder.encode(gameData) else {
             completion(false)
             return
@@ -102,7 +102,7 @@ class GameKitGameEngine: NSObject, GameEngine {
         }
     }
 
-    func endTurn(gameData: GameData, completion: @escaping GameEngineCompletionBlock) {
+    func endTurn(gameData: Game, completion: @escaping GameEngineCompletionBlock) {
         // Wipe all player turn progress when a turn ends...
         let players = gameData.players.map { $0.with(currentTurn: []) }
         let updatedGameData = gameData.with(players: players)
@@ -170,7 +170,7 @@ private extension GKPlayer {
 private extension GKTurnBasedMatch {
     enum MatchState {
         case new(PlayerDetails, Int)
-        case inProgress(Game)
+        case inProgress(GameTurn)
     }
 
     func loadGame(coder: GameCoder, localPlayer: GKLocalPlayer, completion: @escaping (MatchState) -> Void) {
@@ -188,11 +188,11 @@ private extension GKTurnBasedMatch {
         }
     }
 
-    func createGame(gameData: GameData, localPlayer: GKLocalPlayer) -> Game {
+    func createGame(gameData: Game, localPlayer: GKLocalPlayer) -> GameTurn {
         let playerDetails = participants.compactMap { $0.player }
             .map { $0.createPlayerDetails() }
         let isCurrentPlayer = currentParticipant?.player == localPlayer
-        return Game(gameData: gameData,
+        return GameTurn(gameData: gameData,
                     totalPlayerCount: participants.count,
                     playerDetails: playerDetails,
                     localPlayerId: localPlayer.gamePlayerID,

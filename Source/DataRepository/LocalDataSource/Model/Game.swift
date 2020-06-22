@@ -2,93 +2,54 @@
 //  Game.swift
 //  MexicanTrain
 //
-//  Created by Ceri on 13/06/2020.
+//  Created by Ceri on 10/05/2020.
 //
 
 import Foundation
 
-struct Game {
-    let gameData: GameData
-    let totalPlayerCount: Int
-    let playerDetails: [PlayerDetails]
-    let localPlayerId: String
-    let isCurrentPlayer: Bool
-}
+struct Game: Equatable, Codable {
+    let stationValue: DominoValue
+    let mexicanTrain: Train
+    let players: [Player]
+    let pool: [UnplayedDomino]
+    let openGates: [DominoValue]
 
-extension Game {
-    var currentLocalPlayer: PlayerData? {
-        isCurrentPlayer ? localPlayer : nil
-    }
-
-    var localPlayer: PlayerData? {
-        gameData.player(id: localPlayerId)
-    }
-
-    var localPlayerIndex: Int? {
-        playerDetails.firstIndex(where: { $0.id == localPlayerId })
-    }
-
-    var otherPlayers: [PlayerData] {
-        guard let localPlayer = localPlayer else {
-            return gameData.players
-        }
-
-        return gameData.players.filter { $0.id != localPlayer.id }
-    }
-
-    var currentLocalPlayerHasValidPlay: Bool {
-        guard let currentPlayer = currentLocalPlayer else {
-            return false
-        }
-
-        if let openGate = gameData.gateThatMustBeClosed {
-            return currentLocalPlayerHasValidPlayFor(double: openGate)
-        }
-
-        let playerDominoes = currentPlayer.dominoes
-        if currentPlayer.train.isStarted {
-            return !playerDominoes
-                .filter { $0.isPlayable(with: playableTrainValues) }
-                .isEmpty
-        } else {
-            let stationValue = gameData.stationValue
-            return !playerDominoes
-                .filter { $0.has(value: stationValue) }
-                .isEmpty
-        }
-    }
-
-    private func currentLocalPlayerHasValidPlayFor(double: DominoValue) -> Bool {
-        guard let playerDominoes = currentLocalPlayer?.dominoes else {
-            return false
-        }
-
-        return !playerDominoes
-            .filter { $0.has(value: double) }
-            .isEmpty
+    private enum CodingKeys: String, CodingKey {
+        case stationValue = "s"
+        case mexicanTrain = "mt"
+        case players = "ps"
+        case pool = "p"
+        case openGates = "g"
     }
 }
 
 extension Game {
-    static func createFakeGame() -> Game {
-        let initialGameData = GameData(stationValue: .twelve, mexicanTrain: Train(isPlayable: true, dominoes: []), players: [], pool: [], openGates: [])
-        return Game(gameData: initialGameData, totalPlayerCount: 0, playerDetails: [], localPlayerId: "", isCurrentPlayer: false)
-    }
-}
-
-private extension Game {
-    var playableTrainValues: [DominoValue] {
-        return playableTrains
-            .compactMap { $0.dominoes.last?.outerValue }
-    }
-
-    var playableTrains: [Train] {
-        guard let currentPlayer = currentLocalPlayer else {
-            return []
+    var gateThatMustBeClosed: DominoValue? {
+        if hasAnyPlayerPlayedDoubleInThisTurn {
+            return nil
         }
+        return openGates.first
+    }
 
-        return [gameData.mexicanTrain, currentPlayer.train] +
-            otherPlayers.map { $0.train }
-            .filter { $0.isPlayable }
+    var hasAnyPlayerPlayedDoubleInThisTurn: Bool {
+        !players.allSatisfy { !$0.hasPlayedDoubleInThisTurn }
+    }
+
+    func player(id: String) -> Player? {
+        players.filter { $0.id == id }
+            .first
+    }
+
+    func with(mexicanTrain: Train? = nil, players: [Player]? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> Game {
+        Game(stationValue: stationValue,
+                 mexicanTrain: mexicanTrain ?? self.mexicanTrain,
+                 players: players ?? self.players,
+                 pool: pool ?? self.pool,
+                 openGates: openGates ?? self.openGates)
+    }
+
+    func with(updatedPlayer: Player, mexicanTrain: Train? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> Game {
+        let updatedPlayers = players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 }
+        return with(mexicanTrain: mexicanTrain, players: updatedPlayers, pool: pool, openGates: openGates)
     }
 }
