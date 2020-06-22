@@ -10,7 +10,7 @@ import UIKit
 
 class GameViewControllerProvider: TypedViewControllerProvider {
     override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
-        guard case let .gameTest(totalPlayerCount) = token else {
+        guard case let .playGame(totalPlayerCount) = token else {
             return nil
         }
 

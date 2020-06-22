@@ -49,13 +49,13 @@ extension NewGameViewController: NewGameViewModelDelegate {
     func newGameViewModel(_ viewModel: NewGameViewModel, didResumeGame totalPlayerCount: Int) {
         print("Function: \(#function), line: \(#line)")
         dismiss(animated: true)
-        context?.navigateForward(token: MadogToken.gameTest(totalPlayerCount), animated: true)
+        context?.navigateForward(token: MadogToken.playGame(totalPlayerCount), animated: true)
     }
 
     func newGameViewModel(_ viewModel: NewGameViewModel, didStartGame totalPlayerCount: Int) {
         print("Function: \(#function), line: \(#line)")
         dismiss(animated: true)
-        context?.navigateForward(token: MadogToken.gameTest(totalPlayerCount), animated: true)
+        context?.navigateForward(token: MadogToken.playGame(totalPlayerCount), animated: true)
     }
 
     func newGameViewModelDidFailToStartGame(_ viewModel: NewGameViewModel) {
