@@ -14,15 +14,15 @@ class PickUpOperation {
         self.shuffler = shuffler
     }
 
-    func perform(game: GameTurn) -> Game? {
-        var pool = game.gameData.pool
-        guard game.currentLocalPlayerHasValidPlay == false,
-            let currentPlayer = game.currentLocalPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
+    func perform(currentPlayer: Player, game: Game) -> Game? {
+        var pool = game.pool
+        guard game.playerHasValidPlay(player: currentPlayer) == false,
+            let domino = pool.removeRandomElement(using: shuffler) else {
             return nil
         }
 
         let updatedTrain = currentPlayer.train.with(isPlayable: true)
         let updatedPlayer = currentPlayer.with(domino: domino, train: updatedTrain)
-        return game.gameData.with(updatedPlayer: updatedPlayer, pool: pool)
+        return game.with(updatedPlayer: updatedPlayer, pool: pool)
     }
 }

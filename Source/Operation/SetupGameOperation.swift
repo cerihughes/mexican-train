@@ -18,14 +18,14 @@ class SetupGameOperation {
         let mexicanTrain = Train(isPlayable: true, dominoes: [])
         var pool = UnplayedDomino.allDominoes(except: stationValue)
         let player = Player(id: playerId,
-                                dominoes: pool.removeRandomElements(15, using: shuffler),
-                                train: Train(isPlayable: false, dominoes: []),
-                                currentTurn: [],
-                                score: 0)
+                            dominoes: pool.removeRandomElements(15, using: shuffler),
+                            train: Train(isPlayable: false, dominoes: []),
+                            currentTurn: [],
+                            score: 0)
         return Game(stationValue: stationValue,
-                        mexicanTrain: mexicanTrain,
-                        players: [player],
-                        pool: pool,
-                        openGates: [])
+                    mexicanTrain: mexicanTrain,
+                    players: [player],
+                    pool: pool,
+                    openGates: [])
     }
 }

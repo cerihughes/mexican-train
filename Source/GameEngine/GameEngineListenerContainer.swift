@@ -24,9 +24,9 @@ class GameEngineListenerContainer {
 }
 
 extension GameEngineListenerContainer: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameTurn) {
+    func gameEngine(_ gameEngine: GameEngine, didReceive state: GameState) {
         listeners.forEach {
-            $0.gameEngine(gameEngine, didReceive: game)
+            $0.gameEngine(gameEngine, didReceive: state)
         }
     }
 

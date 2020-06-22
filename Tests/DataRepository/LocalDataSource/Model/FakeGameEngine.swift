@@ -25,10 +25,10 @@ class FakeGameEngine {
     func createInitialState() -> GameTurn {
         let playerDetails = generatedPlayerDetails
         return GameTurn(gameData: gameData,
-                    totalPlayerCount: totalPlayerCount,
-                    playerDetails: playerDetails,
-                    localPlayerId: localPlayerId,
-                    isCurrentPlayer: isCurrentPlayer)
+                        totalPlayerCount: totalPlayerCount,
+                        playerDetails: playerDetails,
+                        localPlayerId: localPlayerId,
+                        isCurrentPlayer: isCurrentPlayer)
     }
 
     func incrementedState(gameData: Game) -> GameTurn {
@@ -36,10 +36,10 @@ class FakeGameEngine {
         currentPlayerIndex %= totalPlayerCount
 
         return GameTurn(gameData: gameData,
-                    totalPlayerCount: totalPlayerCount,
-                    playerDetails: generatedPlayerDetails,
-                    localPlayerId: localPlayerId,
-                    isCurrentPlayer: isCurrentPlayer)
+                        totalPlayerCount: totalPlayerCount,
+                        playerDetails: generatedPlayerDetails,
+                        localPlayerId: localPlayerId,
+                        isCurrentPlayer: isCurrentPlayer)
     }
 
     private var isCurrentPlayer: Bool {

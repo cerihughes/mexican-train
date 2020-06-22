@@ -15,10 +15,10 @@ func createGame(stationValue: DominoValue = .zero,
                 pool: [UnplayedDomino] = []) -> Game {
     let mexicanTrain = Train(isPlayable: true, dominoes: mexicanTrain)
     return Game(stationValue: stationValue,
-                    mexicanTrain: mexicanTrain,
-                    players: players,
-                    pool: pool,
-                    openGates: [])
+                mexicanTrain: mexicanTrain,
+                players: players,
+                pool: pool,
+                openGates: [])
 }
 
 func createGame(stationValue: DominoValue = .zero,

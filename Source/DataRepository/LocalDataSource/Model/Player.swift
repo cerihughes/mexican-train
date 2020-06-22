@@ -31,10 +31,10 @@ extension Player {
 
     func with(dominoes: [UnplayedDomino]? = nil, train: Train? = nil, currentTurn: [UnplayedDomino]? = nil, score: Int? = nil) -> Player {
         Player(id: id,
-                   dominoes: dominoes ?? self.dominoes,
-                   train: train ?? self.train,
-                   currentTurn: currentTurn ?? self.currentTurn,
-                   score: score ?? self.score)
+               dominoes: dominoes ?? self.dominoes,
+               train: train ?? self.train,
+               currentTurn: currentTurn ?? self.currentTurn,
+               score: score ?? self.score)
     }
 
     func with(domino: UnplayedDomino, train: Train? = nil) -> Player {

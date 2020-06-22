@@ -38,12 +38,12 @@ class NewGameViewModelImpl: NewGameViewModel {
 }
 
 extension NewGameViewModelImpl: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameTurn) {
+    func gameEngine(_ gameEngine: GameEngine, didReceive state: GameState) {
         print("Function: \(#function), line: \(#line)")
-        if game.localPlayer != nil {
-            delegate?.newGameViewModel(self, didResumeGame: game.totalPlayerCount)
+        if state.localPlayer != nil {
+            delegate?.newGameViewModel(self, didResumeGame: state.turn.totalPlayerCount)
         } else {
-            let gameData = operations.joinGame.perform(game: game, playerId: gameEngine.localPlayerId)
+            let gameData = operations.joinGame.perform(game: state.game, playerId: gameEngine.localPlayerId)
             gameEngine.update(gameData: gameData) { print($0) }
         }
     }
