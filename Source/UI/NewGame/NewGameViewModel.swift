@@ -38,26 +38,26 @@ class NewGameViewModelImpl: NewGameViewModel {
 }
 
 extension NewGameViewModelImpl: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive state: GameState) {
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
         print("Function: \(#function), line: \(#line)")
-        if state.localPlayer != nil {
-            delegate?.newGameViewModel(self, didResumeGame: state.turn.totalPlayerCount)
-        } else {
-            let gameData = operations.joinGame.perform(game: state.game, playerId: gameEngine.localPlayerId)
-            gameEngine.update(gameData: gameData) { print($0) }
+        guard let engineState = gameEngine.engineState else { return }
+        if engineState.localPlayer(game: game) != nil {
+            delegate?.newGameViewModel(self, didResumeGame: engineState.totalPlayerCount)
+        } else if let update = operations.joinGame.perform(game: game) {
+            gameEngine.update(game: update) { print($0) }
         }
     }
 
     func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int) {
         print("Function: \(#function), line: \(#line)")
-        print(player)
-        let gameData = operations.setup.perform(playerId: player.id)
-        gameEngine.update(gameData: gameData) { [weak self] success in
-            guard let self = self else { return }
-            if success {
-                self.delegate?.newGameViewModel(self, didStartGame: totalPlayerCount)
-            } else {
-                self.delegate?.newGameViewModelDidFailToStartGame(self)
+        if let update = operations.setup.perform() {
+            gameEngine.update(game: update) { [weak self] success in
+                guard let self = self else { return }
+                if success {
+                    self.delegate?.newGameViewModel(self, didStartGame: totalPlayerCount)
+                } else {
+                    self.delegate?.newGameViewModelDidFailToStartGame(self)
+                }
             }
         }
     }

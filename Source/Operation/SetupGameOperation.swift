@@ -7,17 +7,19 @@
 
 import UIKit
 
-class SetupGameOperation {
+class SetupGameOperation: Operation {
     private let shuffler: Shuffler
 
-    init(shuffler: Shuffler) {
+    init(gameEngine: GameEngine, shuffler: Shuffler) {
         self.shuffler = shuffler
+        super.init(gameEngine: gameEngine)
     }
 
-    func perform(stationValue: DominoValue = .twelve, playerId: String) -> Game {
+    func perform(stationValue: DominoValue = .twelve) -> Game? {
+        guard let localPlayerId = gameEngine.engineState?.localPlayerId else { return nil }
         let mexicanTrain = Train(isPlayable: true, dominoes: [])
         var pool = UnplayedDomino.allDominoes(except: stationValue)
-        let player = Player(id: playerId,
+        let player = Player(id: localPlayerId,
                             dominoes: pool.removeRandomElements(15, using: shuffler),
                             train: Train(isPlayable: false, dominoes: []),
                             currentTurn: [],

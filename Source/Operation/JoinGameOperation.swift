@@ -7,16 +7,18 @@
 
 import UIKit
 
-class JoinGameOperation {
+class JoinGameOperation: Operation {
     private let shuffler: Shuffler
 
-    init(shuffler: Shuffler) {
+    init(gameEngine: GameEngine, shuffler: Shuffler) {
         self.shuffler = shuffler
+        super.init(gameEngine: gameEngine)
     }
 
-    func perform(game: Game, playerId: String) -> Game {
+    func perform(game: Game) -> Game? {
+        guard let localPlayerId = gameEngine.engineState?.localPlayerId else { return nil }
         var pool = game.pool
-        let player = Player(id: playerId,
+        let player = Player(id: localPlayerId,
                             dominoes: pool.removeRandomElements(15, using: shuffler),
                             train: Train(isPlayable: false, dominoes: []),
                             currentTurn: [],

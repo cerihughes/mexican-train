@@ -52,8 +52,7 @@ class GameViewModelImpl: GameViewModel {
     private let gameEngine: GameEngine
     private let operations: Operations
 
-    private var localPlayerId: String
-    private var latestGame: GameState = GameState.createFakeGame()
+    private var latestGame = Game.createInitialGame()
     private var subscription: AnyCancellable?
     private var timer: Timer?
 
@@ -71,39 +70,32 @@ class GameViewModelImpl: GameViewModel {
         self.operations = operations
         self.totalPlayerCount = totalPlayerCount
 
-        localPlayerId = gameEngine.localPlayerId
-
-        let gameData = gameEngine.gamePublisher
-            .map { $0.game }
-        let player = gameEngine.gamePublisher
-            .compactMap { $0.localPlayer }
-
         currentPlayerTurn = gameEngine.gamePublisher
-            .map { $0.turn.isCurrentPlayer }
+            .map { gameEngine.engineState?.currentLocalPlayer(game: $0) != nil }
             .removeDuplicates()
             .eraseToAnyPublisher()
 
-        playerDominoes = player
+        playerDominoes = gameEngine.localPlayerPublisher
             .map { $0.dominoes }
             .arrayMap { $0.faceUpState }
             .removeDuplicates()
             .eraseToAnyPublisher()
 
-        mexicanTrain = gameData
+        mexicanTrain = gameEngine.gamePublisher
             .map { $0.mexicanTrain.toState() }
             .removeDuplicates()
             .eraseToAnyPublisher()
 
-        player1Train = gameData
+        player1Train = gameEngine.gamePublisher
             .playerTrain(at: 0)
 
-        player2Train = gameData
+        player2Train = gameEngine.gamePublisher
             .playerTrain(at: 1)
 
-        player3Train = gameData
+        player3Train = gameEngine.gamePublisher
             .playerTrain(at: 2)
 
-        player4Train = gameData
+        player4Train = gameEngine.gamePublisher
             .playerTrain(at: 3)
 
         subscription = gameEngine.gamePublisher
@@ -119,7 +111,7 @@ class GameViewModelImpl: GameViewModel {
     }
 
     func playDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain, completion: @escaping (Bool) -> Void) {
-        let doubleCount = latestGame.game.openGates.count
+        let doubleCount = latestGame.openGates.count
         guard let update = play(at: playerDominoIndex, on: destinationTrain) else {
             completion(false)
             return
@@ -127,58 +119,56 @@ class GameViewModelImpl: GameViewModel {
 
         let updateDoubleCount = update.openGates.count
         if updateDoubleCount > doubleCount {
-            gameEngine.update(gameData: update, completion: completion)
+            gameEngine.update(game: update, completion: completion)
         } else {
-            gameEngine.endTurn(gameData: update, completion: completion)
+            gameEngine.endTurn(game: update, completion: completion)
         }
     }
 
     func pickUp(completion: @escaping (Bool) -> Void) {
-        guard let currentLocalPlayer = latestGame.currentLocalPlayer,
-            let update = operations.pickUp.perform(currentPlayer: currentLocalPlayer, game: latestGame.game) else {
+        guard let update = operations.pickUp.perform(game: latestGame) else {
             completion(false)
             return
         }
 
-        gameEngine.endTurn(gameData: update, completion: completion)
+        gameEngine.endTurn(game: update, completion: completion)
     }
 
     func pickUpTrain(at index: Int, completion: @escaping (Bool) -> Void) {
-        guard let currentLocalPlayer = latestGame.currentLocalPlayer,
-            index == latestGame.turn.localPlayerIndex else {
+        guard index == gameEngine.engineState?.localPlayerIndex,
+            let update = operations.changeTrain.perform(game: latestGame) else {
             completion(false)
             return
         }
 
-        let update = operations.changeTrain.perform(currentPlayer: currentLocalPlayer, game: latestGame.game)
-        gameEngine.update(gameData: update, completion: completion)
+        gameEngine.update(game: update, completion: completion)
     }
 
     private func play(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Game? {
-        guard let currentLocalPlayer = latestGame.currentLocalPlayer,
-            let localPlayerData = latestGame.game.player(id: localPlayerId),
+        guard let localPlayerId = gameEngine.engineState?.localPlayerId,
+            let localPlayerData = latestGame.player(id: localPlayerId),
             let unplayedDomino = localPlayerData.dominoes[safe: playerDominoIndex] else {
             return nil
         }
-        return destinationTrain.update(operations: operations, currentPlayer: currentLocalPlayer, game: latestGame.game, unplayedDomino: unplayedDomino)
+        return destinationTrain.update(operations: operations, game: latestGame, unplayedDomino: unplayedDomino)
     }
 }
 
 private extension DestinationTrain {
-    func update(operations: Operations, currentPlayer: Player, game: Game, unplayedDomino: UnplayedDomino) -> Game? {
+    func update(operations: Operations, game: Game, unplayedDomino: UnplayedDomino) -> Game? {
         switch self {
         case let .player(index):
             guard let targetPlayer = game.players[safe: index] else {
                 return nil
             }
-            return operations.playOnPlayer.perform(currentPlayer: currentPlayer, game: game, domino: unplayedDomino, playerId: targetPlayer.id)
+            return operations.playOnPlayer.perform(game: game, domino: unplayedDomino, playerId: targetPlayer.id)
         case .mexican:
-            return operations.playOnMexicanTrain.perform(currentPlayer: currentPlayer, game: game, domino: unplayedDomino)
+            return operations.playOnMexicanTrain.perform(game: game, domino: unplayedDomino)
         }
     }
 }
 
-private extension Publishers.Map where Upstream == Published<GameState>.Publisher, Output == Game {
+private extension Published.Publisher where Value == Game {
     func playerTrain(at index: Int) -> AnyPublisher<TrainState, Never> {
         return compactMap { $0.players[safe: index]?.train }
             .map { $0.toState() }
@@ -233,49 +223,5 @@ private extension DominoValue {
         case .eleven: return .eleven
         case .twelve: return .twelve
         }
-    }
-}
-
-extension Game {
-    func playerHasValidPlay(player: Player) -> Bool {
-        if let openGate = gateThatMustBeClosed {
-            return player.hasMatchingDominoFor(value: openGate)
-        }
-
-        let playerDominoes = player.dominoes
-        if player.train.isStarted {
-            return !playerDominoes
-                .filter { $0.isPlayable(with: playableTrainValues(player: player)) }
-                .isEmpty
-        } else {
-            return player.hasMatchingDominoFor(value: stationValue)
-        }
-    }
-}
-
-extension GameState {
-    var currentLocalPlayer: Player? {
-        turn.isCurrentPlayer ? localPlayer : nil
-    }
-
-    var localPlayer: Player? {
-        game.player(id: turn.localPlayerId)
-    }
-}
-
-private extension Game {
-    func playableTrainValues(player: Player) -> [DominoValue] {
-        playableTrains(player: player)
-            .compactMap { $0.dominoes.last?.outerValue }
-    }
-
-    func playableTrains(player: Player) -> [Train] {
-        return [mexicanTrain, player.train] +
-            otherPlayers(player: player).map { $0.train }
-            .filter { $0.isPlayable }
-    }
-
-    private func otherPlayers(player: Player) -> [Player] {
-        players.removing(player)
     }
 }

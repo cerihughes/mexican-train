@@ -7,8 +7,9 @@
 
 import Foundation
 
-class PlaceDominoOnPlayerOperation {
-    func perform(currentPlayer: Player, game: Game, domino: UnplayedDomino, playerId: String) -> Game? {
+class PlaceDominoOnPlayerOperation: Operation {
+    func perform(game: Game, domino: UnplayedDomino, playerId: String) -> Game? {
+        guard let currentPlayer = currentLocalPlayer(game: game) else { return nil }
         if let gate = game.gateThatMustBeClosed {
             return performOpenGate(currentPlayer: currentPlayer, game: game, domino: domino, playerId: playerId, gate: gate)
         } else {
