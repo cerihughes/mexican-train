@@ -16,6 +16,14 @@ struct Game {
 }
 
 extension Game {
+    init() {
+        gameData = GameData()
+        totalPlayerCount = 0
+        playerDetails = []
+        localPlayerId = ""
+        isCurrentPlayer = false
+    }
+
     var currentLocalPlayer: PlayerData? {
         isCurrentPlayer ? localPlayer : nil
     }
@@ -66,13 +74,6 @@ extension Game {
         return !playerDominoes
             .filter { $0.has(value: double) }
             .isEmpty
-    }
-}
-
-extension Game {
-    static func createFakeGame() -> Game {
-        let initialGameData = GameData(stationValue: .twelve, mexicanTrain: Train(isPlayable: true, dominoes: []), players: [], pool: [], openGates: [])
-        return Game(gameData: initialGameData, totalPlayerCount: 0, playerDetails: [], localPlayerId: "", isCurrentPlayer: false)
     }
 }
 

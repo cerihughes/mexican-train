@@ -1,5 +1,5 @@
 //
-//  JoinGameOperationTests.swift
+//  StartLevelOperationTests.swift
 //  Tests
 //
 //  Created by Ceri on 13/06/2020.
@@ -9,42 +9,43 @@ import XCTest
 
 @testable import MexicanTrain
 
-class JoinGameOperationTests: XCTestCase {
+class StartLevelOperationTests: XCTestCase {
     private var shuffler: MockShuffler!
-    private var setupOperation: SetupGameOperation!
     private var joinOperation: JoinGameOperation!
+    private var startOperation: StartLevelOperation!
 
     override func setUp() {
         super.setUp()
         shuffler = MockShuffler()
-        setupOperation = SetupGameOperation(shuffler: shuffler)
-        joinOperation = JoinGameOperation(shuffler: shuffler)
+        joinOperation = JoinGameOperation()
+        startOperation = StartLevelOperation(shuffler: shuffler)
     }
 
     override func tearDown() {
+        startOperation = nil
         joinOperation = nil
-        setupOperation = nil
         shuffler = nil
         super.tearDown()
     }
 
     func testDominoDistribution() {
-        let game1 = setupOperation.perform(playerId: "P1")
+        let game = Game()
+        let game1 = joinOperation.perform(game: game, playerId: "P1")
         let engine1 = FakeGameEngine(gameData: game1, localPlayerId: "P1")
         let state1 = engine1.createInitialState()
         XCTAssertEqual(state1.isCurrentPlayer, true)
 
-        let game2 = joinOperation.perform(game: state1, playerId: "P2")
+        let game2 = startOperation.perform(game: state1, playerId: "P2")
         let engine2 = FakeGameEngine(gameData: game2, localPlayerId: "P2")
         let state2 = engine2.createInitialState()
         XCTAssertEqual(state2.isCurrentPlayer, true)
 
-        let game3 = joinOperation.perform(game: state2, playerId: "P3")
+        let game3 = startOperation.perform(game: state2, playerId: "P3")
         let engine3 = FakeGameEngine(gameData: game3, localPlayerId: "P3")
         let state3 = engine3.createInitialState()
         XCTAssertEqual(state3.isCurrentPlayer, true)
 
-        let game4 = joinOperation.perform(game: state3, playerId: "P4")
+        let game4 = startOperation.perform(game: state3, playerId: "P4")
         let engine4 = FakeGameEngine(gameData: game4, localPlayerId: "P4")
         let state4 = engine4.createInitialState()
         XCTAssertEqual(state4.isCurrentPlayer, true)
@@ -68,7 +69,7 @@ class JoinGameOperationTests: XCTestCase {
         var state = engine.createInitialState()
         XCTAssertEqual(state.isCurrentPlayer, true)
 
-        let game2 = joinOperation.perform(game: state, playerId: "P2")
+        let game2 = startOperation.perform(game: state, playerId: "P2")
         state = engine.incrementedState(gameData: game2)
         XCTAssertEqual(state.isCurrentPlayer, false)
 

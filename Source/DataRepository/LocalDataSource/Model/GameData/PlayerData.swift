@@ -24,6 +24,14 @@ struct PlayerData: Equatable, Codable {
 }
 
 extension PlayerData {
+    init(id: String) {
+        self.id = id
+        dominoes = []
+        train = Train(isPlayable: false, dominoes: [])
+        currentTurn = []
+        score = 0
+    }
+
     var pointsValue: Int {
         dominoes.map { $0.pointsValue }
             .reduce(0, +)

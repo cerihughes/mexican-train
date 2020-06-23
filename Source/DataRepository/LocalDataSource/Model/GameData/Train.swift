@@ -18,6 +18,11 @@ struct Train: Equatable, Codable {
 }
 
 extension Train {
+    init(isPlayable: Bool) {
+        self.isPlayable = isPlayable
+        dominoes = []
+    }
+
     var isStarted: Bool {
         !dominoes.isEmpty
     }

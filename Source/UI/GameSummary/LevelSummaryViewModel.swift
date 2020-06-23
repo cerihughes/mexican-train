@@ -10,9 +10,9 @@ import Foundation
 protocol LevelSummaryViewModel {}
 
 class LevelSummaryViewModelImpl: LevelSummaryViewModel {
-    private let level: DominoValue
+    private let stationValue: DominoValue
 
-    init(level: DominoValue) {
-        self.level = level
+    init(stationValue: DominoValue) {
+        self.stationValue = stationValue
     }
 }

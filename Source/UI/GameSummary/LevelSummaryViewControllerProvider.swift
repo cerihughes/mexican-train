@@ -10,11 +10,11 @@ import UIKit
 
 class LevelSummaryViewControllerProvider: TypedViewControllerProvider {
     override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
-        guard case let .levelSummary(level) = token else {
+        guard case let .levelSummary(stationValue) = token else {
             return nil
         }
 
-        let viewModel = LevelSummaryViewModelImpl(level: level)
+        let viewModel = LevelSummaryViewModelImpl(stationValue: stationValue)
         return LevelSummaryViewController(viewModel: viewModel, context: context)
     }
 }

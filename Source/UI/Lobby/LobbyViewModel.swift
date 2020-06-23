@@ -9,4 +9,10 @@ import Foundation
 
 protocol LobbyViewModel {}
 
-class LobbyViewModelImpl: LobbyViewModel {}
+class LobbyViewModelImpl: LobbyViewModel {
+    private let stationValue: DominoValue
+
+    init(stationValue: DominoValue) {
+        self.stationValue = stationValue
+    }
+}

@@ -10,7 +10,7 @@ import Foundation
 enum MadogToken: Equatable {
     case welcome
     case newGame
-    case lobby
+    case lobby(DominoValue)
     case playGame(Int)
     case levelSummary(DominoValue)
 }

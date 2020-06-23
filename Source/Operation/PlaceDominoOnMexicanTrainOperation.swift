@@ -45,6 +45,6 @@ class PlaceDominoOnMexicanTrainOperation {
         if domino.isDouble {
             openGates.append(domino.value1)
         }
-        return game.gameData.with(updatedPlayer: updatedCurrentPlayer, mexicanTrain: updatedTrain, openGates: openGates)
+        return game.gameData.with(mexicanTrain: updatedTrain, updatedPlayer: updatedCurrentPlayer, openGates: openGates)
     }
 }

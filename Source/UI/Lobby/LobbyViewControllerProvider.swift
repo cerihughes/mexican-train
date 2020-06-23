@@ -10,11 +10,11 @@ import UIKit
 
 class LobbyViewControllerProvider: TypedViewControllerProvider {
     override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
-        guard token == .lobby else {
+        guard case let .lobby(stationValue) = token else {
             return nil
         }
 
-        let viewModel = LobbyViewModelImpl()
+        let viewModel = LobbyViewModelImpl(stationValue: stationValue)
         return LobbyViewController(viewModel: viewModel, context: context)
     }
 }

@@ -9,9 +9,7 @@ import GameKit
 import UIKit
 
 protocol NewGameViewModelDelegate: AnyObject {
-    func newGameViewModel(_ viewModel: NewGameViewModel, didResumeGame totalPlayerCount: Int)
-    func newGameViewModel(_ viewModel: NewGameViewModel, didStartGame totalPlayerCount: Int)
-    func newGameViewModelDidFailToStartGame(_ viewModel: NewGameViewModel)
+    func newGameViewModel(_ viewModel: NewGameViewModel, navigateTo token: MadogToken)
 }
 
 protocol NewGameViewModel {
@@ -40,25 +38,50 @@ class NewGameViewModelImpl: NewGameViewModel {
 extension NewGameViewModelImpl: GameEngineListener {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
         print("Function: \(#function), line: \(#line)")
-        if game.localPlayer != nil {
-            delegate?.newGameViewModel(self, didResumeGame: game.totalPlayerCount)
+        let gameData = game.gameData
+        let token: MadogToken
+        if gameData.isFinished {
+            token = .levelSummary(.zero)
+        } else if gameData.isLevelFinished {
+            token = .levelSummary(gameData.stationValue)
+        } else if gameData.isPlayingLevel {
+            token = .playGame(game.totalPlayerCount)
         } else {
-            let gameData = operations.joinGame.perform(game: game, playerId: gameEngine.localPlayerId)
-            gameEngine.update(gameData: gameData) { print($0) }
+            token = .welcome
         }
+        delegate?.newGameViewModel(self, navigateTo: token)
+//        if game.localPlayer != nil {
+//            delegate?.newGameViewModel(self, didResumeGame: game.totalPlayerCount)
+//        } else {
+//            let gameData = operations.joinGame.perform(game: game, playerId: gameEngine.localPlayerId)
+//            gameEngine.update(gameData: gameData) { print($0) }
+//        }
     }
 
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int) {
-        print("Function: \(#function), line: \(#line)")
-        print(player)
-        let gameData = operations.setup.perform(playerId: player.id)
-        gameEngine.update(gameData: gameData) { [weak self] success in
-            guard let self = self else { return }
-            if success {
-                self.delegate?.newGameViewModel(self, didStartGame: totalPlayerCount)
-            } else {
-                self.delegate?.newGameViewModelDidFailToStartGame(self)
-            }
-        }
+//    func gameEngine(_ gameEngine: GameEngine, didStartGameWith totalPlayerCount: Int) {
+//        print("Function: \(#function), line: \(#line)")
+//        let gameData = operations.setup.perform(playerId: player.id)
+//        gameEngine.update(gameData: gameData) { [weak self] success in
+//            guard let self = self else { return }
+//            if success {
+//                self.delegate?.newGameViewModel(self, didStartGame: totalPlayerCount)
+//            } else {
+//                self.delegate?.newGameViewModelDidFailToStartGame(self)
+//            }
+//        }
+//    }
+}
+
+private extension GameData {
+    var isFinished: Bool {
+        false // TODO : <- This
+    }
+
+    var isLevelFinished: Bool {
+        true
+    }
+
+    var isPlayingLevel: Bool {
+        true
     }
 }

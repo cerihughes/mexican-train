@@ -24,6 +24,14 @@ struct GameData: Equatable, Codable {
 }
 
 extension GameData {
+    init() {
+        stationValue = .twelve
+        mexicanTrain = Train(isPlayable: true)
+        players = []
+        pool = []
+        openGates = []
+    }
+    
     var gateThatMustBeClosed: DominoValue? {
         if hasAnyPlayerPlayedDoubleInThisTurn {
             return nil
@@ -40,16 +48,28 @@ extension GameData {
             .first
     }
 
-    func with(mexicanTrain: Train? = nil, players: [PlayerData]? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> GameData {
-        GameData(stationValue: stationValue,
+    func with(stationValue: DominoValue? = nil,
+              mexicanTrain: Train? = nil,
+              players: [PlayerData]? = nil,
+              pool: [UnplayedDomino]? = nil,
+              openGates: [DominoValue]? = nil) -> GameData {
+        GameData(stationValue: stationValue ?? self.stationValue,
                  mexicanTrain: mexicanTrain ?? self.mexicanTrain,
                  players: players ?? self.players,
                  pool: pool ?? self.pool,
                  openGates: openGates ?? self.openGates)
     }
 
-    func with(updatedPlayer: PlayerData, mexicanTrain: Train? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> GameData {
+    func with(stationValue: DominoValue? = nil,
+              mexicanTrain: Train? = nil,
+              updatedPlayer: PlayerData,
+              pool: [UnplayedDomino]? = nil,
+              openGates: [DominoValue]? = nil) -> GameData {
         let updatedPlayers = players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 }
-        return with(mexicanTrain: mexicanTrain, players: updatedPlayers, pool: pool, openGates: openGates)
+        return with(stationValue: stationValue,
+                    mexicanTrain: mexicanTrain,
+                    players: updatedPlayers,
+                    pool: pool,
+                    openGates: openGates)
     }
 }

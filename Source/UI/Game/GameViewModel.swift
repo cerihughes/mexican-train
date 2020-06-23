@@ -53,7 +53,7 @@ class GameViewModelImpl: GameViewModel {
     private let operations: Operations
 
     private var localPlayerId: String
-    private var latestGame: Game = Game.createFakeGame()
+    private var latestGame = Game()
     private var subscription: AnyCancellable?
     private var timer: Timer?
 
