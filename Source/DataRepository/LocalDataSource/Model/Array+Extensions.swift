@@ -11,6 +11,15 @@ public extension Array {
     subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
+
+    @inlinable func anySatisfies(_ predicate: (Element) throws -> Bool) rethrows -> Bool {
+        for item in self {
+            if try predicate(item) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 public extension Array where Element: Equatable {

@@ -13,7 +13,6 @@ typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int)
 }
 
 protocol GameEngine: AnyObject {
@@ -78,10 +77,8 @@ class GameKitGameEngine: NSObject, GameEngine {
             guard let self = self, let match = match else { return }
 
             self.currentMatch = match
-
-            match.loadGame(coder: self.coder, localPlayer: self.localPlayer) { [weak self] matchState in
-                guard let self = self, case let .inProgress(game) = matchState else { return }
-                self.currentGamePublished = game
+            match.loadGame(coder: self.coder) { [weak self] game in
+                self?.currentGamePublished = game
             }
         }
     }
@@ -135,18 +132,10 @@ extension GameKitGameEngine: GKLocalPlayerListener {
     func player(_ player: GKPlayer, receivedTurnEventFor match: GKTurnBasedMatch, didBecomeActive: Bool) {
         print("Function: \(#function), line: \(#line)")
         currentMatch = match
-        match.loadGame(coder: coder, localPlayer: localPlayer) { [weak self] matchState in
+        match.loadGame(coder: coder) { [weak self] game in
             guard let self = self else { return }
-
-            switch matchState {
-            case let .new(localPlayerDetails, totalPlayerCount):
-                self.listenerContainer.gameEngine(self,
-                                                  didStartGameWith: localPlayerDetails,
-                                                  totalPlayerCount: totalPlayerCount)
-            case let .inProgress(state):
-                self.currentGamePublished = state
-                self.listenerContainer.gameEngine(self, didReceive: state)
-            }
+            self.currentGamePublished = game
+            self.listenerContainer.gameEngine(self, didReceive: game)
         }
     }
 
@@ -171,21 +160,12 @@ private extension GKPlayer {
 }
 
 private extension GKTurnBasedMatch {
-    enum MatchState {
-        case new(PlayerDetails, Int)
-        case inProgress(Game)
-    }
-
-    func loadGame(coder: GameCoder, localPlayer: GKLocalPlayer, completion: @escaping (MatchState) -> Void) {
-        loadMatchData { [weak self] data, _ in
-            guard let self = self else { return }
-
-            let totalPlayerCount = self.participants.count
+    func loadGame(coder: GameCoder, completion: @escaping (Game) -> Void) {
+        loadMatchData { data, _ in
             if let data = data, let game = coder.decode(data) {
-                completion(.inProgress(game))
+                completion(game)
             } else {
-                let localPlayerDetails = localPlayer.createPlayerDetails()
-                completion(.new(localPlayerDetails, totalPlayerCount))
+                completion(Game.createInitialGame())
             }
         }
     }

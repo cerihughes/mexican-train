@@ -10,24 +10,27 @@ import XCTest
 @testable import MexicanTrain
 
 class JoinGameOperationTests: OperationTestCase {
-    private var setupOperation: SetupGameOperation!
+    private var initialGame: Game!
+    private var startLevelOperation: StartLevelOperation!
     private var joinOperation: JoinGameOperation!
 
     override func setUp() {
         super.setUp()
-        setupOperation = SetupGameOperation(gameEngine: gameEngine, shuffler: shuffler)
-        joinOperation = JoinGameOperation(gameEngine: gameEngine, shuffler: shuffler)
+        initialGame = Game.createInitialGame()
+        startLevelOperation = StartLevelOperation(gameEngine: gameEngine, shuffler: shuffler)
+        joinOperation = JoinGameOperation(gameEngine: gameEngine)
         gameEngine.createState(localPlayerId: "P1")
     }
 
     override func tearDown() {
         joinOperation = nil
-        setupOperation = nil
+        startLevelOperation = nil
+        initialGame = nil
         super.tearDown()
     }
 
     func testDominoDistribution() {
-        let game1 = setupOperation.perform()!
+        let game1 = joinOperation.perform(game: initialGame)!
 
         gameEngine.updateState(localPlayerId: "P2")
         let game2 = joinOperation.perform(game: game1)!
@@ -38,25 +41,29 @@ class JoinGameOperationTests: OperationTestCase {
         gameEngine.updateState(localPlayerId: "P4")
         let game4 = joinOperation.perform(game: game3)!
 
-        XCTAssertEqual(game4.pool.count, 30)
-        XCTAssertEqual(game4.players.count, 4)
-        XCTAssertEqual(game4.players[0].id, "P1")
-        XCTAssertEqual(game4.players[1].id, "P2")
-        XCTAssertEqual(game4.players[2].id, "P3")
-        XCTAssertEqual(game4.players[3].id, "P4")
-        XCTAssertEqual(game4.mexicanTrain.dominoes.count, 0)
+        let startedGame = startLevelOperation.perform(game: game4, stationValue: .twelve)
 
-        game4.players.forEach {
+        XCTAssertEqual(startedGame.pool.count, 30)
+        XCTAssertEqual(startedGame.players.count, 4)
+        XCTAssertEqual(startedGame.players[0].id, "P1")
+        XCTAssertEqual(startedGame.players[1].id, "P2")
+        XCTAssertEqual(startedGame.players[2].id, "P3")
+        XCTAssertEqual(startedGame.players[3].id, "P4")
+        XCTAssertEqual(startedGame.mexicanTrain.dominoes.count, 0)
+
+        startedGame.players.forEach {
             XCTAssertEqual($0.dominoes.count, 15)
             XCTAssertEqual($0.train.dominoes.count, 0)
         }
     }
 
     func testRandomPickups() {
-        let game1 = setupOperation.perform()!
+        let game1 = joinOperation.perform(game: initialGame)!
 
         gameEngine.updateState(localPlayerId: "P2")
         let game2 = joinOperation.perform(game: game1)!
+
+        let startedGame = startLevelOperation.perform(game: game2, stationValue: .twelve)
 
         let expectedPlayer1Dominoes = [
             domino(.eleven, .twelve),
@@ -93,9 +100,9 @@ class JoinGameOperationTests: OperationTestCase {
             domino(.five, .ten)
         ]
 
-        XCTAssertEqual(game2.players.count, 2)
-        XCTAssertEqual(game2.players[0].dominoes, expectedPlayer1Dominoes)
-        XCTAssertEqual(game2.players[1].dominoes, expectedPlayer2Dominoes)
+        XCTAssertEqual(startedGame.players.count, 2)
+        XCTAssertEqual(startedGame.players[0].dominoes, expectedPlayer1Dominoes)
+        XCTAssertEqual(startedGame.players[1].dominoes, expectedPlayer2Dominoes)
     }
 }
 

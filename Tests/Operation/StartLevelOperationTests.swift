@@ -1,5 +1,5 @@
 //
-//  SetupGameOperationTests.swift
+//  StartLevelOperationTests.swift
 //  Tests
 //
 //  Created by Ceri on 31/05/2020.
@@ -9,12 +9,16 @@ import XCTest
 
 @testable import MexicanTrain
 
-class SetupGameOperationTests: OperationTestCase {
-    private var operation: SetupGameOperation!
+class StartLevelOperationTests: OperationTestCase {
+    private var initialGame: Game!
+    private var operation: StartLevelOperation!
 
     override func setUp() {
         super.setUp()
-        operation = SetupGameOperation(gameEngine: gameEngine, shuffler: shuffler)
+        let player = createPlayer(id: "P1", dominoes: [])
+        initialGame = Game.createInitialGame()
+            .with(players: [player])
+        operation = StartLevelOperation(gameEngine: gameEngine, shuffler: shuffler)
         gameEngine.createState(localPlayerId: "P1")
     }
 
@@ -24,7 +28,7 @@ class SetupGameOperationTests: OperationTestCase {
     }
 
     func testDominoDistribution() {
-        let game = operation.perform()!
+        let game = operation.perform(game: initialGame, stationValue: .twelve)
         XCTAssertEqual(game.pool.count, 75)
         XCTAssertEqual(game.players.count, 1)
         XCTAssertEqual(game.players[0].dominoes.count, 15)
@@ -33,7 +37,7 @@ class SetupGameOperationTests: OperationTestCase {
     }
 
     func testRandomPickups() {
-        let game = operation.perform()!
+        let game = operation.perform(game: initialGame, stationValue: .twelve)
         let expectedDominoes = [
             domino(.eleven, .twelve),
             domino(.eleven, .eleven),
