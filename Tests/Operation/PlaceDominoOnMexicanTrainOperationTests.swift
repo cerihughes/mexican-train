@@ -14,44 +14,39 @@ private let playerPlayed = PlayedDomino(innerValue: .twelve, outerValue: .seven)
 private let unplayed1 = UnplayedDomino(value1: .five, value2: .six)
 private let unplayed2 = UnplayedDomino(value1: .five, value2: .seven)
 
-class PlaceDominoOnMexicanTrainOperationTests: XCTestCase {
+class PlaceDominoOnMexicanTrainOperationTests: OperationTestCase {
     private var game: Game!
-    private var engine: FakeGameEngine!
     private var operation: PlaceDominoOnMexicanTrainOperation!
 
     override func setUp() {
         super.setUp()
 
         game = createTestGameData()
-        engine = FakeGameEngine(gameData: game, localPlayerId: "P1")
-        operation = PlaceDominoOnMexicanTrainOperation()
+        operation = PlaceDominoOnMexicanTrainOperation(gameEngine: gameEngine)
+        gameEngine.createState(localPlayerId: "P1")
     }
 
     override func tearDown() {
         game = nil
-        engine = nil
         operation = nil
 
         super.tearDown()
     }
 
     func testPerformOperation_invalidDomino() {
-        let state = engine.createInitialState()
         let unownedDomino = UnplayedDomino(value1: .five, value2: .eleven)
-        XCTAssertNil(operation.perform(game: state, domino: unownedDomino))
+        XCTAssertNil(operation.perform(game: game, domino: unownedDomino))
     }
 
     func testPerformOperation_removesDominoFromPlayer() {
-        let state = engine.createInitialState()
-        let updatedGame = operation.perform(game: state, domino: unplayed1)!
+        let updatedGame = operation.perform(game: game, domino: unplayed1)!
         let updatedPlayer = updatedGame.player(id: "P1")!
         XCTAssertEqual(updatedPlayer.dominoes.count, 1)
         XCTAssertFalse(updatedPlayer.dominoes.contains(unplayed1))
     }
 
     func testPerformOperation_addsDominoToTrain() {
-        let state = engine.createInitialState()
-        let updatedGame = operation.perform(game: state, domino: unplayed1)!
+        let updatedGame = operation.perform(game: game, domino: unplayed1)!
         let updatedTrain = updatedGame.mexicanTrain
         XCTAssertEqual(updatedTrain.dominoes.count, 2)
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)

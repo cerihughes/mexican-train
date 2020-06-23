@@ -9,22 +9,27 @@ import XCTest
 
 @testable import MexicanTrain
 
-class PickUpOperationTests: XCTestCase {
-    private var shuffler: MockShuffler!
+class PickUpOperationTests: OperationTestCase {
     private var operation: PickUpOperation!
 
     override func setUp() {
         super.setUp()
-
-        shuffler = MockShuffler()
-        operation = PickUpOperation(shuffler: shuffler)
+        operation = PickUpOperation(gameEngine: gameEngine, shuffler: shuffler)
+        gameEngine.createState(localPlayerId: "P1")
     }
 
     override func tearDown() {
         operation = nil
-        shuffler = nil
-
         super.tearDown()
+    }
+
+    func testPerformOperation() {
+        let pool = UnplayedDomino.allDominoes()
+        let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .six, value2: .nine))
+        let player2 = createPlayer(id: "P2", dominoes: [])
+        let game1 = createGame(players: [player1, player2], pool: pool)
+        let game2 = operation.perform(game: game1)
+        XCTAssertNotNil(game2)
     }
 
     func testPerformOperation_withValidMove() {
@@ -32,9 +37,7 @@ class PickUpOperationTests: XCTestCase {
         let player1 = createPlayer(id: "P1", domino: UnplayedDomino(value1: .zero, value2: .nine))
         let player2 = createPlayer(id: "P2", dominoes: [])
         let game1 = createGame(players: [player1, player2], pool: pool)
-
-        let engine = FakeGameEngine(gameData: game1, localPlayerId: "P1")
-        let game2 = operation.perform(game: engine.createInitialState())
+        let game2 = operation.perform(game: game1)
         XCTAssertNil(game2)
     }
 
@@ -43,21 +46,17 @@ class PickUpOperationTests: XCTestCase {
         let player1 = createPlayer(id: "P1", dominoes: [])
         let player2 = createPlayer(id: "P2", dominoes: [])
         let game1 = createGame(players: [player1, player2], pool: pool)
-
-        let engine1 = FakeGameEngine(gameData: game1, localPlayerId: "P1")
-        let state1 = engine1.createInitialState()
         XCTAssertEqual(game1.pool.count, 91)
         XCTAssertEqual(game1.players[0].dominoes.count, 0)
         XCTAssertEqual(game1.players[1].dominoes.count, 0)
 
-        let game2 = operation.perform(game: state1)!
-        let engine2 = FakeGameEngine(gameData: game2, localPlayerId: "P2")
-        let state2 = engine2.createInitialState()
+        let game2 = operation.perform(game: game1)!
         XCTAssertEqual(game2.pool.count, 90)
         XCTAssertEqual(game2.players[0].dominoes.count, 1)
         XCTAssertEqual(game2.players[1].dominoes.count, 0)
 
-        let game3 = operation.perform(game: state2)!
+        gameEngine.updateState(localPlayerId: "P2")
+        let game3 = operation.perform(game: game2)!
         XCTAssertEqual(game3.pool.count, 89)
         XCTAssertEqual(game3.players[0].dominoes.count, 1)
         XCTAssertEqual(game3.players[1].dominoes.count, 1)

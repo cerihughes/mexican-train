@@ -22,8 +22,6 @@ protocol GameEngine: AnyObject {
     var isAuthenticated: Bool { get }
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock)
 
-    func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
-
     var engineState: EngineState? { get }
     var gamePublisher: Published<Game>.Publisher { get }
     func refresh()
@@ -68,14 +66,6 @@ class GameKitGameEngine: NSObject, GameEngine {
         localPlayer.authenticateHandler = { [weak self] viewController, _ in
             block(viewController, self?.isAuthenticated ?? false)
         }
-    }
-
-    func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest {
-        let request = GKMatchRequest()
-        request.minPlayers = minPlayers
-        request.maxPlayers = maxPlayers
-        request.inviteMessage = inviteMessage
-        return request
     }
 
     var engineState: EngineState? {

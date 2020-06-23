@@ -16,7 +16,6 @@ protocol NewGameViewModelDelegate: AnyObject {
 
 protocol NewGameViewModel {
     var delegate: NewGameViewModelDelegate? { get nonmutating set }
-    func createMatchRequest() -> GKMatchRequest
 }
 
 class NewGameViewModelImpl: NewGameViewModel {
@@ -30,10 +29,6 @@ class NewGameViewModelImpl: NewGameViewModel {
         self.operations = operations
 
         gameEngine.addListener(self)
-    }
-
-    func createMatchRequest() -> GKMatchRequest {
-        gameEngine.newMatchRequest(minPlayers: 2, maxPlayers: 4, inviteMessage: "Would you like to play Mexican Train?")
     }
 }
 

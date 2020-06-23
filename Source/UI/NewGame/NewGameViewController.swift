@@ -30,10 +30,18 @@ class NewGameViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        let matchRequest = viewModel.createMatchRequest()
+        let matchRequest = createMatchRequest()
         let viewController = GKTurnBasedMatchmakerViewController(matchRequest: matchRequest)
         viewController.turnBasedMatchmakerDelegate = self
         present(viewController, animated: true)
+    }
+
+    private func createMatchRequest() -> GKMatchRequest {
+        let request = GKMatchRequest()
+        request.minPlayers = 2
+        request.maxPlayers = 4
+        request.inviteMessage = "Would you like to play Mexican Train?"
+        return request
     }
 }
 
