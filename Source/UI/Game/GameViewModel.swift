@@ -146,8 +146,8 @@ class GameViewModelImpl: GameViewModel {
 
     private func play(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Game? {
         guard let localPlayerId = gameEngine.engineState?.localPlayerId,
-            let localPlayerData = latestGame.player(id: localPlayerId),
-            let unplayedDomino = localPlayerData.dominoes[safe: playerDominoIndex] else {
+            let localPlayer = latestGame.player(id: localPlayerId),
+            let unplayedDomino = localPlayer.dominoes[safe: playerDominoIndex] else {
             return nil
         }
         return destinationTrain.update(operations: operations, game: latestGame, unplayedDomino: unplayedDomino)

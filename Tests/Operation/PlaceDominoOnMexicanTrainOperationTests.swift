@@ -21,7 +21,7 @@ class PlaceDominoOnMexicanTrainOperationTests: OperationTestCase {
     override func setUp() {
         super.setUp()
 
-        game = createTestGameData()
+        game = createTestGame()
         operation = PlaceDominoOnMexicanTrainOperation(gameEngine: gameEngine)
         gameEngine.createState(localPlayerId: "P1")
     }
@@ -52,7 +52,7 @@ class PlaceDominoOnMexicanTrainOperationTests: OperationTestCase {
         XCTAssertEqual(updatedTrain.dominoes[1].outerValue, .six)
     }
 
-    private func createTestGameData() -> Game {
+    private func createTestGame() -> Game {
         let player1 = createPlayer(id: "P1", dominoes: [unplayed1, unplayed2], train: [playerPlayed])
         return createGame(stationValue: .twelve,
                           players: [player1],
