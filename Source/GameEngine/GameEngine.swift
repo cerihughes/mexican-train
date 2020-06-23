@@ -12,24 +12,29 @@ typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
 typealias GameEngineCompletionBlock = (Bool) -> Void
 
 protocol GameEngineListener: AnyObject {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: GameTurn)
+    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
     func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int)
 }
 
-protocol GameEngine {
+protocol GameEngine: AnyObject {
     func addListener(_ listener: GameEngineListener)
 
     var isAuthenticated: Bool { get }
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock)
 
-    func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest
-
-    var localPlayerId: String { get }
-
-    var gamePublisher: Published<GameTurn>.Publisher { get }
+    var engineState: EngineState? { get }
+    var gamePublisher: Published<Game>.Publisher { get }
     func refresh()
-    func update(gameData: Game, completion: @escaping GameEngineCompletionBlock)
-    func endTurn(gameData: Game, completion: @escaping GameEngineCompletionBlock)
+    func update(game: Game, completion: @escaping GameEngineCompletionBlock)
+    func endTurn(game: Game, completion: @escaping GameEngineCompletionBlock)
+}
+
+extension GameEngine {
+    var localPlayerPublisher: AnyPublisher<Player, Never> {
+        gamePublisher.compactMap { [weak self] in $0.player(id: self?.engineState?.localPlayerId ?? "") }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
@@ -40,8 +45,8 @@ class GameKitGameEngine: NSObject, GameEngine {
     private var currentMatch: GKTurnBasedMatch?
 
     @Published
-    private var currentGamePublished: GameTurn = .createFakeGame()
-    var gamePublisher: Published<GameTurn>.Publisher { $currentGamePublished }
+    private var currentGamePublished = Game.createInitialGame()
+    var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     override init() {
         super.init()
@@ -63,16 +68,8 @@ class GameKitGameEngine: NSObject, GameEngine {
         }
     }
 
-    func newMatchRequest(minPlayers: Int, maxPlayers: Int, inviteMessage: String) -> GKMatchRequest {
-        let request = GKMatchRequest()
-        request.minPlayers = minPlayers
-        request.maxPlayers = maxPlayers
-        request.inviteMessage = inviteMessage
-        return request
-    }
-
-    var localPlayerId: String {
-        localPlayer.gamePlayerID
+    var engineState: EngineState? {
+        currentMatch?.createEngineState(localPlayer: localPlayer)
     }
 
     func refresh() {
@@ -89,25 +86,28 @@ class GameKitGameEngine: NSObject, GameEngine {
         }
     }
 
-    func update(gameData: Game, completion: @escaping GameEngineCompletionBlock) {
-        guard let currentMatch = currentMatch, let data = coder.encode(gameData) else {
+    func update(game: Game, completion: @escaping GameEngineCompletionBlock) {
+        guard let currentMatch = currentMatch, let data = coder.encode(game) else {
             completion(false)
             return
         }
 
         currentMatch.saveCurrentTurn(withMatch: data) { [weak self] error in
-            guard let self = self else { return }
-            self.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayer: self.localPlayer)
-            completion(error == nil)
+            guard let self = self, error == nil else {
+                completion(false)
+                return
+            }
+            self.currentGamePublished = game
+            completion(true)
         }
     }
 
-    func endTurn(gameData: Game, completion: @escaping GameEngineCompletionBlock) {
+    func endTurn(game: Game, completion: @escaping GameEngineCompletionBlock) {
         // Wipe all player turn progress when a turn ends...
-        let players = gameData.players.map { $0.with(currentTurn: []) }
-        let updatedGameData = gameData.with(players: players)
+        let players = game.players.map { $0.with(currentTurn: []) }
+        let updatedGame = game.with(players: players)
 
-        guard let currentMatch = currentMatch, let data = coder.encode(updatedGameData) else {
+        guard let currentMatch = currentMatch, let data = coder.encode(updatedGame) else {
             completion(false)
             return
         }
@@ -115,9 +115,12 @@ class GameKitGameEngine: NSObject, GameEngine {
         currentMatch.endTurn(withNextParticipants: currentMatch.nextParticipants,
                              turnTimeout: GKTurnTimeoutNone,
                              match: data) { [weak self] error in
-            guard let self = self else { return }
-            self.currentGamePublished = currentMatch.createGame(gameData: gameData, localPlayer: self.localPlayer)
-            completion(error == nil)
+            guard let self = self, error == nil else {
+                completion(false)
+                return
+            }
+            self.currentGamePublished = game
+            completion(true)
         }
     }
 }
@@ -140,9 +143,9 @@ extension GameKitGameEngine: GKLocalPlayerListener {
                 self.listenerContainer.gameEngine(self,
                                                   didStartGameWith: localPlayerDetails,
                                                   totalPlayerCount: totalPlayerCount)
-            case let .inProgress(game):
-                self.currentGamePublished = game
-                self.listenerContainer.gameEngine(self, didReceive: game)
+            case let .inProgress(state):
+                self.currentGamePublished = state
+                self.listenerContainer.gameEngine(self, didReceive: state)
             }
         }
     }
@@ -170,7 +173,7 @@ private extension GKPlayer {
 private extension GKTurnBasedMatch {
     enum MatchState {
         case new(PlayerDetails, Int)
-        case inProgress(GameTurn)
+        case inProgress(Game)
     }
 
     func loadGame(coder: GameCoder, localPlayer: GKLocalPlayer, completion: @escaping (MatchState) -> Void) {
@@ -178,8 +181,7 @@ private extension GKTurnBasedMatch {
             guard let self = self else { return }
 
             let totalPlayerCount = self.participants.count
-            if let data = data, let gameData = coder.decode(data) {
-                let game = self.createGame(gameData: gameData, localPlayer: localPlayer)
+            if let data = data, let game = coder.decode(data) {
                 completion(.inProgress(game))
             } else {
                 let localPlayerDetails = localPlayer.createPlayerDetails()
@@ -188,15 +190,14 @@ private extension GKTurnBasedMatch {
         }
     }
 
-    func createGame(gameData: Game, localPlayer: GKLocalPlayer) -> GameTurn {
+    func createEngineState(localPlayer: GKLocalPlayer) -> EngineState {
         let playerDetails = participants.compactMap { $0.player }
             .map { $0.createPlayerDetails() }
-        let isCurrentPlayer = currentParticipant?.player == localPlayer
-        return GameTurn(gameData: gameData,
-                    totalPlayerCount: participants.count,
-                    playerDetails: playerDetails,
-                    localPlayerId: localPlayer.gamePlayerID,
-                    isCurrentPlayer: isCurrentPlayer)
+        let localPlayerIsCurrentPlayer = currentParticipant?.player == localPlayer
+        return EngineState(totalPlayerCount: participants.count,
+                           playerDetails: playerDetails,
+                           localPlayerId: localPlayer.gamePlayerID,
+                           localPlayerIsCurrentPlayer: localPlayerIsCurrentPlayer)
     }
 
     var nextParticipants: [GKTurnBasedParticipant] {
@@ -213,5 +214,15 @@ private extension GKTurnBasedMatch {
             return participants
         }
         return participants.removing(currentParticipant)
+    }
+}
+
+extension Game {
+    static func createInitialGame() -> Game {
+        Game(stationValue: .twelve,
+             mexicanTrain: Train(isPlayable: true, dominoes: []),
+             players: [],
+             pool: [],
+             openGates: [])
     }
 }

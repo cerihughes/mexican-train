@@ -7,13 +7,13 @@
 
 import Foundation
 
-class PassOperation {
-    func perform(game: GameTurn) -> Game? {
-        guard game.currentLocalPlayerHasValidPlay == false,
-            game.gameData.pool.isEmpty else {
+class PassOperation: Operation {
+    func perform(game: Game) -> Game? {
+        guard let currentPlayer = currentLocalPlayer(game: game),
+            game.playerHasValidPlay(player: currentPlayer) == false,
+            game.pool.isEmpty else {
             return nil
         }
-
-        return game.gameData
+        return game
     }
 }

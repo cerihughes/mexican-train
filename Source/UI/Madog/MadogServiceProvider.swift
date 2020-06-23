@@ -27,7 +27,7 @@ class MadogServiceProviderImpl: ServiceProvider, MadogServiceProvider {
         gameEngine = GameKitGameEngine()
         localDataSource = LocalDataSourceImpl()
         let shuffler = ShufflerImpl()
-        operations = Operations(shuffler: shuffler)
+        operations = Operations(gameEngine: gameEngine, shuffler: shuffler)
 
         super.init(context: context)
 

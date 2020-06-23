@@ -7,22 +7,24 @@
 
 import Foundation
 
-class PickUpOperation {
+class PickUpOperation: Operation {
     private let shuffler: Shuffler
 
-    init(shuffler: Shuffler) {
+    init(gameEngine: GameEngine, shuffler: Shuffler) {
         self.shuffler = shuffler
+        super.init(gameEngine: gameEngine)
     }
 
-    func perform(game: GameTurn) -> Game? {
-        var pool = game.gameData.pool
-        guard game.currentLocalPlayerHasValidPlay == false,
-            let currentPlayer = game.currentLocalPlayer, let domino = pool.removeRandomElement(using: shuffler) else {
+    func perform(game: Game) -> Game? {
+        var pool = game.pool
+        guard let currentPlayer = currentLocalPlayer(game: game),
+            game.playerHasValidPlay(player: currentPlayer) == false,
+            let domino = pool.removeRandomElement(using: shuffler) else {
             return nil
         }
 
         let updatedTrain = currentPlayer.train.with(isPlayable: true)
         let updatedPlayer = currentPlayer.with(domino: domino, train: updatedTrain)
-        return game.gameData.with(updatedPlayer: updatedPlayer, pool: pool)
+        return game.with(updatedPlayer: updatedPlayer, pool: pool)
     }
 }

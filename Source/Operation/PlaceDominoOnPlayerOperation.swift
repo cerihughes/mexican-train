@@ -7,42 +7,42 @@
 
 import Foundation
 
-class PlaceDominoOnPlayerOperation {
-    func perform(game: GameTurn, domino: UnplayedDomino, playerId: String) -> Game? {
-        if let gate = game.gameData.gateThatMustBeClosed {
-            return performOpenGate(game: game, domino: domino, playerId: playerId, gate: gate)
+class PlaceDominoOnPlayerOperation: Operation {
+    func perform(game: Game, domino: UnplayedDomino, playerId: String) -> Game? {
+        guard let currentPlayer = currentLocalPlayer(game: game) else { return nil }
+        if let gate = game.gateThatMustBeClosed {
+            return performOpenGate(currentPlayer: currentPlayer, game: game, domino: domino, playerId: playerId, gate: gate)
         } else {
-            return performNoOpenGate(game: game, domino: domino, playerId: playerId)
+            return performNoOpenGate(currentPlayer: currentPlayer, game: game, domino: domino, playerId: playerId)
         }
     }
 
-    private func performOpenGate(game: GameTurn, domino: UnplayedDomino, playerId: String, gate: DominoValue) -> Game? {
-        guard let playerTrain = game.gameData.player(id: playerId)?.train,
+    private func performOpenGate(currentPlayer: Player, game: Game, domino: UnplayedDomino, playerId: String, gate: DominoValue) -> Game? {
+        guard let playerTrain = game.player(id: playerId)?.train,
             let lastTrainDomino = playerTrain.dominoes.last,
             lastTrainDomino.isDouble(gate),
-            let update = performNoOpenGate(game: game, domino: domino, playerId: playerId) else {
+            let update = performNoOpenGate(currentPlayer: currentPlayer, game: game, domino: domino, playerId: playerId) else {
             return nil
         }
 
-        var openGates = game.gameData.openGates
+        var openGates = game.openGates
         openGates.removeAll(where: { $0 == gate })
         return update.with(openGates: openGates)
     }
 
-    private func performNoOpenGate(game: GameTurn, domino: UnplayedDomino, playerId: String) -> Game? {
-        guard let currentPlayer = game.currentLocalPlayer,
-            let player = game.gameData.player(id: playerId),
+    private func performNoOpenGate(currentPlayer: Player, game: Game, domino: UnplayedDomino, playerId: String) -> Game? {
+        guard let player = game.player(id: playerId),
             currentPlayer.canPlayOn(train: player.train),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino) else {
             return nil
         }
 
-        let updatedGame = game.gameData.with(updatedPlayer: updatedCurrentPlayer)
+        let updatedGame = game.with(updatedPlayer: updatedCurrentPlayer)
         guard let refreshedPlayer = updatedGame.player(id: playerId) else {
             return nil
         }
 
-        let trainValue = refreshedPlayer.train.playableValue ?? game.gameData.stationValue
+        let trainValue = refreshedPlayer.train.playableValue ?? game.stationValue
         guard let playedDomino = domino.playedDomino(on: trainValue) else {
             return nil
         }

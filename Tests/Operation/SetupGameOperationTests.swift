@@ -9,24 +9,22 @@ import XCTest
 
 @testable import MexicanTrain
 
-class SetupGameOperationTests: XCTestCase {
-    private var shuffler: MockShuffler!
+class SetupGameOperationTests: OperationTestCase {
     private var operation: SetupGameOperation!
 
     override func setUp() {
         super.setUp()
-        shuffler = MockShuffler()
-        operation = SetupGameOperation(shuffler: shuffler)
+        operation = SetupGameOperation(gameEngine: gameEngine, shuffler: shuffler)
+        gameEngine.createState(localPlayerId: "P1")
     }
 
     override func tearDown() {
         operation = nil
-        shuffler = nil
         super.tearDown()
     }
 
     func testDominoDistribution() {
-        let game = operation.perform(playerId: "P1")
+        let game = operation.perform()!
         XCTAssertEqual(game.pool.count, 75)
         XCTAssertEqual(game.players.count, 1)
         XCTAssertEqual(game.players[0].dominoes.count, 15)
@@ -35,7 +33,7 @@ class SetupGameOperationTests: XCTestCase {
     }
 
     func testRandomPickups() {
-        let game = operation.perform(playerId: "P1")
+        let game = operation.perform()!
         let expectedDominoes = [
             domino(.eleven, .twelve),
             domino(.eleven, .eleven),

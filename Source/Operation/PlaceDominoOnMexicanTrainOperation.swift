@@ -7,44 +7,44 @@
 
 import Foundation
 
-class PlaceDominoOnMexicanTrainOperation {
-    func perform(game: GameTurn, domino: UnplayedDomino) -> Game? {
-        if let gate = game.gameData.gateThatMustBeClosed {
-            return performOpenGate(game: game, domino: domino, gate: gate)
+class PlaceDominoOnMexicanTrainOperation: Operation {
+    func perform(game: Game, domino: UnplayedDomino) -> Game? {
+        guard let currentPlayer = currentLocalPlayer(game: game) else { return nil }
+        if let gate = game.gateThatMustBeClosed {
+            return performOpenGate(currentPlayer: currentPlayer, game: game, domino: domino, gate: gate)
         } else {
-            return performNoOpenGate(game: game, domino: domino)
+            return performNoOpenGate(currentPlayer: currentPlayer, game: game, domino: domino)
         }
     }
 
-    private func performOpenGate(game: GameTurn, domino: UnplayedDomino, gate: DominoValue) -> Game? {
-        guard let lastTrainDomino = game.gameData.mexicanTrain.dominoes.last,
+    private func performOpenGate(currentPlayer: Player, game: Game, domino: UnplayedDomino, gate: DominoValue) -> Game? {
+        guard let lastTrainDomino = game.mexicanTrain.dominoes.last,
             lastTrainDomino.isDouble(gate),
-            let update = performNoOpenGate(game: game, domino: domino) else {
+            let update = performNoOpenGate(currentPlayer: currentPlayer, game: game, domino: domino) else {
             return nil
         }
 
-        var openGates = game.gameData.openGates
+        var openGates = game.openGates
         openGates.removeAll(where: { $0 == gate })
         return update.with(openGates: openGates)
     }
 
-    private func performNoOpenGate(game: GameTurn, domino: UnplayedDomino) -> Game? {
-        guard let currentPlayer = game.currentLocalPlayer,
-            currentPlayer.canPlayOn(train: game.gameData.mexicanTrain),
+    private func performNoOpenGate(currentPlayer: Player, game: Game, domino: UnplayedDomino) -> Game? {
+        guard currentPlayer.canPlayOn(train: game.mexicanTrain),
             let updatedCurrentPlayer = currentPlayer.without(domino: domino) else {
             return nil
         }
 
-        let trainValue = game.gameData.mexicanTrain.playableValue ?? game.gameData.stationValue
+        let trainValue = game.mexicanTrain.playableValue ?? game.stationValue
         guard let playedDomino = domino.playedDomino(on: trainValue) else {
             return nil
         }
 
-        let updatedTrain = game.gameData.mexicanTrain.with(domino: playedDomino)
-        var openGates = game.gameData.openGates
+        let updatedTrain = game.mexicanTrain.with(domino: playedDomino)
+        var openGates = game.openGates
         if domino.isDouble {
             openGates.append(domino.value1)
         }
-        return game.gameData.with(updatedPlayer: updatedCurrentPlayer, mexicanTrain: updatedTrain, openGates: openGates)
+        return game.with(updatedPlayer: updatedCurrentPlayer, mexicanTrain: updatedTrain, openGates: openGates)
     }
 }

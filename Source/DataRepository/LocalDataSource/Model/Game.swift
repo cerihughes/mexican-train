@@ -42,10 +42,10 @@ extension Game {
 
     func with(mexicanTrain: Train? = nil, players: [Player]? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> Game {
         Game(stationValue: stationValue,
-                 mexicanTrain: mexicanTrain ?? self.mexicanTrain,
-                 players: players ?? self.players,
-                 pool: pool ?? self.pool,
-                 openGates: openGates ?? self.openGates)
+             mexicanTrain: mexicanTrain ?? self.mexicanTrain,
+             players: players ?? self.players,
+             pool: pool ?? self.pool,
+             openGates: openGates ?? self.openGates)
     }
 
     func with(updatedPlayer: Player, mexicanTrain: Train? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> Game {
