@@ -5,8 +5,8 @@
 //  Created by Ceri on 12/06/2020.
 //
 
+import Foundation
 import GameKit
-import UIKit
 
 protocol NewGameViewModelDelegate: AnyObject {
     func newGameViewModel(_ viewModel: NewGameViewModel, navigateTo token: MadogToken)
@@ -33,33 +33,41 @@ class NewGameViewModelImpl: NewGameViewModel {
 extension NewGameViewModelImpl: GameEngineListener {
     func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
         print("Function: \(#function), line: \(#line)")
-        guard let engineState = gameEngine.engineState else { return }
-
-        let token: MadogToken
-        if game.isFinished {
-            token = .welcome
-        } else if game.isLevelFinished {
-            token = .welcome
+        if game.isLevelFinished {
+            gameLevelFinished(game)
         } else if game.isPlayingLevel {
-            token = .gameTest(engineState.totalPlayerCount)
+            gameInProgress(game)
         } else {
-            token = .welcome
+            gameStarted(game)
+        }
+    }
+
+    private func gameLevelFinished(_ game: Game) {
+        let token: MadogToken
+        if let nextLevel = game.stationValue.nextValue {
+            token = .lobby(nextLevel)
+        } else {
+            token = .welcome // TODO: Game summary
         }
         delegate?.newGameViewModel(self, navigateTo: token)
+    }
+
+    private func gameInProgress(_ game: Game) {
+        delegate?.newGameViewModel(self, navigateTo: .gameTest)
+    }
+
+    private func gameStarted(_ game: Game) {
+        delegate?.newGameViewModel(self, navigateTo: .lobby(.twelve))
     }
 }
 
 private extension Game {
-    var isFinished: Bool {
-        stationValue == .zero && isLevelFinished
-    }
-
     var isLevelFinished: Bool {
-        stationValue != .zero && players.anySatisfies { $0.hasPlayedAllDominoes }
+        players.anySatisfies { $0.hasPlayedAllDominoes }
     }
 
     var isPlayingLevel: Bool {
-        !isFinished && !isLevelFinished && players.allSatisfy { $0.isPlayingLevel }
+        !isLevelFinished && players.count > 1 && players.allSatisfy { $0.isPlayingLevel }
     }
 }
 
@@ -70,5 +78,11 @@ private extension Player {
 
     var isPlayingLevel: Bool {
         !dominoes.isEmpty
+    }
+}
+
+private extension DominoValue {
+    var nextValue: DominoValue? {
+        DominoValue(rawValue: rawValue - 1)
     }
 }

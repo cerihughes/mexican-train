@@ -30,3 +30,9 @@ class MexicanTrainUI {
         return madog.serviceProviders[serviceProviderName] as? MadogServiceProvider
     }
 }
+
+extension Context {
+    func navigate(to token: MadogToken) {
+        change(to: .basic, tokenData: .single(token), transition: Transition(duration: 1, options: .transitionCrossDissolve))
+    }
+}

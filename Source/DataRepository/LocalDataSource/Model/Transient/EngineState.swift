@@ -18,4 +18,9 @@ extension EngineState {
     var localPlayerIndex: Int? {
         playerDetails.firstIndex(where: { $0.id == localPlayerId })
     }
+
+    var localPlayerDetails: PlayerDetails? {
+        guard let localPlayerIndex = localPlayerIndex else { return nil }
+        return playerDetails[safe: localPlayerIndex]
+    }
 }

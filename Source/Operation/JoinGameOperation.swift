@@ -8,9 +8,8 @@
 import Foundation
 
 class JoinGameOperation: Operation {
-    func perform(game: Game) -> Game? {
-        guard let localPlayerId = gameEngine.engineState?.localPlayerId else { return nil }
-        let player = Player(id: localPlayerId,
+    func perform(game: Game) -> Game {
+        let player = Player(id: gameEngine.engineState.localPlayerId,
                             dominoes: [],
                             train: Train(isPlayable: false, dominoes: []),
                             currentTurn: [],

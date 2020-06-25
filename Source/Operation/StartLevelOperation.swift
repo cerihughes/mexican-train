@@ -19,7 +19,7 @@ class StartLevelOperation: Operation {
         let mexicanTrain = Train(isPlayable: true, dominoes: [])
         var pool = UnplayedDomino.allDominoes(except: stationValue)
         let updatedPlayers = game.players.map { $0.with(dominoes: pool.removeRandomElements(15, using: shuffler),
-                                                        train: Train(isPlayable: true, dominoes: []),
+                                                        train: Train(isPlayable: false, dominoes: []),
                                                         currentTurn: []) }
         return game.with(stationValue: stationValue, mexicanTrain: mexicanTrain, players: updatedPlayers, pool: pool)
     }

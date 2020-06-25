@@ -21,16 +21,19 @@ protocol GameEngine: AnyObject {
     var isAuthenticated: Bool { get }
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock)
 
-    var engineState: EngineState? { get }
+    var engineState: EngineState { get }
+    var game: Game { get }
     var gamePublisher: Published<Game>.Publisher { get }
+
     func refresh()
+
     func update(game: Game, completion: @escaping GameEngineCompletionBlock)
     func endTurn(game: Game, completion: @escaping GameEngineCompletionBlock)
 }
 
 extension GameEngine {
     var localPlayerPublisher: AnyPublisher<Player, Never> {
-        gamePublisher.compactMap { [weak self] in $0.player(id: self?.engineState?.localPlayerId ?? "") }
+        gamePublisher.compactMap { [weak self] in $0.player(id: self?.engineState.localPlayerId ?? "") }
             .removeDuplicates()
             .eraseToAnyPublisher()
     }
@@ -43,8 +46,14 @@ class GameKitGameEngine: NSObject, GameEngine {
 
     private var currentMatch: GKTurnBasedMatch?
 
+    private(set) var game = Game.empty {
+        didSet {
+            currentGamePublished = game
+        }
+    }
+
     @Published
-    private var currentGamePublished = Game.createInitialGame()
+    private var currentGamePublished = Game.empty
     var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     override init() {
@@ -67,8 +76,8 @@ class GameKitGameEngine: NSObject, GameEngine {
         }
     }
 
-    var engineState: EngineState? {
-        currentMatch?.createEngineState(localPlayer: localPlayer)
+    var engineState: EngineState {
+        currentMatch?.createEngineState(localPlayer: localPlayer) ?? .empty
     }
 
     func refresh() {
@@ -165,7 +174,7 @@ private extension GKTurnBasedMatch {
             if let data = data, let game = coder.decode(data) {
                 completion(game)
             } else {
-                completion(Game.createInitialGame())
+                completion(.empty)
             }
         }
     }
@@ -198,11 +207,13 @@ private extension GKTurnBasedMatch {
 }
 
 extension Game {
-    static func createInitialGame() -> Game {
-        Game(stationValue: .twelve,
-             mexicanTrain: Train(isPlayable: true, dominoes: []),
-             players: [],
-             pool: [],
-             openGates: [])
-    }
+    static let empty = Game(stationValue: .twelve,
+                            mexicanTrain: Train(isPlayable: true, dominoes: []),
+                            players: [],
+                            pool: [],
+                            openGates: [])
+}
+
+private extension EngineState {
+    static let empty = EngineState(totalPlayerCount: 0, playerDetails: [], localPlayerId: "", localPlayerIsCurrentPlayer: false)
 }

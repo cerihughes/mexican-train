@@ -13,5 +13,5 @@ enum MadogToken: Equatable {
     case lobby(DominoValue)
 
     // Playground
-    case gameTest(Int)
+    case gameTest
 }

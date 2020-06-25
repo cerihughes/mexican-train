@@ -9,7 +9,7 @@ import Madog
 import UIKit
 
 class NewGameViewControllerProvider: TypedViewControllerProvider {
-    override func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
+    override func createViewController(token: MadogToken, context: Context, serviceProvider: MadogServiceProvider) -> UIViewController? {
         guard token == .newGame else {
             return nil
         }

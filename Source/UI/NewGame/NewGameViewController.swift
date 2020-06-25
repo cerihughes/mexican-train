@@ -11,9 +11,9 @@ import UIKit
 
 class NewGameViewController: UIViewController {
     private let viewModel: NewGameViewModel
-    private weak var context: ForwardBackNavigationContext?
+    private weak var context: Context?
 
-    init(viewModel: NewGameViewModel, context: ForwardBackNavigationContext) {
+    init(viewModel: NewGameViewModel, context: Context) {
         self.viewModel = viewModel
         self.context = context
         super.init(nibName: nil, bundle: nil)
@@ -57,6 +57,6 @@ extension NewGameViewController: NewGameViewModelDelegate {
     func newGameViewModel(_ viewModel: NewGameViewModel, navigateTo token: MadogToken) {
         print("Function: \(#function), line: \(#line)")
         dismiss(animated: true)
-        context?.navigateForward(token: token, animated: true)
+        context?.navigate(to: token)
     }
 }
