@@ -5,6 +5,7 @@
 //  Created by Ceri on 12/06/2020.
 //
 
+import Combine
 import Foundation
 import GameKit
 
@@ -19,6 +20,7 @@ protocol NewGameViewModel {
 class NewGameViewModelImpl: NewGameViewModel {
     private let gameEngine: GameEngine
     private let operations: Operations
+    private var subscription: AnyCancellable?
 
     weak var delegate: NewGameViewModelDelegate?
 
@@ -26,13 +28,11 @@ class NewGameViewModelImpl: NewGameViewModel {
         self.gameEngine = gameEngine
         self.operations = operations
 
-        gameEngine.addListener(self)
+        subscription = gameEngine.gamePublisher
+            .sink { [weak self] in self?.gameUpdated($0) }
     }
-}
 
-extension NewGameViewModelImpl: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
-        print("Function: \(#function), line: \(#line)")
+    private func gameUpdated(_ game: Game) {
         if game.isLevelFinished {
             gameLevelFinished(game)
         } else if game.isPlayingLevel {
@@ -40,6 +40,7 @@ extension NewGameViewModelImpl: GameEngineListener {
         } else {
             gameStarted(game)
         }
+        subscription = nil
     }
 
     private func gameLevelFinished(_ game: Game) {

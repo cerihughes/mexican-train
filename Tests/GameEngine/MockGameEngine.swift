@@ -10,8 +10,6 @@ import Foundation
 @testable import MexicanTrain
 
 class MockGameEngine: GameEngine {
-    func addListener(_ listener: GameEngineListener) {}
-
     var isAuthenticated = true
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock) {
         block(nil, true)

@@ -11,13 +11,7 @@ import GameKit
 typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
 typealias GameEngineCompletionBlock = (Bool) -> Void
 
-protocol GameEngineListener: AnyObject {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
-}
-
 protocol GameEngine: AnyObject {
-    func addListener(_ listener: GameEngineListener)
-
     var isAuthenticated: Bool { get }
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock)
 
@@ -40,7 +34,6 @@ extension GameEngine {
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
-    private let listenerContainer = GameEngineListenerContainer()
     private let coder = GameCoder()
     private let localPlayer = GKLocalPlayer.local
 
@@ -61,10 +54,6 @@ class GameKitGameEngine: NSObject, GameEngine {
         super.init()
 
         localPlayer.register(self)
-    }
-
-    func addListener(_ listener: GameEngineListener) {
-        listenerContainer.addListener(listener)
     }
 
     var isAuthenticated: Bool {
@@ -145,7 +134,6 @@ extension GameKitGameEngine: GKLocalPlayerListener {
         match.loadGame(coder: coder) { [weak self] game in
             guard let self = self else { return }
             self.currentGamePublished = game
-            self.listenerContainer.gameEngine(self, didReceive: game)
         }
     }
 
