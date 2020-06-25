@@ -1,5 +1,5 @@
 //
-//  NewGameViewModel.swift
+//  StartGameViewModel.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 12/06/2020.
@@ -9,20 +9,20 @@ import Combine
 import Foundation
 import GameKit
 
-protocol NewGameViewModelDelegate: AnyObject {
-    func newGameViewModel(_ viewModel: NewGameViewModel, navigateTo token: MadogToken)
+protocol StartGameViewModelDelegate: AnyObject {
+    func startGameViewModel(_ viewModel: StartGameViewModel, navigateTo token: MadogToken)
 }
 
-protocol NewGameViewModel {
-    var delegate: NewGameViewModelDelegate? { get nonmutating set }
+protocol StartGameViewModel {
+    var delegate: StartGameViewModelDelegate? { get nonmutating set }
 }
 
-class NewGameViewModelImpl: NewGameViewModel {
+class StartGameViewModelImpl: StartGameViewModel {
     private let gameEngine: GameEngine
     private let operations: Operations
     private var subscription: AnyCancellable?
 
-    weak var delegate: NewGameViewModelDelegate?
+    weak var delegate: StartGameViewModelDelegate?
 
     init(gameEngine: GameEngine, operations: Operations) {
         self.gameEngine = gameEngine
@@ -50,15 +50,15 @@ class NewGameViewModelImpl: NewGameViewModel {
         } else {
             token = .welcome // TODO: Game summary
         }
-        delegate?.newGameViewModel(self, navigateTo: token)
+        delegate?.startGameViewModel(self, navigateTo: token)
     }
 
     private func gameInProgress(_ game: Game) {
-        delegate?.newGameViewModel(self, navigateTo: .gameTest)
+        delegate?.startGameViewModel(self, navigateTo: .playGame)
     }
 
     private func gameStarted(_ game: Game) {
-        delegate?.newGameViewModel(self, navigateTo: .lobby(.twelve))
+        delegate?.startGameViewModel(self, navigateTo: .lobby(.twelve))
     }
 }
 

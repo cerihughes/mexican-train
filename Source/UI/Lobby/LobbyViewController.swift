@@ -61,6 +61,6 @@ class LobbyViewController: UIViewController {
 
 extension LobbyViewController: LobbyViewModelDelegate {
     func lobbyViewModelIsReadyToPlay(_ viewModel: LobbyViewModel) {
-        context?.navigate(to: .gameTest)
+        context?.navigate(to: .playGame)
     }
 }

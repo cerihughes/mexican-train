@@ -51,6 +51,6 @@ class WelcomeViewController: UIViewController {
 
     @objc
     private func buttonTapped(_ sender: UIButton) {
-        context?.navigate(to: .newGame)
+        context?.navigate(to: .startGame)
     }
 }

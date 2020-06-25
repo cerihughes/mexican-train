@@ -1,5 +1,5 @@
 //
-//  NewGameViewController.swift
+//  StartGameViewController.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 12/06/2020.
@@ -9,11 +9,11 @@ import GameKit
 import Madog
 import UIKit
 
-class NewGameViewController: UIViewController {
-    private let viewModel: NewGameViewModel
+class StartGameViewController: UIViewController {
+    private let viewModel: StartGameViewModel
     private weak var context: Context?
 
-    init(viewModel: NewGameViewModel, context: Context) {
+    init(viewModel: StartGameViewModel, context: Context) {
         self.viewModel = viewModel
         self.context = context
         super.init(nibName: nil, bundle: nil)
@@ -45,7 +45,7 @@ class NewGameViewController: UIViewController {
     }
 }
 
-extension NewGameViewController: GKTurnBasedMatchmakerViewControllerDelegate {
+extension StartGameViewController: GKTurnBasedMatchmakerViewControllerDelegate {
     func turnBasedMatchmakerViewControllerWasCancelled(_ viewController: GKTurnBasedMatchmakerViewController) {
         viewController.dismiss(animated: true)
     }
@@ -53,8 +53,8 @@ extension NewGameViewController: GKTurnBasedMatchmakerViewControllerDelegate {
     func turnBasedMatchmakerViewController(_ viewController: GKTurnBasedMatchmakerViewController, didFailWithError error: Error) {}
 }
 
-extension NewGameViewController: NewGameViewModelDelegate {
-    func newGameViewModel(_ viewModel: NewGameViewModel, navigateTo token: MadogToken) {
+extension StartGameViewController: StartGameViewModelDelegate {
+    func startGameViewModel(_ viewModel: StartGameViewModel, navigateTo token: MadogToken) {
         print("Function: \(#function), line: \(#line)")
         dismiss(animated: true)
         context?.navigate(to: token)

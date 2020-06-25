@@ -16,7 +16,6 @@ protocol GameEngine: AnyObject {
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock)
 
     var engineState: EngineState { get }
-    var game: Game { get }
     var gamePublisher: Published<Game>.Publisher { get }
 
     func refresh()
@@ -39,15 +38,8 @@ class GameKitGameEngine: NSObject, GameEngine {
 
     private var currentMatch: GKTurnBasedMatch?
 
-    var game = Game.empty
-
     @Published
-    private var currentGamePublished = Game.empty {
-        didSet {
-            game = currentGamePublished
-        }
-    }
-
+    private var currentGamePublished = Game.empty
     var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     override init() {
