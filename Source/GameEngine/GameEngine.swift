@@ -46,14 +46,15 @@ class GameKitGameEngine: NSObject, GameEngine {
 
     private var currentMatch: GKTurnBasedMatch?
 
-    private(set) var game = Game.empty {
+    var game = Game.empty
+
+    @Published
+    private var currentGamePublished = Game.empty {
         didSet {
-            currentGamePublished = game
+            game = currentGamePublished
         }
     }
 
-    @Published
-    private var currentGamePublished = Game.empty
     var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     override init() {
@@ -214,6 +215,6 @@ extension Game {
                             openGates: [])
 }
 
-private extension EngineState {
+extension EngineState {
     static let empty = EngineState(totalPlayerCount: 0, playerDetails: [], localPlayerId: "", localPlayerIsCurrentPlayer: false)
 }

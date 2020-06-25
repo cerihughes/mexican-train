@@ -16,7 +16,7 @@ class StartLevelOperationTests: OperationTestCase {
     override func setUp() {
         super.setUp()
         let player = createPlayer(id: "P1", dominoes: [])
-        initialGame = Game.createInitialGame()
+        initialGame = Game.empty
             .with(players: [player])
         operation = StartLevelOperation(gameEngine: gameEngine, shuffler: shuffler)
         gameEngine.createState(localPlayerId: "P1")

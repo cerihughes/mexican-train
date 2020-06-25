@@ -16,7 +16,7 @@ class JoinGameOperationTests: OperationTestCase {
 
     override func setUp() {
         super.setUp()
-        initialGame = Game.createInitialGame()
+        initialGame = .empty
         startLevelOperation = StartLevelOperation(gameEngine: gameEngine, shuffler: shuffler)
         joinOperation = JoinGameOperation(gameEngine: gameEngine)
         gameEngine.createState(localPlayerId: "P1")
@@ -30,16 +30,16 @@ class JoinGameOperationTests: OperationTestCase {
     }
 
     func testDominoDistribution() {
-        let game1 = joinOperation.perform(game: initialGame)!
+        let game1 = joinOperation.perform(game: initialGame)
 
         gameEngine.updateState(localPlayerId: "P2")
-        let game2 = joinOperation.perform(game: game1)!
+        let game2 = joinOperation.perform(game: game1)
 
         gameEngine.updateState(localPlayerId: "P3")
-        let game3 = joinOperation.perform(game: game2)!
+        let game3 = joinOperation.perform(game: game2)
 
         gameEngine.updateState(localPlayerId: "P4")
-        let game4 = joinOperation.perform(game: game3)!
+        let game4 = joinOperation.perform(game: game3)
 
         let startedGame = startLevelOperation.perform(game: game4, stationValue: .twelve)
 
@@ -58,10 +58,10 @@ class JoinGameOperationTests: OperationTestCase {
     }
 
     func testRandomPickups() {
-        let game1 = joinOperation.perform(game: initialGame)!
+        let game1 = joinOperation.perform(game: initialGame)
 
         gameEngine.updateState(localPlayerId: "P2")
-        let game2 = joinOperation.perform(game: game1)!
+        let game2 = joinOperation.perform(game: game1)
 
         let startedGame = startLevelOperation.perform(game: game2, stationValue: .twelve)
 

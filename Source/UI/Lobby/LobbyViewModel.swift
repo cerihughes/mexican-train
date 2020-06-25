@@ -32,14 +32,12 @@ class LobbyViewModelImpl: AbstractGameViewModelImpl, LobbyViewModel {
         super.init(gameEngine: gameEngine, operations: operations)
 
         subscription = gameEngine.gamePublisher.sink { [weak self] in
-            guard let self = self, let delegate = self.delegate else { return }
-            if $0.readyToStart(totalPlayerCount: gameEngine.engineState.totalPlayerCount) {
+            guard let self = self else { return }
+            if gameEngine.engineState.localPlayerIsCurrentPlayer, $0.players.count == self.totalPlayerCount {
                 self.allReady { [weak self] _ in
                     guard let self = self, let delegate = self.delegate else { return }
                     delegate.lobbyViewModelIsReadyToPlay(self)
                 }
-            } else if $0.readyToPlay(totalPlayerCount: gameEngine.engineState.totalPlayerCount) {
-                delegate.lobbyViewModelIsReadyToPlay(self)
             }
         }
         gameEngine.refresh()
@@ -89,15 +87,5 @@ private extension EngineState {
         }
 
         return .waiting(otherPlayerDetails?.name)
-    }
-}
-
-private extension Game {
-    func readyToStart(totalPlayerCount: Int) -> Bool {
-        players.count == totalPlayerCount
-    }
-
-    func readyToPlay(totalPlayerCount: Int) -> Bool {
-        players.count == totalPlayerCount && players.allSatisfy { !$0.dominoes.isEmpty }
     }
 }
