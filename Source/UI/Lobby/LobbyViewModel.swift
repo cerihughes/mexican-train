@@ -31,12 +31,16 @@ class LobbyViewModelImpl: AbstractGameViewModelImpl, LobbyViewModel {
         self.stationValue = stationValue
         super.init(gameEngine: gameEngine, operations: operations)
 
-        subscription = gameEngine.gamePublisher.sink { [weak self] in
+        subscription = gameEngine.gamePublisher.sink { [weak self] game in
             guard let self = self else { return }
-            if gameEngine.engineState.localPlayerIsCurrentPlayer, $0.players.count == self.totalPlayerCount {
-                self.allReady { [weak self] _ in
-                    guard let self = self, let delegate = self.delegate else { return }
-                    delegate.lobbyViewModelIsReadyToPlay(self)
+            if game.players.count == self.totalPlayerCount {
+                if gameEngine.engineState.localPlayerIsCurrentPlayer, game.players.allSatisfy({ player in player.dominoes.isEmpty }) {
+                    let update = operations.startLevel.perform(game: self.latestGame, stationValue: stationValue)
+                    gameEngine.update(game: update) { [weak self] _ in
+                        self?.closeLobby()
+                    }
+                } else {
+                    self.closeLobby()
                 }
             }
         }
@@ -65,9 +69,9 @@ class LobbyViewModelImpl: AbstractGameViewModelImpl, LobbyViewModel {
         gameEngine.endTurn(game: update, completion: completion)
     }
 
-    private func allReady(completion: @escaping (Bool) -> Void) {
-        let update = operations.startLevel.perform(game: latestGame, stationValue: stationValue)
-        gameEngine.update(game: update, completion: completion)
+    private func closeLobby() {
+        subscription?.cancel()
+        delegate?.lobbyViewModelIsReadyToPlay(self)
     }
 }
 
