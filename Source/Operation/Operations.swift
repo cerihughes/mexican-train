@@ -14,15 +14,15 @@ class Operations {
     let pickUp: PickUpOperation
     let playOnMexicanTrain: PlaceDominoOnMexicanTrainOperation
     let playOnPlayer: PlaceDominoOnPlayerOperation
-    let setup: SetupGameOperation
+    let startLevel: StartLevelOperation
 
     init(gameEngine: GameEngine, shuffler: Shuffler) {
         changeTrain = ChangeTrainPlayableStateOperation(gameEngine: gameEngine)
-        joinGame = JoinGameOperation(gameEngine: gameEngine, shuffler: shuffler)
+        joinGame = JoinGameOperation(gameEngine: gameEngine)
         pass = PassOperation(gameEngine: gameEngine)
         pickUp = PickUpOperation(gameEngine: gameEngine, shuffler: shuffler)
         playOnMexicanTrain = PlaceDominoOnMexicanTrainOperation(gameEngine: gameEngine)
         playOnPlayer = PlaceDominoOnPlayerOperation(gameEngine: gameEngine)
-        setup = SetupGameOperation(gameEngine: gameEngine, shuffler: shuffler)
+        startLevel = StartLevelOperation(gameEngine: gameEngine, shuffler: shuffler)
     }
 }

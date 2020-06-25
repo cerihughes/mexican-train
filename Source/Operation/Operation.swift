@@ -15,7 +15,7 @@ class Operation {
     }
 
     func currentLocalPlayer(game: Game) -> Player? {
-        gameEngine.engineState?.currentLocalPlayer(game: game)
+        gameEngine.engineState.currentLocalPlayer(game: game)
     }
 }
 

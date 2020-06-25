@@ -11,9 +11,9 @@ import UIKit
 
 class NewGameViewController: UIViewController {
     private let viewModel: NewGameViewModel
-    private weak var context: ForwardBackNavigationContext?
+    private weak var context: Context?
 
-    init(viewModel: NewGameViewModel, context: ForwardBackNavigationContext) {
+    init(viewModel: NewGameViewModel, context: Context) {
         self.viewModel = viewModel
         self.context = context
         super.init(nibName: nil, bundle: nil)
@@ -54,19 +54,9 @@ extension NewGameViewController: GKTurnBasedMatchmakerViewControllerDelegate {
 }
 
 extension NewGameViewController: NewGameViewModelDelegate {
-    func newGameViewModel(_ viewModel: NewGameViewModel, didResumeGame totalPlayerCount: Int) {
+    func newGameViewModel(_ viewModel: NewGameViewModel, navigateTo token: MadogToken) {
         print("Function: \(#function), line: \(#line)")
         dismiss(animated: true)
-        context?.navigateForward(token: MadogToken.gameTest(totalPlayerCount), animated: true)
-    }
-
-    func newGameViewModel(_ viewModel: NewGameViewModel, didStartGame totalPlayerCount: Int) {
-        print("Function: \(#function), line: \(#line)")
-        dismiss(animated: true)
-        context?.navigateForward(token: MadogToken.gameTest(totalPlayerCount), animated: true)
-    }
-
-    func newGameViewModelDidFailToStartGame(_ viewModel: NewGameViewModel) {
-        print("Function: \(#function), line: \(#line)")
+        context?.navigate(to: token)
     }
 }

@@ -5,13 +5,12 @@
 //  Created by Ceri on 12/06/2020.
 //
 
+import Combine
+import Foundation
 import GameKit
-import UIKit
 
 protocol NewGameViewModelDelegate: AnyObject {
-    func newGameViewModel(_ viewModel: NewGameViewModel, didResumeGame totalPlayerCount: Int)
-    func newGameViewModel(_ viewModel: NewGameViewModel, didStartGame totalPlayerCount: Int)
-    func newGameViewModelDidFailToStartGame(_ viewModel: NewGameViewModel)
+    func newGameViewModel(_ viewModel: NewGameViewModel, navigateTo token: MadogToken)
 }
 
 protocol NewGameViewModel {
@@ -21,6 +20,7 @@ protocol NewGameViewModel {
 class NewGameViewModelImpl: NewGameViewModel {
     private let gameEngine: GameEngine
     private let operations: Operations
+    private var subscription: AnyCancellable?
 
     weak var delegate: NewGameViewModelDelegate?
 
@@ -28,32 +28,62 @@ class NewGameViewModelImpl: NewGameViewModel {
         self.gameEngine = gameEngine
         self.operations = operations
 
-        gameEngine.addListener(self)
+        subscription = gameEngine.gamePublisher
+            .sink { [weak self] in self?.gameUpdated($0) }
+    }
+
+    private func gameUpdated(_ game: Game) {
+        if game.isLevelFinished {
+            gameLevelFinished(game)
+        } else if game.isPlayingLevel {
+            gameInProgress(game)
+        } else {
+            gameStarted(game)
+        }
+        subscription = nil
+    }
+
+    private func gameLevelFinished(_ game: Game) {
+        let token: MadogToken
+        if let nextLevel = game.stationValue.nextValue {
+            token = .lobby(nextLevel)
+        } else {
+            token = .welcome // TODO: Game summary
+        }
+        delegate?.newGameViewModel(self, navigateTo: token)
+    }
+
+    private func gameInProgress(_ game: Game) {
+        delegate?.newGameViewModel(self, navigateTo: .gameTest)
+    }
+
+    private func gameStarted(_ game: Game) {
+        delegate?.newGameViewModel(self, navigateTo: .lobby(.twelve))
     }
 }
 
-extension NewGameViewModelImpl: GameEngineListener {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game) {
-        print("Function: \(#function), line: \(#line)")
-        guard let engineState = gameEngine.engineState else { return }
-        if engineState.localPlayer(game: game) != nil {
-            delegate?.newGameViewModel(self, didResumeGame: engineState.totalPlayerCount)
-        } else if let update = operations.joinGame.perform(game: game) {
-            gameEngine.update(game: update) { print($0) }
-        }
+private extension Game {
+    var isLevelFinished: Bool {
+        players.anySatisfies { $0.hasPlayedAllDominoes }
     }
 
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int) {
-        print("Function: \(#function), line: \(#line)")
-        if let update = operations.setup.perform() {
-            gameEngine.update(game: update) { [weak self] success in
-                guard let self = self else { return }
-                if success {
-                    self.delegate?.newGameViewModel(self, didStartGame: totalPlayerCount)
-                } else {
-                    self.delegate?.newGameViewModelDidFailToStartGame(self)
-                }
-            }
-        }
+    var isPlayingLevel: Bool {
+        !isLevelFinished && players.count > 1 && players.allSatisfy { $0.isPlayingLevel }
+    }
+}
+
+private extension Player {
+    var hasPlayedAllDominoes: Bool {
+        dominoes.isEmpty && train.isStarted
+    }
+
+    var isPlayingLevel: Bool {
+        !dominoes.isEmpty
+    }
+}
+
+private extension DominoValue {
+    var nextValue: DominoValue? {
+        DominoValue(rawValue: rawValue - 1)
     }
 }

@@ -45,9 +45,8 @@ class GameViewController: UIViewController {
             let dominoesView = $0.element
 
             dominoesView.collectionView.dropDelegate = self
-            if let trainPublisher = viewModel.train(for: index) {
-                subscribe(to: trainPublisher, dominoesView: dominoesView)
-            }
+            let trainPublisher = viewModel.train(for: index)
+            subscribe(to: trainPublisher, dominoesView: dominoesView)
 
             dominoesView.trainButton.tag = index
             dominoesView.trainButton.addTarget(self, action: #selector(trainButtonTapped), for: .touchUpInside)

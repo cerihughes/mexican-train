@@ -6,7 +6,7 @@
 //
 
 import Combine
-import UIKit
+import Foundation
 
 enum DestinationTrain {
     case player(Int)
@@ -24,54 +24,22 @@ protocol GameViewModel {
     var currentPlayerTurn: AnyPublisher<Bool, Never> { get }
     var playerDominoes: AnyPublisher<[DominoView.State], Never> { get }
     var mexicanTrain: AnyPublisher<TrainState, Never> { get }
-    var player1Train: AnyPublisher<TrainState, Never> { get }
-    var player2Train: AnyPublisher<TrainState, Never> { get }
-    var player3Train: AnyPublisher<TrainState, Never> { get }
-    var player4Train: AnyPublisher<TrainState, Never> { get }
 
+    func train(for player: Int) -> AnyPublisher<TrainState, Never>
     func canPlayDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Bool
     func playDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain, completion: @escaping (Bool) -> Void)
     func pickUp(completion: @escaping (Bool) -> Void)
     func pickUpTrain(at index: Int, completion: @escaping (Bool) -> Void)
 }
 
-extension GameViewModel {
-    func train(for player: Int) -> AnyPublisher<TrainState, Never>? {
-        guard player < totalPlayerCount else { return nil }
-        switch player {
-        case 0: return player1Train
-        case 1: return player2Train
-        case 2: return player3Train
-        case 3: return player4Train
-        default: return nil
-        }
-    }
-}
-
-class GameViewModelImpl: GameViewModel {
-    private let gameEngine: GameEngine
-    private let operations: Operations
-
-    private var latestGame = Game.createInitialGame()
-    private var subscription: AnyCancellable?
-    private var timer: Timer?
-
-    let totalPlayerCount: Int
+class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
     let currentPlayerTurn: AnyPublisher<Bool, Never>
     let playerDominoes: AnyPublisher<[DominoView.State], Never>
     let mexicanTrain: AnyPublisher<TrainState, Never>
-    let player1Train: AnyPublisher<TrainState, Never>
-    let player2Train: AnyPublisher<TrainState, Never>
-    let player3Train: AnyPublisher<TrainState, Never>
-    let player4Train: AnyPublisher<TrainState, Never>
 
-    init(gameEngine: GameEngine, operations: Operations, totalPlayerCount: Int) {
-        self.gameEngine = gameEngine
-        self.operations = operations
-        self.totalPlayerCount = totalPlayerCount
-
+    override init(gameEngine: GameEngine, operations: Operations) {
         currentPlayerTurn = gameEngine.gamePublisher
-            .map { gameEngine.engineState?.currentLocalPlayer(game: $0) != nil }
+            .map { gameEngine.engineState.currentLocalPlayer(game: $0) != nil }
             .removeDuplicates()
             .eraseToAnyPublisher()
 
@@ -86,24 +54,16 @@ class GameViewModelImpl: GameViewModel {
             .removeDuplicates()
             .eraseToAnyPublisher()
 
-        player1Train = gameEngine.gamePublisher
-            .playerTrain(at: 0)
+        super.init(gameEngine: gameEngine, operations: operations)
+        startRefreshTimer()
+    }
 
-        player2Train = gameEngine.gamePublisher
-            .playerTrain(at: 1)
-
-        player3Train = gameEngine.gamePublisher
-            .playerTrain(at: 2)
-
-        player4Train = gameEngine.gamePublisher
-            .playerTrain(at: 3)
-
-        subscription = gameEngine.gamePublisher
-            .assign(to: \.latestGame, on: self)
-
-        timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
-            gameEngine.refresh()
-        }
+    func train(for player: Int) -> AnyPublisher<TrainState, Never> {
+        gameEngine.gamePublisher
+            .compactMap { $0.players[safe: player]?.train }
+            .map { $0.toState() }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
     }
 
     func canPlayDomino(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Bool {
@@ -135,7 +95,7 @@ class GameViewModelImpl: GameViewModel {
     }
 
     func pickUpTrain(at index: Int, completion: @escaping (Bool) -> Void) {
-        guard index == gameEngine.engineState?.localPlayerIndex,
+        guard index == gameEngine.engineState.localPlayerIndex,
             let update = operations.changeTrain.perform(game: latestGame) else {
             completion(false)
             return
@@ -145,8 +105,7 @@ class GameViewModelImpl: GameViewModel {
     }
 
     private func play(at playerDominoIndex: Int, on destinationTrain: DestinationTrain) -> Game? {
-        guard let localPlayerId = gameEngine.engineState?.localPlayerId,
-            let localPlayer = latestGame.player(id: localPlayerId),
+        guard let localPlayer = latestGame.player(id: gameEngine.engineState.localPlayerId),
             let unplayedDomino = localPlayer.dominoes[safe: playerDominoIndex] else {
             return nil
         }
@@ -165,15 +124,6 @@ private extension DestinationTrain {
         case .mexican:
             return operations.playOnMexicanTrain.perform(game: game, domino: unplayedDomino)
         }
-    }
-}
-
-private extension Published.Publisher where Value == Game {
-    func playerTrain(at index: Int) -> AnyPublisher<TrainState, Never> {
-        return compactMap { $0.players[safe: index]?.train }
-            .map { $0.toState() }
-            .removeDuplicates()
-            .eraseToAnyPublisher()
     }
 }
 

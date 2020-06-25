@@ -40,16 +40,27 @@ extension Game {
             .first
     }
 
-    func with(mexicanTrain: Train? = nil, players: [Player]? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> Game {
-        Game(stationValue: stationValue,
+    func with(stationValue: DominoValue? = nil,
+              mexicanTrain: Train? = nil,
+              players: [Player]? = nil,
+              pool: [UnplayedDomino]? = nil,
+              openGates: [DominoValue]? = nil) -> Game {
+        Game(stationValue: stationValue ?? self.stationValue,
              mexicanTrain: mexicanTrain ?? self.mexicanTrain,
              players: players ?? self.players,
              pool: pool ?? self.pool,
              openGates: openGates ?? self.openGates)
     }
 
-    func with(updatedPlayer: Player, mexicanTrain: Train? = nil, pool: [UnplayedDomino]? = nil, openGates: [DominoValue]? = nil) -> Game {
-        let updatedPlayers = players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 }
-        return with(mexicanTrain: mexicanTrain, players: updatedPlayers, pool: pool, openGates: openGates)
+    func with(stationValue: DominoValue? = nil,
+              mexicanTrain: Train? = nil,
+              updatedPlayer: Player,
+              pool: [UnplayedDomino]? = nil,
+              openGates: [DominoValue]? = nil) -> Game {
+        with(stationValue: stationValue,
+             mexicanTrain: mexicanTrain,
+             players: players.map { $0.id == updatedPlayer.id ? updatedPlayer : $0 },
+             pool: pool,
+             openGates: openGates)
     }
 }

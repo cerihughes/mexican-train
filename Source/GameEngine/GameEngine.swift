@@ -11,51 +11,49 @@ import GameKit
 typealias GameEngineAuthenticationBlock = (UIViewController?, Bool) -> Void
 typealias GameEngineCompletionBlock = (Bool) -> Void
 
-protocol GameEngineListener: AnyObject {
-    func gameEngine(_ gameEngine: GameEngine, didReceive game: Game)
-    func gameEngine(_ gameEngine: GameEngine, didStartGameWith player: PlayerDetails, totalPlayerCount: Int)
-}
-
 protocol GameEngine: AnyObject {
-    func addListener(_ listener: GameEngineListener)
-
     var isAuthenticated: Bool { get }
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock)
 
-    var engineState: EngineState? { get }
+    var engineState: EngineState { get }
+    var game: Game { get }
     var gamePublisher: Published<Game>.Publisher { get }
+
     func refresh()
+
     func update(game: Game, completion: @escaping GameEngineCompletionBlock)
     func endTurn(game: Game, completion: @escaping GameEngineCompletionBlock)
 }
 
 extension GameEngine {
     var localPlayerPublisher: AnyPublisher<Player, Never> {
-        gamePublisher.compactMap { [weak self] in $0.player(id: self?.engineState?.localPlayerId ?? "") }
+        gamePublisher.compactMap { [weak self] in $0.player(id: self?.engineState.localPlayerId ?? "") }
             .removeDuplicates()
             .eraseToAnyPublisher()
     }
 }
 
 class GameKitGameEngine: NSObject, GameEngine {
-    private let listenerContainer = GameEngineListenerContainer()
     private let coder = GameCoder()
     private let localPlayer = GKLocalPlayer.local
 
     private var currentMatch: GKTurnBasedMatch?
 
+    var game = Game.empty
+
     @Published
-    private var currentGamePublished = Game.createInitialGame()
+    private var currentGamePublished = Game.empty {
+        didSet {
+            game = currentGamePublished
+        }
+    }
+
     var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     override init() {
         super.init()
 
         localPlayer.register(self)
-    }
-
-    func addListener(_ listener: GameEngineListener) {
-        listenerContainer.addListener(listener)
     }
 
     var isAuthenticated: Bool {
@@ -68,8 +66,8 @@ class GameKitGameEngine: NSObject, GameEngine {
         }
     }
 
-    var engineState: EngineState? {
-        currentMatch?.createEngineState(localPlayer: localPlayer)
+    var engineState: EngineState {
+        currentMatch?.createEngineState(localPlayer: localPlayer) ?? .empty
     }
 
     func refresh() {
@@ -78,10 +76,8 @@ class GameKitGameEngine: NSObject, GameEngine {
             guard let self = self, let match = match else { return }
 
             self.currentMatch = match
-
-            match.loadGame(coder: self.coder, localPlayer: self.localPlayer) { [weak self] matchState in
-                guard let self = self, case let .inProgress(game) = matchState else { return }
-                self.currentGamePublished = game
+            match.loadGame(coder: self.coder) { [weak self] game in
+                self?.currentGamePublished = game
             }
         }
     }
@@ -135,18 +131,9 @@ extension GameKitGameEngine: GKLocalPlayerListener {
     func player(_ player: GKPlayer, receivedTurnEventFor match: GKTurnBasedMatch, didBecomeActive: Bool) {
         print("Function: \(#function), line: \(#line)")
         currentMatch = match
-        match.loadGame(coder: coder, localPlayer: localPlayer) { [weak self] matchState in
+        match.loadGame(coder: coder) { [weak self] game in
             guard let self = self else { return }
-
-            switch matchState {
-            case let .new(localPlayerDetails, totalPlayerCount):
-                self.listenerContainer.gameEngine(self,
-                                                  didStartGameWith: localPlayerDetails,
-                                                  totalPlayerCount: totalPlayerCount)
-            case let .inProgress(state):
-                self.currentGamePublished = state
-                self.listenerContainer.gameEngine(self, didReceive: state)
-            }
+            self.currentGamePublished = game
         }
     }
 
@@ -171,21 +158,12 @@ private extension GKPlayer {
 }
 
 private extension GKTurnBasedMatch {
-    enum MatchState {
-        case new(PlayerDetails, Int)
-        case inProgress(Game)
-    }
-
-    func loadGame(coder: GameCoder, localPlayer: GKLocalPlayer, completion: @escaping (MatchState) -> Void) {
-        loadMatchData { [weak self] data, _ in
-            guard let self = self else { return }
-
-            let totalPlayerCount = self.participants.count
+    func loadGame(coder: GameCoder, completion: @escaping (Game) -> Void) {
+        loadMatchData { data, _ in
             if let data = data, let game = coder.decode(data) {
-                completion(.inProgress(game))
+                completion(game)
             } else {
-                let localPlayerDetails = localPlayer.createPlayerDetails()
-                completion(.new(localPlayerDetails, totalPlayerCount))
+                completion(.empty)
             }
         }
     }
@@ -218,11 +196,13 @@ private extension GKTurnBasedMatch {
 }
 
 extension Game {
-    static func createInitialGame() -> Game {
-        Game(stationValue: .twelve,
-             mexicanTrain: Train(isPlayable: true, dominoes: []),
-             players: [],
-             pool: [],
-             openGates: [])
-    }
+    static let empty = Game(stationValue: .twelve,
+                            mexicanTrain: Train(isPlayable: true, dominoes: []),
+                            players: [],
+                            pool: [],
+                            openGates: [])
+}
+
+extension EngineState {
+    static let empty = EngineState(totalPlayerCount: 0, playerDetails: [], localPlayerId: "", localPlayerIsCurrentPlayer: false)
 }

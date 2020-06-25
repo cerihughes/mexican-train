@@ -18,14 +18,14 @@ class TypedViewControllerProvider: SingleViewControllerProvider<MadogToken> {
     }
 
     override final func createViewController(token: MadogToken, context: Context) -> UIViewController? {
-        guard let serviceProvider = serviceProvider, let context = context as? ForwardBackNavigationContext else {
+        guard let serviceProvider = serviceProvider else {
             return nil
         }
 
         return createViewController(token: token, context: context, serviceProvider: serviceProvider)
     }
 
-    func createViewController(token: MadogToken, context: ForwardBackNavigationContext, serviceProvider: MadogServiceProvider) -> UIViewController? {
+    func createViewController(token: MadogToken, context: Context, serviceProvider: MadogServiceProvider) -> UIViewController? {
         // OVERRIDE POINT
         return nil
     }

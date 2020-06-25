@@ -10,11 +10,11 @@ import UIKit
 
 class WelcomeViewController: UIViewController {
     private let viewModel: WelcomeViewModel
-    private weak var context: ForwardBackNavigationContext?
+    private weak var context: Context?
 
     private lazy var welcomeView = WelcomeView()
 
-    init(viewModel: WelcomeViewModel, context: ForwardBackNavigationContext) {
+    init(viewModel: WelcomeViewModel, context: Context) {
         self.viewModel = viewModel
         self.context = context
         super.init(nibName: nil, bundle: nil)
@@ -51,6 +51,6 @@ class WelcomeViewController: UIViewController {
 
     @objc
     private func buttonTapped(_ sender: UIButton) {
-        context?.navigateForward(token: MadogToken.newGame, animated: true)
+        context?.navigate(to: .newGame)
     }
 }

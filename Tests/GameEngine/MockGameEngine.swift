@@ -10,17 +10,21 @@ import Foundation
 @testable import MexicanTrain
 
 class MockGameEngine: GameEngine {
-    func addListener(_ listener: GameEngineListener) {}
-
     var isAuthenticated = true
     func authenticate(_ block: @escaping GameEngineAuthenticationBlock) {
         block(nil, true)
     }
 
-    var engineState: EngineState?
+    var game = Game.empty
+    var engineState = EngineState.empty
 
     @Published
-    private var currentGamePublished = Game.createInitialGame()
+    private var currentGamePublished = Game.empty {
+        didSet {
+            game = currentGamePublished
+        }
+    }
+
     var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     func refresh() {}
@@ -41,10 +45,10 @@ class MockGameEngine: GameEngine {
                      playerDetails: [PlayerDetails]? = nil,
                      localPlayerId: String? = nil,
                      localPlayerIsCurrentPlayer: Bool? = nil) {
-        engineState = engineState?.with(totalPlayerCount: totalPlayerCount,
-                                        playerDetails: playerDetails,
-                                        localPlayerId: localPlayerId,
-                                        localPlayerIsCurrentPlayer: localPlayerIsCurrentPlayer)
+        engineState = engineState.with(totalPlayerCount: totalPlayerCount,
+                                       playerDetails: playerDetails,
+                                       localPlayerId: localPlayerId,
+                                       localPlayerIsCurrentPlayer: localPlayerIsCurrentPlayer)
     }
 }
 
