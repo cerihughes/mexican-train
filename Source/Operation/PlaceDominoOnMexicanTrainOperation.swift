@@ -19,14 +19,11 @@ class PlaceDominoOnMexicanTrainOperation: Operation {
 
     private func performOpenGate(currentPlayer: Player, game: Game, domino: UnplayedDomino, gate: DominoValue) -> Game? {
         guard let lastTrainDomino = game.mexicanTrain.dominoes.last,
-            lastTrainDomino.isDouble(gate),
-            let update = performNoOpenGate(currentPlayer: currentPlayer, game: game, domino: domino) else {
+            lastTrainDomino.isDouble(gate) else {
             return nil
         }
 
-        var openGates = game.openGates
-        openGates.removeAll(where: { $0 == gate })
-        return update.with(openGates: openGates)
+        return performNoOpenGate(currentPlayer: currentPlayer, game: game, domino: domino)
     }
 
     private func performNoOpenGate(currentPlayer: Player, game: Game, domino: UnplayedDomino) -> Game? {
@@ -35,6 +32,7 @@ class PlaceDominoOnMexicanTrainOperation: Operation {
             return nil
         }
 
+        let lastPlayedDomino = game.mexicanTrain.dominoes.last
         let trainValue = game.mexicanTrain.playableValue ?? game.stationValue
         guard let playedDomino = domino.playedDomino(on: trainValue) else {
             return nil
@@ -42,7 +40,9 @@ class PlaceDominoOnMexicanTrainOperation: Operation {
 
         let updatedTrain = game.mexicanTrain.with(domino: playedDomino)
         var openGates = game.openGates
-        if domino.isDouble {
+        if let lastPlayedDomino = lastPlayedDomino, lastPlayedDomino.isDouble {
+            openGates.removeAll(where: { $0 == lastPlayedDomino.innerValue })
+        } else if domino.isDouble {
             openGates.append(domino.value1)
         }
         return game.with(mexicanTrain: updatedTrain, updatedPlayer: updatedCurrentPlayer, openGates: openGates)
