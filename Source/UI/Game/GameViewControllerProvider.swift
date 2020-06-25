@@ -10,7 +10,7 @@ import UIKit
 
 class GameViewControllerProvider: TypedViewControllerProvider {
     override func createViewController(token: MadogToken, context: Context, serviceProvider: MadogServiceProvider) -> UIViewController? {
-        guard token == .gameTest else {
+        guard token == .playGame else {
             return nil
         }
 

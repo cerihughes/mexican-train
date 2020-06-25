@@ -15,16 +15,10 @@ class MockGameEngine: GameEngine {
         block(nil, true)
     }
 
-    var game = Game.empty
     var engineState = EngineState.empty
 
     @Published
-    private var currentGamePublished = Game.empty {
-        didSet {
-            game = currentGamePublished
-        }
-    }
-
+    private var currentGamePublished = Game.empty
     var gamePublisher: Published<Game>.Publisher { $currentGamePublished }
 
     func refresh() {}
