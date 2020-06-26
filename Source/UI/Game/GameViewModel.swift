@@ -19,7 +19,7 @@ struct TrainState: Equatable {
 }
 
 protocol GameViewModelDelegate: AnyObject {
-    func gameViewModelRoundDidFinish(_ viewModel: LobbyViewModel)
+    func gameViewModelRoundDidFinish(_ viewModel: GameViewModel)
 }
 
 protocol GameViewModel {
@@ -66,8 +66,11 @@ class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
 
         super.init(gameEngine: gameEngine, operations: operations)
 
-        subscription = gameEngine.gamePublisher.sink { [weak self] _ in
+        subscription = gameEngine.gamePublisher.sink { [weak self] game in
             guard let self = self else { return }
+            if game.isLevelFinished {
+                self.delegate?.gameViewModelRoundDidFinish(self)
+            }
         }
 
         startRefreshTimer()
@@ -92,11 +95,16 @@ class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
             return
         }
 
-        let updateDoubleCount = update.openGates.count
-        if updateDoubleCount > doubleCount {
-            gameEngine.update(game: update, completion: completion)
+        if update.isLevelFinished {
+            let finished = update.withUpdatedScores()
+            gameEngine.endTurn(game: finished, completion: completion)
         } else {
-            gameEngine.endTurn(game: update, completion: completion)
+            let updateDoubleCount = update.openGates.count
+            if updateDoubleCount > doubleCount {
+                gameEngine.update(game: update, completion: completion)
+            } else {
+                gameEngine.endTurn(game: update, completion: completion)
+            }
         }
     }
 

@@ -36,6 +36,10 @@ extension Player {
         with(dominoes: dominoes.with(domino), train: train)
     }
 
+    func withUpdatedScore() -> Player {
+        with(dominoes: [], score: score + pointsValue)
+    }
+
     func without(domino: UnplayedDomino) -> Player? {
         guard let dominoes = dominoes.without(domino) else {
             return nil

@@ -47,4 +47,9 @@ extension Game {
              pool: pool,
              openGates: openGates)
     }
+
+    func withUpdatedScores() -> Game {
+        let updatedPlayers = players.map { $0.withUpdatedScore() }
+        return with(players: updatedPlayers)
+    }
 }
