@@ -18,7 +18,13 @@ struct TrainState: Equatable {
     let isPlayable: Bool
 }
 
+protocol GameViewModelDelegate: AnyObject {
+    func gameViewModel(_ viewModel: GameViewModel, levelDidFinish dominoValue: DominoValue)
+}
+
 protocol GameViewModel {
+    var delegate: GameViewModelDelegate? { get nonmutating set }
+
     var totalPlayerCount: Int { get }
 
     var currentPlayerTurn: AnyPublisher<Bool, Never> { get }
@@ -36,6 +42,10 @@ class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
     let currentPlayerTurn: AnyPublisher<Bool, Never>
     let playerDominoes: AnyPublisher<[DominoView.State], Never>
     let mexicanTrain: AnyPublisher<TrainState, Never>
+
+    weak var delegate: GameViewModelDelegate?
+
+    private var subscription: AnyCancellable?
 
     override init(gameEngine: GameEngine, operations: Operations) {
         currentPlayerTurn = gameEngine.gamePublisher
@@ -55,6 +65,14 @@ class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
             .eraseToAnyPublisher()
 
         super.init(gameEngine: gameEngine, operations: operations)
+
+        subscription = gameEngine.gamePublisher.sink { [weak self] game in
+            guard let self = self else { return }
+            if game.isLevelFinished {
+                self.delegate?.gameViewModel(self, levelDidFinish: game.stationValue)
+            }
+        }
+
         startRefreshTimer()
     }
 
@@ -77,11 +95,16 @@ class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
             return
         }
 
-        let updateDoubleCount = update.openGates.count
-        if updateDoubleCount > doubleCount {
-            gameEngine.update(game: update, completion: completion)
+        if update.isLevelFinished {
+            let finished = update.withUpdatedScores()
+            gameEngine.endTurn(game: finished, completion: completion)
         } else {
-            gameEngine.endTurn(game: update, completion: completion)
+            let updateDoubleCount = update.openGates.count
+            if updateDoubleCount > doubleCount {
+                gameEngine.update(game: update, completion: completion)
+            } else {
+                gameEngine.endTurn(game: update, completion: completion)
+            }
         }
     }
 

@@ -61,29 +61,3 @@ class StartGameViewModelImpl: StartGameViewModel {
         delegate?.startGameViewModel(self, navigateTo: .lobby(.twelve))
     }
 }
-
-private extension Game {
-    var isLevelFinished: Bool {
-        players.anySatisfies { $0.hasPlayedAllDominoes }
-    }
-
-    var isPlayingLevel: Bool {
-        !isLevelFinished && players.count > 1 && players.allSatisfy { $0.isPlayingLevel }
-    }
-}
-
-private extension Player {
-    var hasPlayedAllDominoes: Bool {
-        dominoes.isEmpty && train.isStarted
-    }
-
-    var isPlayingLevel: Bool {
-        !dominoes.isEmpty
-    }
-}
-
-private extension DominoValue {
-    var nextValue: DominoValue? {
-        DominoValue(rawValue: rawValue - 1)
-    }
-}
