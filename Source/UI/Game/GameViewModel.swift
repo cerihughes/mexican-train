@@ -19,7 +19,7 @@ struct TrainState: Equatable {
 }
 
 protocol GameViewModelDelegate: AnyObject {
-    func gameViewModelRoundDidFinish(_ viewModel: GameViewModel)
+    func gameViewModel(_ viewModel: GameViewModel, levelDidFinish dominoValue: DominoValue)
 }
 
 protocol GameViewModel {
@@ -69,7 +69,7 @@ class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
         subscription = gameEngine.gamePublisher.sink { [weak self] game in
             guard let self = self else { return }
             if game.isLevelFinished {
-                self.delegate?.gameViewModelRoundDidFinish(self)
+                self.delegate?.gameViewModel(self, levelDidFinish: game.stationValue)
             }
         }
 

@@ -15,6 +15,6 @@ class GameViewControllerProvider: TypedViewControllerProvider {
         }
 
         let viewModel = GameViewModelImpl(gameEngine: serviceProvider.gameEngine, operations: serviceProvider.operations)
-        return GameViewController(viewModel: viewModel)
+        return GameViewController(viewModel: viewModel, context: context)
     }
 }

@@ -7,17 +7,21 @@
 
 import Combine
 import CombineDataSources
+import Madog
 import UIKit
 
 private let cellIdentifier = String(describing: DominoCell.self)
 
 class GameViewController: UIViewController {
     private let viewModel: GameViewModel
+    private weak var context: Context?
+
     private lazy var gameView = GameView(frame: .zero, numberOfTrains: viewModel.totalPlayerCount)
     private var subscriptions = [AnyCancellable]()
 
-    init(viewModel: GameViewModel) {
+    init(viewModel: GameViewModel, context: Context) {
         self.viewModel = viewModel
+        self.context = context
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -31,6 +35,8 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        viewModel.delegate = self
 
         viewModel.currentPlayerTurn.sink { [weak self] isCurrent in self?.gameView.playerDominoes.backgroundColor = isCurrent ? .green : .white }
             .store(in: &subscriptions)
@@ -94,6 +100,18 @@ class GameViewController: UIViewController {
 
     @objc private func trainButtonTapped(_ sender: UIButton) {
         viewModel.pickUpTrain(at: sender.tag) { print($0) }
+    }
+}
+
+extension GameViewController: GameViewModelDelegate {
+    func gameViewModel(_ viewModel: GameViewModel, levelDidFinish dominoValue: DominoValue) {
+        let token: MadogToken
+        if let nextLevel = dominoValue.nextValue {
+            token = .lobby(nextLevel)
+        } else {
+            token = .welcome // TODO: Game summary
+        }
+        context?.navigate(to: token)
     }
 }
 
