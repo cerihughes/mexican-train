@@ -14,6 +14,7 @@ protocol LobbyViewModelDelegate: AnyObject {
 
 protocol LobbyViewModel {
     var delegate: LobbyViewModelDelegate? { get nonmutating set }
+
     var totalPlayerCount: Int { get }
 
     func lobbyState(for player: Int) -> LobbyPlayerView.State
@@ -34,14 +35,7 @@ class LobbyViewModelImpl: AbstractGameViewModelImpl, LobbyViewModel {
         subscription = gameEngine.gamePublisher.sink { [weak self] game in
             guard let self = self else { return }
             if game.players.count == self.totalPlayerCount {
-                if gameEngine.engineState.localPlayerIsCurrentPlayer, game.players.allSatisfy({ player in player.dominoes.isEmpty }) {
-                    let update = operations.startLevel.perform(game: self.latestGame, stationValue: stationValue)
-                    gameEngine.update(game: update) { [weak self] _ in
-                        self?.closeLobby()
-                    }
-                } else {
-                    self.closeLobby()
-                }
+                self.closeLobby()
             }
         }
         gameEngine.refresh()
@@ -65,7 +59,10 @@ class LobbyViewModelImpl: AbstractGameViewModelImpl, LobbyViewModel {
             return
         }
 
-        let update = operations.joinGame.perform(game: latestGame)
+        var update = operations.joinGame.perform(game: latestGame)
+        if update.players.count == totalPlayerCount {
+            update = operations.startLevel.perform(game: update, stationValue: stationValue)
+        }
         gameEngine.endTurn(game: update, completion: completion)
     }
 

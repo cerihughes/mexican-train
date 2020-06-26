@@ -24,22 +24,6 @@ struct Game: Equatable, Codable {
 }
 
 extension Game {
-    var gateThatMustBeClosed: DominoValue? {
-        if hasAnyPlayerPlayedDoubleInThisTurn {
-            return nil
-        }
-        return openGates.first
-    }
-
-    var hasAnyPlayerPlayedDoubleInThisTurn: Bool {
-        !players.allSatisfy { !$0.hasPlayedDoubleInThisTurn }
-    }
-
-    func player(id: String) -> Player? {
-        players.filter { $0.id == id }
-            .first
-    }
-
     func with(stationValue: DominoValue? = nil,
               mexicanTrain: Train? = nil,
               players: [Player]? = nil,

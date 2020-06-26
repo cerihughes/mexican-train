@@ -24,11 +24,6 @@ struct Player: Equatable, Codable {
 }
 
 extension Player {
-    var pointsValue: Int {
-        dominoes.map { $0.pointsValue }
-            .reduce(0, +)
-    }
-
     func with(dominoes: [UnplayedDomino]? = nil, train: Train? = nil, currentTurn: [UnplayedDomino]? = nil, score: Int? = nil) -> Player {
         Player(id: id,
                dominoes: dominoes ?? self.dominoes,
@@ -48,25 +43,5 @@ extension Player {
         var currentTurn = self.currentTurn
         currentTurn.append(domino)
         return with(dominoes: dominoes, currentTurn: currentTurn)
-    }
-
-    func canPlayOn(train: Train) -> Bool {
-        if self.train == train {
-            return true
-        }
-
-        guard self.train.isStarted else {
-            return false
-        }
-
-        if let last = train.dominoes.last, last.isDouble {
-            return true
-        }
-
-        return train.isPlayable
-    }
-
-    var hasPlayedDoubleInThisTurn: Bool {
-        !currentTurn.isEmpty
     }
 }

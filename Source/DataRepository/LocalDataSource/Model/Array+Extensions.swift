@@ -7,7 +7,7 @@
 
 import Foundation
 
-public extension Array {
+extension Array {
     subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
@@ -22,7 +22,7 @@ public extension Array {
     }
 }
 
-public extension Array where Element: Equatable {
+extension Array where Element: Equatable {
     func with(_ element: Element) -> [Element] {
         self + [element]
     }
