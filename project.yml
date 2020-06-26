@@ -31,7 +31,19 @@ targets:
     platform: iOS
     deploymentTarget: "13.0"
     settings:
-      INFOPLIST_FILE: Resources/Secret.plist
+      base:
+        INFOPLIST_FILE: Resources/Secret.plist
+        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+        PRODUCT_BUNDLE_IDENTIFIER: uk.co.cerihughes.MexicanTrain
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: Y56955G4Q8
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: iPhone Developer
+          PROVISIONING_PROFILE_SPECIFIER: mexican-train-dev
+        Release:
+          CODE_SIGN_IDENTITY: iPhone Distribution
+          PROVISIONING_PROFILE_SPECIFIER: mexican-train-ad-hoc
     sources:
       - Source
       - path: Resources
@@ -57,8 +69,6 @@ targets:
         inputFiles:
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
           - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
-    settings:
-      DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
   Tests:
     type: bundle.unit-test
     platform: iOS

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>ad-hoc</string>
+	<key>signingcertificate</key>
+	<string>iOS Distribution</string>
+	<key>teamID</key>
+	<string>Y56955G4Q8</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>uk.co.cerihughes.MexicanTrain</key>
+		<string>mexican-train-ad-hoc</string>
+	</dict>
+</dict>
+</plist>
