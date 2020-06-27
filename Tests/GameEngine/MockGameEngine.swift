@@ -2,7 +2,7 @@
 //  MockGameEngine.swift
 //  Tests
 //
-//  Created by Ceri Hughes on 22/06/2020.
+//  Created by Ceri on 22/06/2020.
 //
 
 import Foundation

@@ -2,7 +2,7 @@
 //  DominoCollectionViewLayout.swift
 //  MexicanTrain
 //
-//  Created by Ceri Hughes on 27/06/2020.
+//  Created by Ceri on 27/06/2020.
 //
 
 import UIKit

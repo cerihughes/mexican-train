@@ -2,7 +2,7 @@
 //  GameViewControllerProvider.swift
 //  MexicanTrain
 //
-//  Created by Ceri Hughes on 31/05/2020.
+//  Created by Ceri on 31/05/2020.
 //
 
 import Madog
