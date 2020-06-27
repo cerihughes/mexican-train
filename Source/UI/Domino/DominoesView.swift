@@ -9,8 +9,18 @@ import SnapKit
 import UIKit
 
 class DominoesView: SuperView {
+    enum Mode {
+        case unplayed, played
+    }
+
     let collectionView = UICollectionView.create()
     let trainButton = UIButton(type: .roundedRect)
+
+    var mode: Mode = .unplayed {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
     override func commonInit() {
         super.commonInit()
@@ -38,8 +48,19 @@ class DominoesView: SuperView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let newLayout = UICollectionViewFlowLayout.create(itemHeight: collectionView.frame.height)
+        let newLayout = mode.createCollectionViewLayout(collectionView: collectionView)
         collectionView.setCollectionViewLayout(newLayout, animated: true)
+    }
+}
+
+private extension DominoesView.Mode {
+    func createCollectionViewLayout(collectionView: UICollectionView) -> UICollectionViewLayout {
+        switch self {
+        case .unplayed:
+            return UICollectionViewFlowLayout.create(itemHeight: collectionView.frame.height)
+        case .played:
+            return DominoCollectionViewLayout()
+        }
     }
 }
 
