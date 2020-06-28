@@ -39,7 +39,7 @@ class DominoFaceView: SuperView {
         guard let ctx = UIGraphicsGetCurrentContext() else { return }
         ctx.setFillColor(value.color.cgColor)
         ctx.setStrokeColor(UIColor.black.cgColor)
-        ctx.setLineWidth(2)
+        ctx.setLineWidth(1)
 
         let size = bounds.size
         let dotDiameter = min(size.width, size.height) / 7.0

@@ -12,12 +12,10 @@ class GameView: UIView {
     let pickupView = PickupView()
     let playerDominoes = UnplayedDominoesView()
     let divider = UIView()
-    let mexicanTrain = PlayedDominoesView()
-    let playerTrains: [PlayedDominoesView]
+    let boardView: GameBoardView
 
     init(frame: CGRect, numberOfTrains: Int) {
-        playerTrains = (0 ..< numberOfTrains)
-            .map { _ in PlayedDominoesView() }
+        boardView = GameBoardView(frame: .zero, numberOfTrains: numberOfTrains)
 
         super.init(frame: frame)
 
@@ -35,50 +33,30 @@ class GameView: UIView {
         addSubview(pickupView)
         addSubview(playerDominoes)
         addSubview(divider)
-        addSubview(mexicanTrain)
-        playerTrains.forEach { addSubview($0) }
+        addSubview(boardView)
 
         pickupView.snp.makeConstraints { make in
-            make.top.leading.equalTo(safeAreaLayoutGuide).inset(DominoView.spacing)
-            make.bottom.equalTo(playerDominoes).inset(DominoView.spacing)
-            make.width.equalTo(pickupView.snp.height).multipliedBy(DominoView.aspectRatio)
+            make.top.leading.equalToSuperview().inset(8)
+            make.bottom.equalTo(playerDominoes).inset(8)
+            make.width.equalTo(pickupView.snp.height).dividedBy(2)
         }
 
         playerDominoes.snp.makeConstraints { make in
-            make.top.trailing.equalTo(safeAreaLayoutGuide)
-            make.leading.equalTo(pickupView.snp.trailing).offset(DominoView.spacing)
+            make.top.trailing.equalToSuperview()
+            make.height.equalTo(124)
+            make.leading.equalTo(pickupView.snp.trailing).offset(8)
         }
 
         divider.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
             make.top.equalTo(playerDominoes.snp.bottom)
             make.height.equalTo(2)
         }
 
-        mexicanTrain.snp.makeConstraints { make in
+        boardView.snp.makeConstraints { make in
             make.leading.trailing.equalTo(divider)
             make.top.equalTo(divider.snp.bottom)
-            make.height.equalTo(playerDominoes)
+            make.bottom.equalToSuperview()
         }
-
-        var previousView: UIView = mexicanTrain
-        playerTrains.forEach {
-            $0.snp.makeConstraints { make in
-                make.leading.trailing.equalTo(previousView)
-                make.top.equalTo(previousView.snp.bottom)
-                make.height.equalTo(playerDominoes)
-            }
-
-            previousView = $0
-        }
-
-        previousView.snp.makeConstraints { make in
-            make.bottom.equalTo(safeAreaLayoutGuide)
-        }
-    }
-
-    func indexOfTrainCollectionView(_ collectionView: UICollectionView) -> Int? {
-        playerTrains.map { $0.collectionView }
-            .firstIndex(of: collectionView)
     }
 }

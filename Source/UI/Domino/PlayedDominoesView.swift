@@ -15,8 +15,8 @@ class PlayedDominoesView: SuperView {
     override func commonInit() {
         super.commonInit()
 
-        backgroundColor = .white
-        collectionView.backgroundColor = .white
+        backgroundColor = .clear
+        collectionView.backgroundColor = .clear
 
         trainButton.titleLabel?.font = .systemFont(ofSize: 32, weight: .bold)
         trainButton.titleLabel?.textColor = .black
@@ -27,7 +27,7 @@ class PlayedDominoesView: SuperView {
         addSubview(trainButton)
 
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(8)
+            make.edges.equalToSuperview()
         }
 
         trainButton.snp.makeConstraints { make in

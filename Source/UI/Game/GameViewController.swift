@@ -43,10 +43,13 @@ class GameViewController: UIViewController {
 
         subscribe(to: viewModel.playerDominoes, collectionView: gameView.playerDominoes.collectionView)
 
-        gameView.mexicanTrain.collectionView.dropDelegate = self
-        subscribe(to: viewModel.mexicanTrain, dominoesView: gameView.mexicanTrain)
+        viewModel.stationValue.sink { [weak self] in self?.gameView.boardView.stationDominoView.state = $0 }
+            .store(in: &subscriptions)
 
-        gameView.playerTrains.enumerated().forEach {
+        gameView.boardView.mexicanTrain.collectionView.dropDelegate = self
+        subscribe(to: viewModel.mexicanTrain, dominoesView: gameView.boardView.mexicanTrain)
+
+        gameView.boardView.playerTrains.enumerated().forEach {
             let index = $0.offset
             let dominoesView = $0.element
 
@@ -151,9 +154,9 @@ extension GameViewController: UICollectionViewDropDelegate {
     }
 
     private func destinationTrain(for collectionView: UICollectionView) -> DestinationTrain? {
-        if let trainIndex = gameView.indexOfTrainCollectionView(collectionView) {
+        if let trainIndex = gameView.boardView.indexOfTrainCollectionView(collectionView) {
             return .player(trainIndex)
-        } else if collectionView == gameView.mexicanTrain.collectionView {
+        } else if collectionView == gameView.boardView.mexicanTrain.collectionView {
             return .mexican
         }
         return nil

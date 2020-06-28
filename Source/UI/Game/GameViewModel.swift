@@ -27,6 +27,7 @@ protocol GameViewModel {
 
     var totalPlayerCount: Int { get }
 
+    var stationValue: AnyPublisher<DominoView.State, Never> { get }
     var currentPlayerTurn: AnyPublisher<Bool, Never> { get }
     var playerDominoes: AnyPublisher<[DominoView.State], Never> { get }
     var mexicanTrain: AnyPublisher<TrainState, Never> { get }
@@ -39,6 +40,7 @@ protocol GameViewModel {
 }
 
 class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
+    let stationValue: AnyPublisher<DominoView.State, Never>
     let currentPlayerTurn: AnyPublisher<Bool, Never>
     let playerDominoes: AnyPublisher<[DominoView.State], Never>
     let mexicanTrain: AnyPublisher<TrainState, Never>
@@ -48,6 +50,11 @@ class GameViewModelImpl: AbstractGameViewModelImpl, GameViewModel {
     private var subscription: AnyCancellable?
 
     override init(gameEngine: GameEngine, operations: Operations) {
+        stationValue = gameEngine.gamePublisher
+            .map { $0.stationValue.stationDominoState }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+
         currentPlayerTurn = gameEngine.gamePublisher
             .map { gameEngine.engineState.currentLocalPlayer(game: $0) != nil }
             .removeDuplicates()
@@ -196,5 +203,9 @@ private extension DominoValue {
         case .eleven: return .eleven
         case .twelve: return .twelve
         }
+    }
+
+    var stationDominoState: DominoView.State {
+        .faceUp(viewValue, viewValue)
     }
 }

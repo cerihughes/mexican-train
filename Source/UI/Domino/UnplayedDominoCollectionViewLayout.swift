@@ -15,12 +15,12 @@ class UnplayedDominoCollectionViewLayout: UICollectionViewLayout {
 
     private var cache: [UICollectionViewLayoutAttributes] = []
 
-    private var contentWidth: CGFloat {
+    private var contentHeight: CGFloat {
         guard let collectionView = collectionView else { return 0 }
-        return collectionView.bounds.width - (collectionView.contentInset.left + collectionView.contentInset.right)
+        return collectionView.bounds.height - (collectionView.contentInset.top + collectionView.contentInset.bottom)
     }
 
-    private var contentHeight: CGFloat = 0
+    private var contentWidth: CGFloat = 0
 
     override var collectionViewContentSize: CGSize {
         return CGSize(width: contentWidth, height: contentHeight)
@@ -31,14 +31,14 @@ class UnplayedDominoCollectionViewLayout: UICollectionViewLayout {
 
         guard let collectionView = collectionView else { return }
 
-        let contentWidth = self.contentWidth
+        let contentHeight = self.contentHeight
         let layoutAttributes = (0 ..< collectionView.numberOfItems(inSection: 0))
             .map { $0.toPlacement() }
             .enumerated()
-            .map { $0.element.toLayoutAttributes(index: $0.offset, width: contentWidth) }
+            .map { $0.element.toLayoutAttributes(index: $0.offset, height: contentHeight) }
 
         cache = layoutAttributes
-        contentHeight = layoutAttributes.reduce(CGFloat(0)) { max($0, $1.bounds.maxY) }
+        contentWidth = layoutAttributes.reduce(CGFloat(0)) { max($0, $1.frame.maxX) }
     }
 
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
@@ -52,28 +52,19 @@ class UnplayedDominoCollectionViewLayout: UICollectionViewLayout {
 
 private extension UnplayedDominoCollectionViewLayout.Placement {
     static func placement(for index: Int) -> UnplayedDominoCollectionViewLayout.Placement {
-        let numberOfPlacements = 10
-        var columnIndex = index
-        var rowOffset = 0
-
-        while columnIndex >= numberOfPlacements {
-            columnIndex -= numberOfPlacements
-            rowOffset += 2
-        }
-
-        return UnplayedDominoCollectionViewLayout.Placement(x: columnIndex, y: (columnIndex % 2) + rowOffset)
+        return UnplayedDominoCollectionViewLayout.Placement(x: index, y: index % 2)
     }
 
-    func toLayoutAttributes(index: Int, width: CGFloat) -> UICollectionViewLayoutAttributes {
+    func toLayoutAttributes(index: Int, height: CGFloat) -> UICollectionViewLayoutAttributes {
         let attributes = UICollectionViewLayoutAttributes(forCellWith: IndexPath(row: index, section: 0))
-        let frame = toRect(width: width)
+        let frame = toRect(height: height)
         attributes.frame = frame
         attributes.transform = toTransform(size: frame.size)
         return attributes
     }
 
-    private func toRect(width: CGFloat) -> CGRect {
-        let multiple = width / 11.0
+    private func toRect(height: CGFloat) -> CGRect {
+        let multiple = height / 2.0
         let origin = CGPoint(x: CGFloat(x) * multiple, y: CGFloat(y) * multiple)
         let size = CGSize(width: multiple, height: multiple * 2.0)
         return CGRect(origin: origin, size: size)

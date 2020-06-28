@@ -43,7 +43,7 @@ class PlayedDominoCollectionViewLayout: UICollectionViewLayout {
             .map { $0.element.toLayoutAttributes(index: $0.offset, width: contentWidth) }
 
         cache = layoutAttributes
-        contentHeight = layoutAttributes.reduce(CGFloat(0)) { max($0, $1.bounds.maxY) }
+        contentHeight = layoutAttributes.reduce(CGFloat(0)) { max($0, $1.frame.maxY) }
     }
 
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
@@ -60,45 +60,46 @@ private extension PlayedDominoCollectionViewLayout.Placement {
         PlayedDominoCollectionViewLayout.Placement(x: x, y: y, direction: direction)
     }
 
-    private static let placement0 = PlayedDominoCollectionViewLayout.Placement.p(3, 0, .down) // Special case for index 0
     private static let placements: [PlayedDominoCollectionViewLayout.Placement] = [
-        .p(3, 2, .right),
-        .p(4, 1, .right),
-        .p(5, 2, .right),
-        .p(6, 1, .right),
-        .p(7, 2, .down),
-        .p(6, 3, .down),
-        .p(7, 4, .down),
+        .p(7, 0, .down),
+        .p(7, 2, .right),
+        .p(8, 1, .right),
+        .p(9, 2, .down),
+        .p(8, 3, .down),
+        .p(9, 4, .down),
+        .p(8, 5, .left),
+        .p(7, 4, .left),
         .p(6, 5, .left),
         .p(5, 4, .left),
-        .p(4, 5, .left),
-        .p(3, 4, .left),
-        .p(2, 5, .left),
-        .p(1, 4, .left),
-        .p(0, 5, .down),
-        .p(1, 6, .down),
-        .p(0, 7, .down),
-        .p(1, 8, .right),
-        .p(2, 7, .right)
+        .p(4, 5, .down),
+        .p(5, 6, .down),
+        .p(4, 7, .down),
+        .p(5, 8, .right),
+        .p(6, 7, .right),
+        .p(7, 8, .right),
+        .p(8, 7, .right),
+        .p(9, 8, .right),
+        .p(10, 7, .right),
+        .p(11, 8, .right),
+        .p(12, 7, .right),
+        .p(13, 8, .down),
+        .p(12, 9, .down),
+        .p(13, 10, .down),
+        .p(12, 11, .left),
+        .p(11, 10, .left),
+        .p(10, 11, .left),
+        .p(9, 10, .left),
+        .p(8, 11, .left),
+        .p(7, 10, .left),
+        .p(6, 11, .left),
+        .p(5, 10, .left),
+        .p(4, 11, .left),
+        .p(3, 10, .left),
+        .p(2, 11, .left)
     ]
 
-    private func applyingRowOffset(_ rowOffset: Int) -> PlayedDominoCollectionViewLayout.Placement {
-        PlayedDominoCollectionViewLayout.Placement(x: x, y: y + rowOffset, direction: direction)
-    }
-
     static func placement(for index: Int) -> PlayedDominoCollectionViewLayout.Placement {
-        if index == 0 { return .placement0 }
-
-        let numberOfPlacements = PlayedDominoCollectionViewLayout.Placement.placements.count
-        var arrayIndex = index - 1
-        var rowOffset = 0
-
-        while arrayIndex >= numberOfPlacements {
-            arrayIndex -= numberOfPlacements
-            rowOffset += 6
-        }
-
-        return PlayedDominoCollectionViewLayout.Placement.placements[arrayIndex].applyingRowOffset(rowOffset)
+        placements[safe: index] ?? .p(1, 10, .left)
     }
 
     func toLayoutAttributes(index: Int, width: CGFloat) -> UICollectionViewLayoutAttributes {
@@ -110,7 +111,7 @@ private extension PlayedDominoCollectionViewLayout.Placement {
     }
 
     private func toRect(width: CGFloat) -> CGRect {
-        let multiple = width / 8.0
+        let multiple = width / 15.0
         let origin = CGPoint(x: CGFloat(x) * multiple, y: CGFloat(y) * multiple)
         let size = CGSize(width: multiple, height: multiple * 2.0)
         return CGRect(origin: origin, size: size)
