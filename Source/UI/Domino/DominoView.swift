@@ -9,9 +9,6 @@ import SnapKit
 import UIKit
 
 class DominoView: SuperView {
-    static let aspectRatio: CGFloat = 115.0 / 216.0
-    static let spacing: CGFloat = 8.0
-
     enum State: Hashable {
         case faceUp(DominoFaceView.Value, DominoFaceView.Value)
         case faceDown
@@ -29,7 +26,9 @@ class DominoView: SuperView {
     override func commonInit() {
         super.commonInit()
 
-        layer.borderWidth = 8
+        backgroundColor = .white
+
+        layer.borderWidth = 5
         layer.cornerRadius = 16
         layer.borderColor = UIColor.black.cgColor
 
@@ -37,12 +36,12 @@ class DominoView: SuperView {
         addSubview(face2)
 
         face1.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(16)
+            make.top.leading.trailing.equalToSuperview().inset(8)
             make.width.equalTo(face1.snp.height)
         }
 
         face2.snp.makeConstraints { make in
-            make.bottom.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.leading.trailing.equalToSuperview().inset(8)
             make.width.equalTo(face2.snp.height)
         }
     }

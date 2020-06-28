@@ -2,7 +2,7 @@
 //  OperationTestCase.swift
 //  Tests
 //
-//  Created by Ceri Hughes on 23/06/2020.
+//  Created by Ceri on 23/06/2020.
 //
 
 import XCTest
