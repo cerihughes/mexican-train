@@ -1,5 +1,5 @@
 //
-//  DominoCollectionViewLayout.swift
+//  PlayedDominoCollectionViewLayout.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 27/06/2020.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DominoCollectionViewLayout: UICollectionViewLayout {
+class PlayedDominoCollectionViewLayout: UICollectionViewLayout {
     fileprivate struct Placement {
         enum Direction {
             case right, down, left
@@ -55,13 +55,13 @@ class DominoCollectionViewLayout: UICollectionViewLayout {
     }
 }
 
-private extension DominoCollectionViewLayout.Placement {
-    private static func p(_ x: Int, _ y: Int, _ direction: Direction) -> DominoCollectionViewLayout.Placement {
-        DominoCollectionViewLayout.Placement(x: x, y: y, direction: direction)
+private extension PlayedDominoCollectionViewLayout.Placement {
+    private static func p(_ x: Int, _ y: Int, _ direction: Direction) -> PlayedDominoCollectionViewLayout.Placement {
+        PlayedDominoCollectionViewLayout.Placement(x: x, y: y, direction: direction)
     }
 
-    private static let placement0 = DominoCollectionViewLayout.Placement.p(3, 0, .down) // Special case for index 0
-    private static let placements: [DominoCollectionViewLayout.Placement] = [
+    private static let placement0 = PlayedDominoCollectionViewLayout.Placement.p(3, 0, .down) // Special case for index 0
+    private static let placements: [PlayedDominoCollectionViewLayout.Placement] = [
         .p(3, 2, .right),
         .p(4, 1, .right),
         .p(5, 2, .right),
@@ -82,14 +82,14 @@ private extension DominoCollectionViewLayout.Placement {
         .p(2, 7, .right)
     ]
 
-    private func applyingRowOffset(_ rowOffset: Int) -> DominoCollectionViewLayout.Placement {
-        DominoCollectionViewLayout.Placement(x: x, y: y + rowOffset, direction: direction)
+    private func applyingRowOffset(_ rowOffset: Int) -> PlayedDominoCollectionViewLayout.Placement {
+        PlayedDominoCollectionViewLayout.Placement(x: x, y: y + rowOffset, direction: direction)
     }
 
-    static func placement(for index: Int) -> DominoCollectionViewLayout.Placement {
+    static func placement(for index: Int) -> PlayedDominoCollectionViewLayout.Placement {
         if index == 0 { return .placement0 }
 
-        let numberOfPlacements = DominoCollectionViewLayout.Placement.placements.count
+        let numberOfPlacements = PlayedDominoCollectionViewLayout.Placement.placements.count
         var arrayIndex = index - 1
         var rowOffset = 0
 
@@ -98,7 +98,7 @@ private extension DominoCollectionViewLayout.Placement {
             rowOffset += 6
         }
 
-        return DominoCollectionViewLayout.Placement.placements[arrayIndex].applyingRowOffset(rowOffset)
+        return PlayedDominoCollectionViewLayout.Placement.placements[arrayIndex].applyingRowOffset(rowOffset)
     }
 
     func toLayoutAttributes(index: Int, width: CGFloat) -> UICollectionViewLayoutAttributes {
@@ -134,7 +134,7 @@ private extension CGAffineTransform {
 }
 
 private extension Int {
-    func toPlacement() -> DominoCollectionViewLayout.Placement {
-        DominoCollectionViewLayout.Placement.placement(for: self)
+    func toPlacement() -> PlayedDominoCollectionViewLayout.Placement {
+        PlayedDominoCollectionViewLayout.Placement.placement(for: self)
     }
 }

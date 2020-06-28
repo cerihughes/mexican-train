@@ -59,7 +59,7 @@ private extension DominoesView.Mode {
         case .unplayed:
             return UICollectionViewFlowLayout.create(itemHeight: collectionView.frame.height)
         case .played:
-            return DominoCollectionViewLayout()
+            return PlayedDominoCollectionViewLayout()
         }
     }
 }
