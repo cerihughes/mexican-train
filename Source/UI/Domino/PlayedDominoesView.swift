@@ -1,5 +1,5 @@
 //
-//  DominoesView.swift
+//  PlayedDominoesView.swift
 //  MexicanTrain
 //
 //  Created by Ceri on 12/05/2020.
@@ -9,18 +9,8 @@ import SnapKit
 import UIKit
 
 class PlayedDominoesView: SuperView {
-    enum Mode {
-        case unplayed, played
-    }
-
-    let collectionView = UICollectionView.create(mode: .unplayed)
+    let collectionView = UICollectionView.create()
     let trainButton = UIButton(type: .roundedRect)
-
-    var mode: Mode = .unplayed {
-        didSet {
-            setNeedsLayout()
-        }
-    }
 
     override func commonInit() {
         super.commonInit()
@@ -48,24 +38,13 @@ class PlayedDominoesView: SuperView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let newLayout = mode.createCollectionViewLayout()
+        let newLayout = PlayedDominoCollectionViewLayout()
         collectionView.setCollectionViewLayout(newLayout, animated: true)
     }
 }
 
-private extension PlayedDominoesView.Mode {
-    func createCollectionViewLayout() -> UICollectionViewLayout {
-        switch self {
-        case .unplayed:
-            return UnplayedDominoCollectionViewLayout()
-        case .played:
-            return PlayedDominoCollectionViewLayout()
-        }
-    }
-}
-
 private extension UICollectionView {
-    static func create(mode: PlayedDominoesView.Mode) -> UICollectionView {
-        UICollectionView(frame: .zero, collectionViewLayout: mode.createCollectionViewLayout())
+    static func create() -> UICollectionView {
+        UICollectionView(frame: .zero, collectionViewLayout: PlayedDominoCollectionViewLayout())
     }
 }

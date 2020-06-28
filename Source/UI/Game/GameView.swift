@@ -10,18 +10,14 @@ import UIKit
 
 class GameView: UIView {
     let pickupView = PickupView()
-    let playerDominoes = DominoesView()
+    let playerDominoes = UnplayedDominoesView()
     let divider = UIView()
-    let mexicanTrain = DominoesView()
-    let playerTrains: [DominoesView]
+    let mexicanTrain = PlayedDominoesView()
+    let playerTrains: [PlayedDominoesView]
 
     init(frame: CGRect, numberOfTrains: Int) {
         playerTrains = (0 ..< numberOfTrains)
-            .map { _ in
-                let view = DominoesView()
-                view.mode = .played
-                return view
-            }
+            .map { _ in PlayedDominoesView() }
 
         super.init(frame: frame)
 
@@ -35,9 +31,6 @@ class GameView: UIView {
     private func commonInit(numberOfTrains: Int) {
         backgroundColor = .white
         divider.backgroundColor = .darkGray
-
-        playerDominoes.mode = .unplayed
-        mexicanTrain.mode = .played
 
         addSubview(pickupView)
         addSubview(playerDominoes)

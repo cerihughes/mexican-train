@@ -81,7 +81,7 @@ class GameViewController: UIViewController {
             .store(in: &subscriptions)
     }
 
-    private func subscribe(to publisher: AnyPublisher<TrainState, Never>, dominoesView: DominoesView) {
+    private func subscribe(to publisher: AnyPublisher<TrainState, Never>, dominoesView: PlayedDominoesView) {
         publisher.map { $0.isPlayable }
             .removeDuplicates()
             .sink { isPlayable in dominoesView.trainButton.isHidden = !isPlayable }
