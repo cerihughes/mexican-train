@@ -13,7 +13,7 @@ class DominoesView: SuperView {
         case unplayed, played
     }
 
-    let collectionView = UICollectionView.create()
+    let collectionView = UICollectionView.create(mode: .unplayed)
     let trainButton = UIButton(type: .roundedRect)
 
     var mode: Mode = .unplayed {
@@ -48,16 +48,16 @@ class DominoesView: SuperView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let newLayout = mode.createCollectionViewLayout(collectionView: collectionView)
+        let newLayout = mode.createCollectionViewLayout()
         collectionView.setCollectionViewLayout(newLayout, animated: true)
     }
 }
 
 private extension DominoesView.Mode {
-    func createCollectionViewLayout(collectionView: UICollectionView) -> UICollectionViewLayout {
+    func createCollectionViewLayout() -> UICollectionViewLayout {
         switch self {
         case .unplayed:
-            return UICollectionViewFlowLayout.create(itemHeight: collectionView.frame.height)
+            return UnplayedDominoCollectionViewLayout()
         case .played:
             return PlayedDominoCollectionViewLayout()
         }
@@ -65,18 +65,7 @@ private extension DominoesView.Mode {
 }
 
 private extension UICollectionView {
-    static func create() -> UICollectionView {
-        let layout = UICollectionViewFlowLayout.create()
-        return UICollectionView(frame: .zero, collectionViewLayout: layout)
-    }
-}
-
-private extension UICollectionViewFlowLayout {
-    static func create(itemHeight: CGFloat = 0.0) -> UICollectionViewFlowLayout {
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: itemHeight * DominoView.aspectRatio, height: itemHeight)
-        layout.minimumInteritemSpacing = DominoView.spacing
-        layout.scrollDirection = .horizontal
-        return layout
+    static func create(mode: DominoesView.Mode) -> UICollectionView {
+        UICollectionView(frame: .zero, collectionViewLayout: mode.createCollectionViewLayout())
     }
 }

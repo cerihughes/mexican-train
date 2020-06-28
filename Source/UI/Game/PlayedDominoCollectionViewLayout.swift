@@ -110,8 +110,9 @@ private extension PlayedDominoCollectionViewLayout.Placement {
     }
 
     private func toRect(width: CGFloat) -> CGRect {
-        let origin = CGPoint(x: CGFloat(x) * width / 8.0, y: CGFloat(y) * width / 8.0)
-        let size = CGSize(width: width / 8.0, height: width / 4.0)
+        let multiple = width / 8.0
+        let origin = CGPoint(x: CGFloat(x) * multiple, y: CGFloat(y) * multiple)
+        let size = CGSize(width: multiple, height: multiple * 2.0)
         return CGRect(origin: origin, size: size)
     }
 
@@ -121,15 +122,6 @@ private extension PlayedDominoCollectionViewLayout.Placement {
         case .left: return .rotationAround(angle: .pi / 2.0, size: size)
         case .right: return .rotationAround(angle: .pi / -2.0, size: size)
         }
-    }
-}
-
-private extension CGAffineTransform {
-    static func rotationAround(angle: CGFloat, size: CGSize) -> CGAffineTransform {
-        let y = size.height * -0.25
-        return CGAffineTransform(translationX: 0, y: y)
-            .rotated(by: angle)
-            .translatedBy(x: 0, y: -y)
     }
 }
 
